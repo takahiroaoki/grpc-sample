@@ -8,7 +8,9 @@
 	"workspaceFolder": "/mnt",
 	"customizations": {
 		"vscode": {
-			"extensions": []
+			"extensions": [
+				"golang.Go"
+			]
 		}
 	}
 }

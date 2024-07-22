@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/takahiroaoki/go-env/cmd"
+)
 
 func main() {
-	fmt.Println("Hello world!")
+	rootCmd := cmd.NewRootCmd()
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Printf("Failed to execute the command. Error: %v", err)
+	}
 }

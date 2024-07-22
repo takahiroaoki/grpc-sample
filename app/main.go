@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	rootCmd := cmd.NewRootCmd()
+	rootCmd := cmd.NewCmdRoot()
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Printf("Failed to execute the command. Error: %v", err)
 	}

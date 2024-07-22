@@ -6,12 +6,12 @@ import (
 	"github.com/takahiroaoki/go-env/cmd/server"
 )
 
-func NewRootCmd() *cobra.Command {
+func NewCmdRoot() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd.Help()
 		},
 	}
-	rootCmd.AddCommand(server.NewServerCmd())
+	rootCmd.AddCommand(server.NewCmdServer())
 	return rootCmd
 }

@@ -10,11 +10,15 @@ import (
 	"github.com/takahiroaoki/go-env/handler"
 )
 
-func NewServerCmd() *cobra.Command {
+func NewCmdServer() *cobra.Command {
+	var profile string
+
 	serverCmd := &cobra.Command{
-		Use: "server",
+		Use:   "server",
+		Short: "Boot command of web server with a profile.",
+		Long:  "Boot command of web server with a profile. Usage example: 'go run main.go server -p prod'",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("Hello world!")
+			fmt.Println(profile)
 
 			server := http.NewServeMux()
 			server.HandleFunc("/", handler.HealthCheck)
@@ -26,5 +30,7 @@ func NewServerCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	serverCmd.Flags().StringVarP(&profile, "profile", "p", "local", "Running profile: 'local', 'prod'")
 	return serverCmd
 }

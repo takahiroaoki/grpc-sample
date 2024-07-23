@@ -5,12 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type SampleRepositoryInterface interface {
+type SampleRepository interface {
 	SelectOneUserByUserId(userId string) (*entity.User, error)
-}
-
-func NewSampleRepository(db *gorm.DB) SampleRepositoryInterface {
-	return &SampleRepositoryImpl{db: db}
 }
 
 type SampleRepositoryImpl struct {
@@ -24,4 +20,8 @@ func (r *SampleRepositoryImpl) SelectOneUserByUserId(userId string) (*entity.Use
 	}
 
 	return &user, nil
+}
+
+func NewSampleRepository(db *gorm.DB) SampleRepository {
+	return &SampleRepositoryImpl{db: db}
 }

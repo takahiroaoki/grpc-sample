@@ -1,7 +1,7 @@
 FROM golang:1.22.4-alpine3.20
 
-RUN apk update \\
-    && apk add git \\
+RUN apk update \
+    && apk add git \
     && apk add curl
 
 WORKDIR /bin

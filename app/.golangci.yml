@@ -1,0 +1,5 @@
+skip-dirs:
+  - asset
+
+skip-files:
+  - ".*_test.go$"

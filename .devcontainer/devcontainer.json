@@ -9,7 +9,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"golang.Go"
+				"golang.Go",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	}

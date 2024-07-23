@@ -11,3 +11,9 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - 3306:3306
+    networks:
+      - dev-net
+
+networks:
+  dev-net:
+    driver: bridge

@@ -5,7 +5,7 @@
 		"docker-compose.infra.yml"
 	],
     "service": "demo-app",
-	"workspaceFolder": "/mnt",
+	"workspaceFolder": "/workspaces/go-env",
 	"customizations": {
 		"vscode": {
 			"extensions": [

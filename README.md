@@ -20,8 +20,6 @@ etc.
 ## Local setup
 
 ```
-$ cd app
-
 # migrate up
 $ migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
 
@@ -29,6 +27,7 @@ $ migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root
 $ migrate -path "/workspaces/go-env/app/asset/sample" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
 
 # start web server, and get access to localhost:8080
+$ cd app
 $ go run main.go server
 ```
 

@@ -8,7 +8,7 @@ import (
 )
 
 type SampleHandler struct {
-	sampleService service.SampleServiceInterface
+	sampleService service.SampleService
 }
 
 func (h *SampleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +16,7 @@ func (h *SampleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func NewSampleHandler(sampleService service.SampleServiceInterface) *SampleHandler {
+func NewSampleHandler(sampleService service.SampleService) *SampleHandler {
 	return &SampleHandler{
 		sampleService: sampleService,
 	}

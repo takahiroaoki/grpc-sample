@@ -1,9 +1,6 @@
 {
 	"name": "go-env",
-	"dockerComposeFile": [
-		"docker-compose.app.yml",
-		"docker-compose.infra.yml"
-	],
+	"dockerComposeFile": "docker-compose.yml",
     "service": "demo-app",
 	"workspaceFolder": "/workspaces/go-env",
 	"customizations": {

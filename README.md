@@ -12,5 +12,5 @@ $ migrate create -ext sql -dir /workspaces/go-env/app/asset/migration -seq ${MIG
 ### How to execute migration.
 
 ```
-$ migrate --path /workspaces/go-env/app/asset/migration --database mysql://root:password@host.docker.internal:3306/demodb up
+$ migrate --path /workspaces/go-env/app/asset/migration --database mysql://root:password@demo-mysql:3306/demodb up
 ```

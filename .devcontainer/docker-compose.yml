@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  demo-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-app
+    volumes:
+      - ..:/workspaces/go-env
+    working_dir: /workspaces/go-env
+    ports:
+      - 8080:8080
+    depends_on:
+      - demo-mysql
+    tty: true
+    networks:
+      - dev-net
   demo-mysql:
     image: mysql:8.0.33
     container_name: demo-mysql

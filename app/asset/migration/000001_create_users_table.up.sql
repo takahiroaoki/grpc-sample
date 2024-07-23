@@ -3,6 +3,7 @@ CREATE TABLE demodb.users(
     created_at TIME,
     updated_at TIME,
     deleted_at TIME,
+    email VARCHAR(255) NOT NULL,
 
     PRIMARY KEY(id)
 ) ENGINE = innoDB DEFAULT CHARSET = utf8;

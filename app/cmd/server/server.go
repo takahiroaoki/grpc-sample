@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -8,6 +9,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/stretchr/graceful"
 	"github.com/takahiroaoki/go-env/handler"
+	"github.com/takahiroaoki/go-env/repository"
+	"github.com/takahiroaoki/go-env/service"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func NewCmdServer() *cobra.Command {
@@ -20,8 +25,14 @@ func NewCmdServer() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Println(profile)
 
+			dsn := "dev-user:password@tcp(demo-mysql:3306)/demodb?charset=utf8"
+			db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+			sampleRepository := repository.NewSampleRepository(db)
+			sampleService := service.NewSampleService(sampleRepository)
+			ctx := context.Background()
+
 			server := http.NewServeMux()
-			server.HandleFunc("/", handler.HealthCheck)
+			server.Handle("/", handler.NewSampleHandler(ctx, sampleService))
 
 			fmt.Println("Starting web server...")
 			graceful.Run(":8080", 1*time.Second, server)

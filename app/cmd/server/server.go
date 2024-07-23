@@ -23,14 +23,14 @@ func NewCmdServer() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// Prepare db client
-			dbc, err := config.NewDataBaseConfig()
+			db, err := gorm.Open(
+				mysql.Open(config.NewDataBaseConfig().GetDataSourceName()),
+				&gorm.Config{},
+			)
 			if err != nil {
 				return err
 			}
-			db, err := gorm.Open(mysql.Open(dbc.GetDataSourceName()), &gorm.Config{})
-			if err != nil {
-				return err
-			}
+			defer closeDB(db)
 
 			// Prepare repositories and servicies
 			sampleRepository := repository.NewSampleRepository(db)
@@ -48,4 +48,15 @@ func NewCmdServer() *cobra.Command {
 		},
 	}
 	return serverCmd
+}
+
+func closeDB(db *gorm.DB) {
+	sqlDB, err := db.DB()
+	if err != nil {
+		fmt.Println("Failed to close db")
+		return
+	}
+	if err := sqlDB.Close(); err != nil {
+		fmt.Println("Failed to close db")
+	}
 }

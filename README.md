@@ -21,27 +21,19 @@ etc.
 ## Local setup
 
 ```
-# migrate up
-$ make migrate-up
-
-# sample data
-$ make insert-dev-data
-
-# start web server, and get access to localhost:8080
-$ make run-server
+# migrate up, insert data for development, start web server
+$ make init-run
 ```
+Then, get access to ${YOUR_HOST}:8080
 
-## Other commands
+## Appendix
+### Lint
 ```
 # lint
 $ make lint
 ```
 
-## Appendix
-
-### Migration on the local environment
-
-#### How to create migration files
+### How to create migration files
 ```
 $ migrate create -ext sql -dir ${PATH_TO_MIGRATION_DIR} -seq ${MIGRATION_FILE_NAME}
 ```

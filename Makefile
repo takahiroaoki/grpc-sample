@@ -1,3 +1,5 @@
+init-run:migrate-up insert-dev-data run-server
+
 migrate-up:
 	@migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
 

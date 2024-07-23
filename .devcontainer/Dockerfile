@@ -4,7 +4,8 @@ RUN apk update \
     && apk add git \
         curl \
         mysql-client \
-        golangci-lint
+        golangci-lint \
+        make
 
 WORKDIR /bin
 

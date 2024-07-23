@@ -1,13 +1,13 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/stretchr/graceful"
+	"github.com/takahiroaoki/go-env/cmd/config"
 	"github.com/takahiroaoki/go-env/handler"
 	"github.com/takahiroaoki/go-env/repository"
 	"github.com/takahiroaoki/go-env/service"
@@ -16,23 +16,29 @@ import (
 )
 
 func NewCmdServer() *cobra.Command {
-	var profile string
-
 	serverCmd := &cobra.Command{
 		Use:   "server",
-		Short: "Boot command of web server with a profile.",
-		Long:  "Boot command of web server with a profile. Usage example: 'go run main.go server -p prod'",
+		Short: "Boot command of web server.",
+		Long:  "Boot command of web server.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println(profile)
 
-			dsn := "dev-user:password@tcp(demo-mysql:3306)/demodb?charset=utf8"
-			db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+			// Prepare db client
+			db, err := gorm.Open(
+				mysql.Open(config.NewDataBaseConfig().GetDataSourceName()),
+				&gorm.Config{},
+			)
+			if err != nil {
+				return err
+			}
+			defer closeDB(db)
+
+			// Prepare repositories and servicies
 			sampleRepository := repository.NewSampleRepository(db)
 			sampleService := service.NewSampleService(sampleRepository)
-			ctx := context.Background()
 
+			// Prepare http server settings
 			server := http.NewServeMux()
-			server.Handle("/", handler.NewSampleHandler(ctx, sampleService))
+			server.Handle("/", handler.NewSampleHandler(sampleService))
 
 			fmt.Println("Starting web server...")
 			graceful.Run(":8080", 1*time.Second, server)
@@ -41,7 +47,16 @@ func NewCmdServer() *cobra.Command {
 			return nil
 		},
 	}
-
-	serverCmd.Flags().StringVarP(&profile, "profile", "p", "local", "Running profile: 'local', 'prod'")
 	return serverCmd
+}
+
+func closeDB(db *gorm.DB) {
+	sqlDB, err := db.DB()
+	if err != nil {
+		fmt.Println("Failed to close db")
+		return
+	}
+	if err := sqlDB.Close(); err != nil {
+		fmt.Println("Failed to close db")
+	}
 }

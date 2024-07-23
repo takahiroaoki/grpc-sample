@@ -31,6 +31,12 @@ $ cd app
 $ go run main.go server
 ```
 
+## Development
+```
+# lint
+$ golangci-lint run
+```
+
 ## Appendix
 
 ### Migration on the local environment

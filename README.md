@@ -21,10 +21,10 @@ etc.
 ## Local setup
 
 ```
-# migrate up, insert data for development, generate go code from proto, start web server
+# migrate up, insert data for development, generate go code from proto, start grpc server
+# the password is necessary for mysql. see .devcontainer/.env
 $ make init-run
 ```
-Then, get access to ${YOUR_HOST}:8080
 
 ## Appendix
 ### Lint

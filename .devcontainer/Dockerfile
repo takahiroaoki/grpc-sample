@@ -5,7 +5,8 @@ RUN apk update \
         curl \
         mysql-client \
         golangci-lint \
-        make
+        make \
+        protobuf
 
 WORKDIR /bin
 

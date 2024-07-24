@@ -21,7 +21,6 @@ mysql:
 	@mysql -h demo-mysql -u dev-user -p
 
 proto-go:
-	@cd /workspaces/go-env/grpc \
-	&& protoc --go_out=gen_go --go_opt=paths=source_relative \
-		--go-grpc_out=gen_go --go-grpc_opt=paths=source_relative \
+	@protoc --go_out=app/grpc --go_opt=paths=source_relative \
+		--go-grpc_out=app/grpc --go-grpc_opt=paths=source_relative \
 		proto/sample.proto

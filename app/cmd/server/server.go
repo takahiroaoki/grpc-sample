@@ -2,10 +2,10 @@ package server
 
 import (
 	"fmt"
-	"time"
+	"log"
+	"net"
 
 	"github.com/spf13/cobra"
-	"github.com/stretchr/graceful"
 	"github.com/takahiroaoki/go-env/cmd/config"
 	"github.com/takahiroaoki/go-env/handler"
 	"github.com/takahiroaoki/go-env/pb"
@@ -38,11 +38,17 @@ func NewCmdServer() *cobra.Command {
 			sampleService := service.NewSampleService(sampleRepository)
 
 			// Prepare grpc server settings
+			lis, err := net.Listen("tcp", ":8080")
+			if err != nil {
+				log.Fatalf("failed to listen: %v", err)
+			}
 			server := grpc.NewServer()
 			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
 
 			fmt.Println("Starting grpc server...")
-			graceful.Run(":8080", 1*time.Second, server)
+			if err := server.Serve(lis); err != nil {
+				log.Fatalf("failed to serve: %v", err)
+			}
 			fmt.Println("Stopping grpc server...")
 
 			return nil

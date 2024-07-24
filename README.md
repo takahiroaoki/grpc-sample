@@ -10,6 +10,7 @@ Docker Desktop
 ## Tech stack
 - Go 1.22
 - MySQL 8
+- gRPC
 
 
 Others:
@@ -21,10 +22,15 @@ etc.
 ## Local setup
 
 ```
-# migrate up, insert data for development, generate go code from proto, start grpc server
+# migrate up, insert data for development, generate go code from proto
 # the password is necessary for mysql. see .devcontainer/.env
-$ make init-run
+$ make init
+
+# start grpc server
+$ make run-server
 ```
+
+You can try gRPC request via Postman of VSCode extension. The server URL is localhost:8080.
 
 ## Appendix
 ### Lint

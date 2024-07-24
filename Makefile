@@ -1,4 +1,4 @@
-init-run:migrate-up insert-dev-data proto-go run-server
+init:migrate-up insert-dev-data proto-go
 
 migrate-up:
 	@migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up

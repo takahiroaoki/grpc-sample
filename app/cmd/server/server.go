@@ -2,15 +2,16 @@ package server
 
 import (
 	"fmt"
-	"net/http"
-	"time"
+	"log"
+	"net"
 
 	"github.com/spf13/cobra"
-	"github.com/stretchr/graceful"
 	"github.com/takahiroaoki/go-env/cmd/config"
 	"github.com/takahiroaoki/go-env/handler"
+	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/repository"
 	"github.com/takahiroaoki/go-env/service"
+	"google.golang.org/grpc"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -36,13 +37,19 @@ func NewCmdServer() *cobra.Command {
 			sampleRepository := repository.NewSampleRepository(db)
 			sampleService := service.NewSampleService(sampleRepository)
 
-			// Prepare http server settings
-			server := http.NewServeMux()
-			server.Handle("/", handler.NewSampleHandler(sampleService))
+			// Prepare grpc server settings
+			lis, err := net.Listen("tcp", ":8080")
+			if err != nil {
+				log.Fatalf("failed to listen: %v", err)
+			}
+			server := grpc.NewServer()
+			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
 
-			fmt.Println("Starting web server...")
-			graceful.Run(":8080", 1*time.Second, server)
-			fmt.Println("Stopping web server...")
+			fmt.Println("Starting grpc server...")
+			if err := server.Serve(lis); err != nil {
+				log.Fatalf("failed to serve: %v", err)
+			}
+			fmt.Println("Stopping grpc server...")
 
 			return nil
 		},

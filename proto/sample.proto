@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "github.com/takahiroaoki/go-env/app/pb";
+
+package sample;
+
+service SampleService {
+    rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse);
+}
+
+message GetUserInfoRequest {
+    string id = 1;
+}
+
+message GetUserInfoResponse {
+    string id = 1;
+    string email = 2;
+}

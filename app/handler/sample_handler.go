@@ -1,22 +1,22 @@
 package handler
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
+	"context"
 
+	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/service"
 )
 
 type SampleHandler struct {
+	pb.UnimplementedSampleServiceServer
 	sampleService service.SampleService
 }
 
-func (h *SampleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	user, _ := h.sampleService.GetUserByUserId("1")
-	if err := json.NewEncoder(w).Encode(user); err != nil {
-		fmt.Println("Failed to encode user")
-	}
+func (h *SampleHandler) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+	return &pb.GetUserInfoResponse{
+		Id:    "1",
+		Email: "user@test.example",
+	}, nil
 }
 
 func NewSampleHandler(sampleService service.SampleService) *SampleHandler {

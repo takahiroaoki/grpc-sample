@@ -1,4 +1,4 @@
-init-run:migrate-up insert-dev-data run-server
+init-run:migrate-up insert-dev-data proto-go run-server
 
 migrate-up:
 	@migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
@@ -8,6 +8,12 @@ migrate-down:
 
 insert-dev-data:
 	@migrate -path "/workspaces/go-env/app/asset/dev" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
+
+proto-go:
+	@protoc --proto_path=proto \
+		--go_out=app/pb --go_opt=paths=source_relative \
+		--go-grpc_out=app/pb --go-grpc_opt=paths=source_relative \
+		sample.proto
 
 run-server:
 	@cd /workspaces/go-env/app \
@@ -19,8 +25,3 @@ lint:
 
 mysql:
 	@mysql -h demo-mysql -u dev-user -p
-
-proto-go:
-	@protoc --go_out=app/grpc --go_opt=paths=source_relative \
-		--go-grpc_out=app/grpc --go-grpc_opt=paths=source_relative \
-		proto/sample.proto

@@ -21,7 +21,7 @@ etc.
 ## Local setup
 
 ```
-# migrate up, insert data for development, start web server
+# migrate up, insert data for development, generate go code from proto, start web server
 $ make init-run
 ```
 Then, get access to ${YOUR_HOST}:8080

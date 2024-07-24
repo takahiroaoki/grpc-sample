@@ -14,11 +14,15 @@ type SampleHandler struct {
 }
 
 func (h *SampleHandler) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	fmt.Println("Receiving request")
+	u, err := h.sampleService.GetUserByUserId(req.GetId())
+	if err != nil {
+		fmt.Println("Failed to get user info")
+		return nil, err
+	}
 
 	return &pb.GetUserInfoResponse{
-		Id:    "1",
-		Email: "user@test.example",
+		Id:    req.GetId(),
+		Email: u.Email,
 	}, nil
 }
 

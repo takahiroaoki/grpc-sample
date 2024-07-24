@@ -1,4 +1,4 @@
-module github.com/takahiroaoki/go-env
+module github.com/takahiroaoki/go-env/app
 
 go 1.22.4
 

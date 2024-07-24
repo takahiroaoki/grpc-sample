@@ -19,3 +19,10 @@ lint:
 
 mysql:
 	@mysql -h demo-mysql -u dev-user -p
+
+proto-gen-go:
+	@cd /workspaces/go-env/grpc \
+	&& protoc --proto_path=proto \
+		--go_out=gen_go --go_opt=paths=source_relative \
+		--go-grpc_out=gen_go --go-grpc_opt=paths=source_relative \
+		proto/sample.proto

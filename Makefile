@@ -1,13 +1,13 @@
 init:migrate-up insert-dev-data proto-go
 
 migrate-up:
-	migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
+	migrate -path "/workspaces/go-env/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
 
 migrate-down:
-	migrate -path "/workspaces/go-env/app/asset/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" down
+	migrate -path "/workspaces/go-env/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" down
 
 insert-dev-data:
-	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/data/dev.sql
+	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/asset/dev.sql
 
 proto-go:
 	protoc --proto_path=proto \

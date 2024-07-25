@@ -1,5 +1,7 @@
 skip-dirs:
   - asset
+  - mock
+  - pb
 
 skip-files:
   - ".*_test.go$"

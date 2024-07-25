@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/service"
@@ -22,7 +23,7 @@ func (h *SampleHandler) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequ
 	}
 
 	return &pb.GetUserInfoResponse{
-		Id:    req.GetId(),
+		Id:    strconv.FormatUint(uint64(u.ID), 10),
 		Email: u.Email,
 	}, nil
 }

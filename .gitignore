@@ -21,5 +21,8 @@
 go.work
 go.work.sum
 
-# Generate files for grpc
+# Generated files for grpc
 app/pb/*.pb.go
+
+# Generated files for test
+app/mock/*_mock.go

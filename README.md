@@ -33,18 +33,22 @@ $ make run-server
 You can try gRPC request via Postman of VSCode extension. The server URL is localhost:8080.
 
 ## Appendix
+### Generate mock files for unit test
+```
+$ make mockgen
+```
+
 ### Lint
 ```
-# lint
 $ make lint
 ```
 
-### How to create migration files
+### Create migration files
 ```
 $ migrate create -ext sql -dir ${PATH_TO_MIGRATION_DIR} -seq ${MIGRATION_FILE_NAME}
 ```
 
-### How to connect to mysql container from app container
+### Connect to mysql container from app container
 ```
 # the password is written in .devcontainer/.env
 $ make mysql

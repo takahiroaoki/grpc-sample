@@ -12,11 +12,14 @@ import (
 	"github.com/takahiroaoki/go-env/repository"
 	"github.com/takahiroaoki/go-env/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func NewCmdServer() *cobra.Command {
+	var profile string
+
 	serverCmd := &cobra.Command{
 		Use:   "server",
 		Short: "Boot command of web server.",
@@ -45,6 +48,10 @@ func NewCmdServer() *cobra.Command {
 			server := grpc.NewServer()
 			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
 
+			if profile != "prod" {
+				reflection.Register(server)
+			}
+
 			fmt.Println("Starting grpc server...")
 			if err := server.Serve(lis); err != nil {
 				log.Fatalf("failed to serve: %v", err)
@@ -54,6 +61,8 @@ func NewCmdServer() *cobra.Command {
 			return nil
 		},
 	}
+
+	serverCmd.Flags().StringVarP(&profile, "profile", "p", "local", "Running profile: 'local', 'prod'")
 	return serverCmd
 }
 

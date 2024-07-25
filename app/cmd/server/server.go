@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/spf13/cobra"
@@ -11,12 +10,16 @@ import (
 	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/repository"
 	"github.com/takahiroaoki/go-env/service"
+	"github.com/takahiroaoki/go-env/util"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func NewCmdServer() *cobra.Command {
+	var profile string
+
 	serverCmd := &cobra.Command{
 		Use:   "server",
 		Short: "Boot command of web server.",
@@ -29,7 +32,7 @@ func NewCmdServer() *cobra.Command {
 				&gorm.Config{},
 			)
 			if err != nil {
-				return err
+				util.FatalLog(fmt.Sprintf("Failed to get DB connection. Error: %v", err))
 			}
 			defer closeDB(db)
 
@@ -40,20 +43,25 @@ func NewCmdServer() *cobra.Command {
 			// Prepare grpc server settings
 			lis, err := net.Listen("tcp", ":8080")
 			if err != nil {
-				log.Fatalf("failed to listen: %v", err)
+				util.FatalLog(fmt.Sprintf("Failed to listen: %v", err))
 			}
 			server := grpc.NewServer()
 			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
 
-			fmt.Println("Starting grpc server...")
-			if err := server.Serve(lis); err != nil {
-				log.Fatalf("failed to serve: %v", err)
+			if profile != "prod" {
+				reflection.Register(server)
 			}
-			fmt.Println("Stopping grpc server...")
+
+			util.InfoLog(fmt.Sprintf("Started gRPC server on profile: %v", profile))
+			if err := server.Serve(lis); err != nil {
+				util.FatalLog(fmt.Sprintf("Failed to serve: %v", err))
+			}
 
 			return nil
 		},
 	}
+
+	serverCmd.Flags().StringVarP(&profile, "profile", "p", "local", "Running profile: 'local', 'prod'")
 	return serverCmd
 }
 

@@ -17,7 +17,7 @@ proto-go:
 
 run-server:
 	@cd /workspaces/go-env/app \
-	&& go run main.go server
+	&& go run main.go server -p local
 
 lint:
 	@cd /workspaces/go-env/app \

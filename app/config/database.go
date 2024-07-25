@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 )
 
 type DataBaseConfig struct {
@@ -18,11 +17,12 @@ func (dbc *DataBaseConfig) GetDataSourceName() string {
 }
 
 func NewDataBaseConfig() *DataBaseConfig {
+	envVars := GetEnvVars()
 	return &DataBaseConfig{
-		user:     os.Getenv(ENV_DB_USER),
-		password: os.Getenv(ENV_DB_PASSWORD),
-		host:     os.Getenv(ENV_DB_HOST),
-		port:     os.Getenv(ENV_DB_PORT),
-		database: os.Getenv(ENV_DB_DATABASE),
+		user:     envVars.GetDBUser(),
+		password: envVars.GetDBPassword(),
+		host:     envVars.GetDBHost(),
+		port:     envVars.GetDBPort(),
+		database: envVars.GetDBDatabase(),
 	}
 }

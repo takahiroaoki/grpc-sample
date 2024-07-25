@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/spf13/cobra"
-	"github.com/takahiroaoki/go-env/cmd/config"
+	"github.com/takahiroaoki/go-env/config"
 	"github.com/takahiroaoki/go-env/handler"
 	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/repository"
@@ -52,7 +52,7 @@ func NewCmdServer() *cobra.Command {
 				reflection.Register(server)
 			}
 
-			util.InfoLog(fmt.Sprintf("Started gRPC server on profile: %v", profile))
+			util.InfoLog(fmt.Sprintf("Starting gRPC server on profile: %v", profile))
 			if err := server.Serve(lis); err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to serve: %v", err))
 			}

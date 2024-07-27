@@ -2,16 +2,28 @@ package util
 
 import "log"
 
+func init() {
+	log.SetFlags(log.Lmicroseconds)
+}
+
+func generalLog(category string, v string) {
+	log.Printf("[%v] %v", category, v)
+}
+
 func InfoLog(v string) {
-	log.Printf("[INFO] %v", v)
+	generalLog("INFO", v)
 }
 
 func WarnLog(v string) {
-	log.Printf("[Warn] %v", v)
+	generalLog("WARN", v)
 }
 
 func ErrorLog(v string) {
-	log.Printf("[ERROR] %v", v)
+	generalLog("ERROR", v)
+}
+
+func PerfLog(v string) {
+	generalLog("PERF", v)
 }
 
 func FatalLog(v string) {

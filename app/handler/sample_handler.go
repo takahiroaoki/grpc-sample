@@ -2,12 +2,10 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/service"
-	"github.com/takahiroaoki/go-env/util"
 )
 
 type SampleHandler struct {
@@ -18,7 +16,6 @@ type SampleHandler struct {
 func (h *SampleHandler) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	u, err := h.sampleService.GetUserByUserId(req.GetId())
 	if err != nil {
-		util.ErrorLog(fmt.Sprintf("Failed to get user info. ID=%v", req.GetId()))
 		return nil, err
 	}
 

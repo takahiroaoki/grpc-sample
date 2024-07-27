@@ -33,9 +33,9 @@ $ make run-server
 You can try gRPC request via Postman of VSCode extension. The server URL is localhost:8080.
 
 ## Appendix
-### Generate mock files for unit test
+### Unit test
 ```
-$ make mockgen
+$ make test
 ```
 
 ### Lint

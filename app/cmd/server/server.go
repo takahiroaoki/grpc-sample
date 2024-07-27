@@ -3,6 +3,9 @@ package server
 import (
 	"fmt"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/spf13/cobra"
@@ -20,7 +23,7 @@ import (
 )
 
 func NewCmdServer() *cobra.Command {
-	var profile string
+	var refFlg bool
 
 	serverCmd := &cobra.Command{
 		Use:   "server",
@@ -30,7 +33,7 @@ func NewCmdServer() *cobra.Command {
 
 			// Prepare db client
 			db, err := gorm.Open(
-				mysql.Open(config.NewDataBaseConfig().GetDataSourceName()),
+				mysql.Open(config.GetDataSourceName()),
 				&gorm.Config{},
 			)
 			if err != nil {
@@ -38,48 +41,62 @@ func NewCmdServer() *cobra.Command {
 			}
 			defer closeDB(db)
 
-			// Prepare repositories and servicies
-			sampleRepository := repository.NewSampleRepository(db)
-			sampleService := service.NewSampleService(sampleRepository)
-
 			// Prepare grpc server settings
 			lis, err := net.Listen("tcp", ":8080")
 			if err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to listen: %v", err))
 			}
-
 			server := grpc.NewServer(grpc.UnaryInterceptor(
 				middleware.ChainUnaryServer(
 					interceptor.Log(),
 					interceptor.ValidateReq(),
 				),
 			))
+			if refFlg {
+				reflection.Register(server)
+				util.InfoLog("Server reflection is ON")
+			}
+
+			// Prepare repositories and servicies for dependency injection
+			sampleRepository := repository.NewSampleRepository(db)
+			sampleService := service.NewSampleService(sampleRepository)
+
+			// Register gRPC handler
 			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
 
-			if profile != "prod" {
-				reflection.Register(server)
-			}
+			// Run
+			go func() {
+				if err := server.Serve(lis); err != nil {
+					util.FatalLog("Failed to start gRPC server")
+				}
+			}()
+			util.InfoLog("gRPC server started successfully")
 
-			util.InfoLog(fmt.Sprintf("Starting gRPC server on profile: %v", profile))
-			if err := server.Serve(lis); err != nil {
-				util.FatalLog(fmt.Sprintf("Failed to serve: %v", err))
-			}
-
+			// Shutdown settings
+			quitCh := make(chan os.Signal, 1)
+			signal.Notify(quitCh, syscall.SIGTERM, syscall.SIGINT)
+			<-quitCh
+			// Stop accepting new request. This must be called before closeDB() method.
+			server.GracefulStop()
+			util.InfoLog("gRPC server stopped successfully")
 			return nil
 		},
 	}
 
-	serverCmd.Flags().StringVarP(&profile, "profile", "p", "local", "Running profile: 'local', 'prod'")
+	serverCmd.Flags().BoolVarP(&refFlg, "reflection", "r", false, "Reflection flag")
 	return serverCmd
 }
 
+// closeDB Close DB connection. This method must be called after gracefully stop of server.
 func closeDB(db *gorm.DB) {
 	sqlDB, err := db.DB()
 	if err != nil {
-		fmt.Println("Failed to close db")
+		util.FatalLog("Failed to close db connection")
 		return
 	}
 	if err := sqlDB.Close(); err != nil {
-		fmt.Println("Failed to close db")
+		util.FatalLog("Failed to close db connection")
+		return
 	}
+	util.InfoLog("DB connection closed successfully")
 }

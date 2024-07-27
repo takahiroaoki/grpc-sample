@@ -28,6 +28,9 @@ $ make init
 
 # start grpc server
 $ make run-server
+
+# start grpc server with reflection
+$ make run-server-ref
 ```
 
 You can try gRPC request via Postman of VSCode extension. The server URL is localhost:8080.

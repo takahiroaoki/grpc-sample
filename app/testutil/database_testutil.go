@@ -9,6 +9,8 @@ import (
 func GetDatabase() (*gorm.DB, error) {
 	return gorm.Open(
 		mysql.Open(config.GetDataSourceName()),
-		&gorm.Config{},
+		&gorm.Config{
+			SkipDefaultTransaction: true,
+		},
 	)
 }

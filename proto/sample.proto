@@ -24,5 +24,4 @@ message CreateUserRequest {
 
 message CreateUserResponse {
     string id = 1;
-    string email = 2;
 }

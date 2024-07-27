@@ -1,8 +1,6 @@
 package entity
 
-import "gorm.io/gorm"
-
 type User struct {
-	gorm.Model
+	ID    uint   `gorm:"primaryKey"`
 	Email string `gorm:"type:varchar(255);not null"`
 }

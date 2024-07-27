@@ -43,8 +43,7 @@ func (h *SampleHandler) CreateUser(ctx context.Context, req *pb.CreateUserReques
 		return nil, err
 	}
 	return &pb.CreateUserResponse{
-		Id:    strconv.FormatUint(uint64(u.ID), 10),
-		Email: u.Email,
+		Id: strconv.FormatUint(uint64(u.ID), 10),
 	}, nil
 }
 

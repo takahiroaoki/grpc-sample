@@ -30,7 +30,7 @@ lint:
 mysql:
 	mysql -h demo-mysql -D demodb -u dev-user -p
 
-test:mockgen
+test:proto-go mockgen
 	cd /workspaces/go-env/app \
 	&& go test ./handler ./interceptor/validator ./repository ./service
 

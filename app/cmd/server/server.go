@@ -23,7 +23,7 @@ import (
 )
 
 func NewCmdServer() *cobra.Command {
-	var profile string
+	var refFlg bool
 
 	serverCmd := &cobra.Command{
 		Use:   "server",
@@ -52,8 +52,9 @@ func NewCmdServer() *cobra.Command {
 					interceptor.ValidateReq(),
 				),
 			))
-			if profile != "prod" {
+			if refFlg {
 				reflection.Register(server)
+				util.InfoLog("Server reflection is ON")
 			}
 
 			// Prepare repositories and servicies for dependency injection
@@ -69,7 +70,7 @@ func NewCmdServer() *cobra.Command {
 					util.FatalLog("Failed to start gRPC server")
 				}
 			}()
-			util.InfoLog(fmt.Sprintf("gRPC server started successfully on profile: %v", profile))
+			util.InfoLog("gRPC server started successfully")
 
 			// Shutdown settings
 			quitCh := make(chan os.Signal, 1)
@@ -82,7 +83,7 @@ func NewCmdServer() *cobra.Command {
 		},
 	}
 
-	serverCmd.Flags().StringVarP(&profile, "profile", "p", "local", "Running profile: 'local', 'prod'")
+	serverCmd.Flags().BoolVarP(&refFlg, "reflection", "r", false, "Reflection flag")
 	return serverCmd
 }
 

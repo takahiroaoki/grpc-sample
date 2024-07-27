@@ -1,3 +1,6 @@
+
+DROP TABLE IF EXISTS demodb.users;
+
 CREATE TABLE demodb.users(
     id INT NOT NULL AUTO_INCREMENT,
     email VARCHAR(320) NOT NULL,

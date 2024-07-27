@@ -33,7 +33,7 @@ func NewCmdServer() *cobra.Command {
 
 			// Prepare db client
 			db, err := gorm.Open(
-				mysql.Open(config.NewDataBaseConfig().GetDataSourceName()),
+				mysql.Open(config.GetDataSourceName()),
 				&gorm.Config{},
 			)
 			if err != nil {

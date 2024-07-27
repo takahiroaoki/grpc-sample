@@ -26,9 +26,9 @@ lint:
 mysql:
 	mysql -h demo-mysql -D demodb -u dev-user -p
 
-test:
+test:mockgen
 	cd /workspaces/go-env/app \
-	&& go test ./handler ./service ./repository
+	&& go test ./handler ./interceptor/validator ./repository ./service
 
 mockgen:
 	rm -f ./app/mock/*_mock.go \

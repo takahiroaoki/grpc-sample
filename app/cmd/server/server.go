@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net"
 
+	middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/spf13/cobra"
 	"github.com/takahiroaoki/go-env/config"
 	"github.com/takahiroaoki/go-env/handler"
+	"github.com/takahiroaoki/go-env/interceptor"
 	"github.com/takahiroaoki/go-env/pb"
 	"github.com/takahiroaoki/go-env/repository"
 	"github.com/takahiroaoki/go-env/service"
@@ -45,7 +47,13 @@ func NewCmdServer() *cobra.Command {
 			if err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to listen: %v", err))
 			}
-			server := grpc.NewServer()
+
+			server := grpc.NewServer(grpc.UnaryInterceptor(
+				middleware.ChainUnaryServer(
+					interceptor.Log(),
+					interceptor.ValidateReq(),
+				),
+			))
 			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
 
 			if profile != "prod" {

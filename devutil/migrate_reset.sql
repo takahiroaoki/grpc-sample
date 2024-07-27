@@ -1,0 +1,1 @@
+DELETE FROM demodb.schema_migrations;

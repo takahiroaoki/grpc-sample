@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/takahiroaoki/go-env/cmd/server"
+	"github.com/takahiroaoki/go-env/app/cmd/server"
 )
 
 func NewCmdRoot() *cobra.Command {

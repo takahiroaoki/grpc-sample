@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"github.com/takahiroaoki/go-env/util"
+	"github.com/takahiroaoki/go-env/app/util"
 )
 
 var envVars *EnvVars

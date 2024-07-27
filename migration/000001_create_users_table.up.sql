@@ -1,9 +1,9 @@
+
+DROP TABLE IF EXISTS demodb.users;
+
 CREATE TABLE demodb.users(
     id INT NOT NULL AUTO_INCREMENT,
-    created_at TIME,
-    updated_at TIME,
-    deleted_at TIME,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(320) NOT NULL,
 
     PRIMARY KEY(id)
 ) ENGINE = innoDB DEFAULT CHARSET = utf8;

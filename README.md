@@ -22,7 +22,7 @@ etc.
 ## Local setup
 
 ```
-# migrate up, insert data for development, generate go code from proto
+# migration and generate go code from proto
 # the password is necessary for mysql. see .devcontainer/.env
 $ make init
 
@@ -31,6 +31,9 @@ $ make run-server
 
 # start grpc server with reflection
 $ make run-server-ref
+
+$ if you need sample data
+$ make sample
 ```
 
 You can try gRPC request via Postman of VSCode extension. The server URL is localhost:8080.
@@ -56,3 +59,5 @@ $ migrate create -ext sql -dir ${PATH_TO_MIGRATION_DIR} -seq ${MIGRATION_FILE_NA
 # the password is written in .devcontainer/.env
 $ make mysql
 ```
+
+Other commands are written in Makefile.

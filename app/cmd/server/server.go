@@ -9,13 +9,13 @@ import (
 
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/spf13/cobra"
-	"github.com/takahiroaoki/go-env/config"
-	"github.com/takahiroaoki/go-env/handler"
-	"github.com/takahiroaoki/go-env/interceptor"
-	"github.com/takahiroaoki/go-env/pb"
-	"github.com/takahiroaoki/go-env/repository"
-	"github.com/takahiroaoki/go-env/service"
-	"github.com/takahiroaoki/go-env/util"
+	"github.com/takahiroaoki/go-env/app/config"
+	"github.com/takahiroaoki/go-env/app/handler"
+	"github.com/takahiroaoki/go-env/app/interceptor"
+	"github.com/takahiroaoki/go-env/app/pb"
+	"github.com/takahiroaoki/go-env/app/repository"
+	"github.com/takahiroaoki/go-env/app/service"
+	"github.com/takahiroaoki/go-env/app/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"gorm.io/driver/mysql"
@@ -34,7 +34,9 @@ func NewCmdServer() *cobra.Command {
 			// Prepare db client
 			db, err := gorm.Open(
 				mysql.Open(config.GetDataSourceName()),
-				&gorm.Config{},
+				&gorm.Config{
+					SkipDefaultTransaction: true,
+				},
 			)
 			if err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to get DB connection. Error: %v", err))
@@ -58,11 +60,11 @@ func NewCmdServer() *cobra.Command {
 			}
 
 			// Prepare repositories and servicies for dependency injection
-			sampleRepository := repository.NewSampleRepository(db)
+			sampleRepository := repository.NewSampleRepository()
 			sampleService := service.NewSampleService(sampleRepository)
 
 			// Register gRPC handler
-			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
+			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(db, sampleService))
 
 			// Run
 			go func() {

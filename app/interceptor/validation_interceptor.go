@@ -3,8 +3,8 @@ package interceptor
 import (
 	"context"
 
-	"github.com/takahiroaoki/go-env/interceptor/validator"
-	"github.com/takahiroaoki/go-env/pb"
+	"github.com/takahiroaoki/go-env/app/interceptor/validator"
+	"github.com/takahiroaoki/go-env/app/pb"
 	"google.golang.org/grpc"
 )
 
@@ -13,7 +13,9 @@ func ValidateReq() grpc.UnaryServerInterceptor {
 		var err error
 		switch req := req.(type) {
 		case *pb.GetUserInfoRequest:
-			err = validator.ValidateGetUserInfo(ctx, req)
+			err = validator.ValidateGetUserInfoRequest(ctx, req)
+		case *pb.CreateUserRequest:
+			err = validator.ValidateCreateUserRequest(ctx, req)
 		}
 
 		if err != nil {

@@ -6,6 +6,7 @@ package sample;
 
 service SampleService {
     rpc GetUserInfo (GetUserInfoRequest) returns (GetUserInfoResponse);
+    rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
 }
 
 message GetUserInfoRequest {
@@ -15,4 +16,12 @@ message GetUserInfoRequest {
 message GetUserInfoResponse {
     string id = 1;
     string email = 2;
+}
+
+message CreateUserRequest {
+    string email = 1;
+}
+
+message CreateUserResponse {
+    string id = 1;
 }

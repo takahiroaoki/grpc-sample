@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/go-env/pb"
+	"github.com/takahiroaoki/go-env/app/pb"
 )
 
-func TestGetUserInfoValidator_Success(t *testing.T) {
+func TestValidateGetUserInfoRequest_Success(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	req := &pb.GetUserInfoRequest{
@@ -16,23 +16,25 @@ func TestGetUserInfoValidator_Success(t *testing.T) {
 	}
 
 	var expected error
-	actual := ValidateGetUserInfo(ctx, req)
+	actual := ValidateGetUserInfoRequest(ctx, req)
 
 	assert.Equal(t, expected, actual)
 }
 
-func TestGetUserInfoValidator_Error_Id項目が存在しない(t *testing.T) {
+func TestValidateGetUserInfoRequest_Error_Idが存在しない(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	req := &pb.GetUserInfoRequest{}
 
 	expected := "id: cannot be blank."
-	actual := ValidateGetUserInfo(ctx, req).Error()
+	actual := ValidateGetUserInfoRequest(ctx, req)
 
-	assert.Equal(t, expected, actual)
+	if assert.Error(t, actual) {
+		assert.Equal(t, expected, actual.Error())
+	}
 }
 
-func TestGetUserInfoValidator_Error_Idが空文字(t *testing.T) {
+func TestValidateGetUserInfoRequest_Error_Idが空文字(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	req := &pb.GetUserInfoRequest{
@@ -40,12 +42,14 @@ func TestGetUserInfoValidator_Error_Idが空文字(t *testing.T) {
 	}
 
 	expected := "id: cannot be blank."
-	actual := ValidateGetUserInfo(ctx, req).Error()
+	actual := ValidateGetUserInfoRequest(ctx, req)
 
-	assert.Equal(t, expected, actual)
+	if assert.Error(t, actual) {
+		assert.Equal(t, expected, actual.Error())
+	}
 }
 
-func TestGetUserInfoValidator_Error_Idが数字以外を含む(t *testing.T) {
+func TestValidateGetUserInfoRequest_Error_Idが数字以外を含む(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	req := &pb.GetUserInfoRequest{
@@ -53,7 +57,9 @@ func TestGetUserInfoValidator_Error_Idが数字以外を含む(t *testing.T) {
 	}
 
 	expected := "id: must contain digits only."
-	actual := ValidateGetUserInfo(ctx, req).Error()
+	actual := ValidateGetUserInfoRequest(ctx, req)
 
-	assert.Equal(t, expected, actual)
+	if assert.Error(t, actual) {
+		assert.Equal(t, expected, actual.Error())
+	}
 }

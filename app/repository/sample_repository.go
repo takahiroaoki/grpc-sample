@@ -1,27 +1,34 @@
 package repository
 
 import (
-	"github.com/takahiroaoki/go-env/entity"
+	"github.com/takahiroaoki/go-env/app/entity"
 	"gorm.io/gorm"
 )
 
 type SampleRepository interface {
-	SelectOneUserByUserId(userId string) (*entity.User, error)
+	SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error)
+	CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error)
 }
 
 type SampleRepositoryImpl struct {
-	db *gorm.DB
 }
 
-func (r *SampleRepositoryImpl) SelectOneUserByUserId(userId string) (*entity.User, error) {
+func (r *SampleRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
 	var user entity.User
-	if err := r.db.Where("id = ?", userId).First(&user).Error; err != nil {
+	if err := db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func NewSampleRepository(db *gorm.DB) SampleRepository {
-	return &SampleRepositoryImpl{db: db}
+func (r *SampleRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error) {
+	if err := db.Create(&u).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+func NewSampleRepository() SampleRepository {
+	return &SampleRepositoryImpl{}
 }

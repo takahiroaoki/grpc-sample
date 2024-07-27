@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/takahiroaoki/go-env/util"
+	"github.com/takahiroaoki/go-env/app/util"
 	"google.golang.org/grpc"
 )
 

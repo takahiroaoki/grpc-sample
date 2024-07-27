@@ -25,4 +25,4 @@ go.work.sum
 app/pb/*.pb.go
 
 # Generated files for test
-app/mock/*_mock.go
+app/testutil/mock/*_mock.go

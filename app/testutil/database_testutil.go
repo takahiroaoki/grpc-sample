@@ -1,7 +1,7 @@
 package testutil
 
 import (
-	"github.com/takahiroaoki/go-env/config"
+	"github.com/takahiroaoki/go-env/app/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

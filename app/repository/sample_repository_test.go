@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/go-env/entity"
-	"github.com/takahiroaoki/go-env/testutil"
+	"github.com/takahiroaoki/go-env/app/entity"
+	"github.com/takahiroaoki/go-env/app/testutil"
 	"gorm.io/gorm"
 )
 

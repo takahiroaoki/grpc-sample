@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/takahiroaoki/go-env/pb"
-	"github.com/takahiroaoki/go-env/service"
+	"github.com/takahiroaoki/go-env/app/pb"
+	"github.com/takahiroaoki/go-env/app/service"
 	"gorm.io/gorm"
 )
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/go-env/pb"
+	"github.com/takahiroaoki/go-env/app/pb"
 )
 
 func TestGetUserInfoValidator_Success(t *testing.T) {

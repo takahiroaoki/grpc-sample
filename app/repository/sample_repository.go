@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/takahiroaoki/go-env/entity"
+	"github.com/takahiroaoki/go-env/app/entity"
 	"gorm.io/gorm"
 )
 

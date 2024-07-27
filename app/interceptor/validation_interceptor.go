@@ -3,8 +3,8 @@ package interceptor
 import (
 	"context"
 
-	"github.com/takahiroaoki/go-env/interceptor/validator"
-	"github.com/takahiroaoki/go-env/pb"
+	"github.com/takahiroaoki/go-env/app/interceptor/validator"
+	"github.com/takahiroaoki/go-env/app/pb"
 	"google.golang.org/grpc"
 )
 

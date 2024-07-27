@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/takahiroaoki/go-env/cmd"
-	"github.com/takahiroaoki/go-env/util"
+	"github.com/takahiroaoki/go-env/app/cmd"
+	"github.com/takahiroaoki/go-env/app/util"
 )
 
 func main() {

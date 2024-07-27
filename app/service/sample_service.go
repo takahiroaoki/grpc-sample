@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/takahiroaoki/go-env/entity"
-	"github.com/takahiroaoki/go-env/repository"
+	"github.com/takahiroaoki/go-env/app/entity"
+	"github.com/takahiroaoki/go-env/app/repository"
 	"gorm.io/gorm"
 )
 

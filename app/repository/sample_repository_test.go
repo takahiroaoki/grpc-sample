@@ -4,21 +4,17 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/go-env/config"
 	"github.com/takahiroaoki/go-env/entity"
-	"gorm.io/driver/mysql"
+	"github.com/takahiroaoki/go-env/testutil"
 	"gorm.io/gorm"
 )
 
 func TestSampleRepository_SelectOneUserByUserId_Success(t *testing.T) {
 	t.Parallel()
 
-	db, _ := gorm.Open(
-		mysql.Open(config.NewDataBaseConfig().GetDataSourceName()),
-		&gorm.Config{},
-	)
+	db, _ := testutil.GetDatabase()
 
-	sampleRepository := NewSampleRepository(db)
+	sampleRepository := NewSampleRepository()
 
 	userId := "1"
 	expected := &entity.User{
@@ -28,7 +24,7 @@ func TestSampleRepository_SelectOneUserByUserId_Success(t *testing.T) {
 		Email: "user@example.com",
 	}
 
-	actual, err := sampleRepository.SelectOneUserByUserId(userId)
+	actual, err := sampleRepository.SelectOneUserByUserId(db, userId)
 	if assert.NoError(t, err) {
 		assert.Equal(t, expected, actual)
 	}
@@ -37,17 +33,14 @@ func TestSampleRepository_SelectOneUserByUserId_Success(t *testing.T) {
 func TestSampleRepository_SelectOneUserByUserId_Error(t *testing.T) {
 	t.Parallel()
 
-	db, _ := gorm.Open(
-		mysql.Open(config.NewDataBaseConfig().GetDataSourceName()),
-		&gorm.Config{},
-	)
+	db, _ := testutil.GetDatabase()
 
-	sampleRepository := NewSampleRepository(db)
+	sampleRepository := NewSampleRepository()
 
 	userId := "invalid id"
 	var expected *entity.User
 
-	actual, err := sampleRepository.SelectOneUserByUserId(userId)
+	actual, err := sampleRepository.SelectOneUserByUserId(db, userId)
 	if assert.Error(t, err) {
 		assert.Equal(t, "record not found", err.Error())
 		assert.Equal(t, expected, actual)

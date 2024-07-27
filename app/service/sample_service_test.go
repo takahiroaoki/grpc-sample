@@ -6,12 +6,15 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/go-env/entity"
-	"github.com/takahiroaoki/go-env/mock"
+	"github.com/takahiroaoki/go-env/testutil"
+	"github.com/takahiroaoki/go-env/testutil/mock"
 	"github.com/takahiroaoki/go-env/util"
 )
 
 func TestSampleService_GetUserById_Success(t *testing.T) {
 	t.Parallel()
+
+	db, _ := testutil.GetDatabase()
 
 	userId := "1"
 	expected := &entity.User{
@@ -22,12 +25,12 @@ func TestSampleService_GetUserById_Success(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockSampleRepository(ctrl)
-	mockRepository.EXPECT().SelectOneUserByUserId(userId).Return(&entity.User{
+	mockRepository.EXPECT().SelectOneUserByUserId(db, userId).Return(&entity.User{
 		Email: "user@example.com",
 	}, nil)
 
 	sampleService := NewSampleService(mockRepository)
-	actual, err := sampleService.GetUserByUserId(userId)
+	actual, err := sampleService.GetUserByUserId(db, userId)
 	if assert.NoError(t, err) {
 		assert.Equal(t, expected, actual)
 	}
@@ -36,6 +39,8 @@ func TestSampleService_GetUserById_Success(t *testing.T) {
 func TestSampleService_GetUserById_Error(t *testing.T) {
 	t.Parallel()
 
+	db, _ := testutil.GetDatabase()
+
 	userId := "1"
 	var expected *entity.User
 
@@ -43,10 +48,10 @@ func TestSampleService_GetUserById_Error(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockSampleRepository(ctrl)
-	mockRepository.EXPECT().SelectOneUserByUserId(userId).Return(nil, util.NewError("err"))
+	mockRepository.EXPECT().SelectOneUserByUserId(db, userId).Return(nil, util.NewError("err"))
 
 	sampleService := NewSampleService(mockRepository)
-	actual, err := sampleService.GetUserByUserId(userId)
+	actual, err := sampleService.GetUserByUserId(db, userId)
 
 	if assert.Error(t, err) {
 		assert.Equal(t, "err", err.Error())

@@ -34,7 +34,9 @@ func NewCmdServer() *cobra.Command {
 			// Prepare db client
 			db, err := gorm.Open(
 				mysql.Open(config.GetDataSourceName()),
-				&gorm.Config{},
+				&gorm.Config{
+					SkipDefaultTransaction: true,
+				},
 			)
 			if err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to get DB connection. Error: %v", err))
@@ -58,11 +60,11 @@ func NewCmdServer() *cobra.Command {
 			}
 
 			// Prepare repositories and servicies for dependency injection
-			sampleRepository := repository.NewSampleRepository(db)
+			sampleRepository := repository.NewSampleRepository()
 			sampleService := service.NewSampleService(sampleRepository)
 
 			// Register gRPC handler
-			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(sampleService))
+			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(db, sampleService))
 
 			// Run
 			go func() {

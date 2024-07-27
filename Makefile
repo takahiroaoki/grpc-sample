@@ -35,6 +35,6 @@ test:mockgen
 	&& go test ./handler ./interceptor/validator ./repository ./service
 
 mockgen:
-	rm -f ./app/mock/*_mock.go \
-	&& mockgen -source=./app/repository/sample_repository.go -destination=./app/mock/sample_repository_mock.go -package=mock \
-	&& mockgen -source=./app/service/sample_service.go -destination=./app/mock/sample_service_mock.go -package=mock
+	rm -f ./app/testutil/mock/*_mock.go \
+	&& mockgen -source=./app/repository/sample_repository.go -destination=./app/testutil/mock/sample_repository_mock.go -package=mock \
+	&& mockgen -source=./app/service/sample_service.go -destination=./app/testutil/mock/sample_service_mock.go -package=mock

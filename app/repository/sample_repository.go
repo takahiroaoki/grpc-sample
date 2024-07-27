@@ -7,6 +7,7 @@ import (
 
 type SampleRepository interface {
 	SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error)
+	CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error)
 }
 
 type SampleRepositoryImpl struct {
@@ -19,6 +20,13 @@ func (r *SampleRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string)
 	}
 
 	return &user, nil
+}
+
+func (r *SampleRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error) {
+	if err := db.Create(&u).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
 func NewSampleRepository() SampleRepository {

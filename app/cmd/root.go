@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-
-	"github.com/takahiroaoki/go-env/app/cmd/server"
 )
 
 func NewCmdRoot() *cobra.Command {
@@ -12,6 +10,6 @@ func NewCmdRoot() *cobra.Command {
 			_ = cmd.Help()
 		},
 	}
-	rootCmd.AddCommand(server.NewCmdServer())
+	rootCmd.AddCommand(newCmdServer())
 	return rootCmd
 }

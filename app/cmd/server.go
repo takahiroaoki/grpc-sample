@@ -1,4 +1,4 @@
-package server
+package cmd
 
 import (
 	"fmt"
@@ -22,7 +22,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewCmdServer() *cobra.Command {
+func newCmdServer() *cobra.Command {
 	var refFlg bool
 
 	serverCmd := &cobra.Command{

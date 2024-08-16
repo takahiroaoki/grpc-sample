@@ -2,24 +2,21 @@ package config
 
 import (
 	"os"
-
-	"github.com/takahiroaoki/go-env/app/util"
 )
 
-var envVars *EnvVars
+var env *envVars
 
 func init() {
-	envVars = &EnvVars{
+	env = &envVars{
 		dbHost:     os.Getenv("DB_HOST"),
 		dbPort:     os.Getenv("DB_PORT"),
 		dbDatabase: os.Getenv("DB_DATABASE"),
 		dbUser:     os.Getenv("DB_USER"),
 		dbPassword: os.Getenv("DB_PASSWORD"),
 	}
-	util.InfoLog("Environment variables loaded successfully")
 }
 
-type EnvVars struct {
+type envVars struct {
 	/* About Database */
 	dbHost     string
 	dbPort     string

@@ -10,10 +10,10 @@ type UserRepository interface {
 	CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error)
 }
 
-type UserRepositoryImpl struct {
+type userRepositoryImpl struct {
 }
 
-func (r *UserRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
+func (r *userRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
 	var user entity.User
 	if err := db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (r *UserRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string) (
 	return &user, nil
 }
 
-func (r *UserRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error) {
+func (r *userRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error) {
 	if err := db.Create(&u).Error; err != nil {
 		return nil, err
 	}
@@ -30,5 +30,5 @@ func (r *UserRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.
 }
 
 func NewUserRepository() UserRepository {
-	return &UserRepositoryImpl{}
+	return &userRepositoryImpl{}
 }

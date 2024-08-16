@@ -10,15 +10,15 @@ type GetUserInfoService interface {
 	GetUserByUserId(db *gorm.DB, userId string) (*entity.User, error)
 }
 
-type GetUserInfoServiceImpl struct {
+type getUserInfoServiceImpl struct {
 	userRepository repository.UserRepository
 }
 
-func (s *GetUserInfoServiceImpl) GetUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
+func (s *getUserInfoServiceImpl) GetUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
 	user, err := s.userRepository.SelectOneUserByUserId(db, userId)
 	return user, err
 }
 
 func NewGetUserInfoService(userRepository repository.UserRepository) GetUserInfoService {
-	return &GetUserInfoServiceImpl{userRepository: userRepository}
+	return &getUserInfoServiceImpl{userRepository: userRepository}
 }

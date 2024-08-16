@@ -43,7 +43,29 @@ func TestGetUserInfoHandler_getUserInfo_Success(t *testing.T) {
 	}
 }
 
-func TestGetUserInfoHandler_getUserInfo_Error(t *testing.T) {
+func TestGetUserInfoHandler_getUserInfo_Error_validation(t *testing.T) {
+	t.Parallel()
+
+	db, _ := testutil.GetDatabase()
+
+	ctx := context.Background()
+	userId := "invalid value"
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := mock.NewMockGetUserInfoService(ctrl)
+	mockService.EXPECT().GetUserByUserId(gomock.Any(), gomock.Any()).MaxTimes(0)
+
+	handler := NewGetUserInfoHandler(db, mockService)
+	actual, err := handler.getUserInfo(ctx, &pb.GetUserInfoRequest{
+		Id: userId,
+	})
+	assert.Nil(t, actual)
+	assert.Error(t, err)
+}
+
+func TestGetUserInfoHandler_getUserInfo_Error_service(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()

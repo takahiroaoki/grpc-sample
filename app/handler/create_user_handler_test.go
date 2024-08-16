@@ -45,7 +45,7 @@ func TestCreateUserHandler_createUser_Success(t *testing.T) {
 	}
 }
 
-func TestCreateUserHandler_createUser_Error(t *testing.T) {
+func TestCreateUserHandler_createUser_Error_service(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -70,6 +70,30 @@ func TestCreateUserHandler_createUser_Error(t *testing.T) {
 		assert.Equal(t, "err", err.Error())
 		assert.Equal(t, expected, actual)
 	}
+}
+
+func TestCreateUserHandler_createUser_Error_validation(t *testing.T) {
+	t.Parallel()
+
+	db, _ := testutil.GetDatabase()
+
+	ctx := context.Background()
+	u := entity.User{
+		Email: "invalid value",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := mock.NewMockCreateUserService(ctrl)
+	mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any()).MaxTimes(0)
+
+	handler := NewCreateUserHandler(db, mockService)
+	actual, err := handler.createUser(ctx, &pb.CreateUserRequest{
+		Email: u.Email,
+	})
+	assert.Nil(t, actual)
+	assert.Error(t, err)
 }
 
 func TestCreateUserHandler_validate_Success(t *testing.T) {

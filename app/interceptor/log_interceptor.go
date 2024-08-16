@@ -12,16 +12,16 @@ import (
 func Log() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res any, err error) {
 		reqAt := time.Now()
-		util.InfoLog(fmt.Sprintf("Request: %v", info.FullMethod))
+		util.InfoLogWithContext(ctx, fmt.Sprintf("Request: %v", info.FullMethod))
 
 		defer func() {
 			latency := time.Since(reqAt)
 
 			if err != nil {
-				util.ErrorLog(err.Error())
+				util.ErrorLogWithContext(ctx, err.Error())
 			}
 
-			util.PerfLog(fmt.Sprintf("Response: %v, Latency: %v", info.FullMethod, latency))
+			util.PerfLogWithContext(ctx, fmt.Sprintf("Response: %v, Latency: %v", info.FullMethod, latency))
 		}()
 
 		res, err = handler(ctx, req)

@@ -22,7 +22,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func newCmdServer() *cobra.Command {
+func newServerCmd() *cobra.Command {
 	var refFlg bool
 
 	serverCmd := &cobra.Command{
@@ -50,6 +50,7 @@ func newCmdServer() *cobra.Command {
 			}
 			server := grpc.NewServer(grpc.UnaryInterceptor(
 				middleware.ChainUnaryServer(
+					interceptor.SetContext(),
 					interceptor.Log(),
 					interceptor.ValidateReq(),
 				),
@@ -59,12 +60,8 @@ func newCmdServer() *cobra.Command {
 				util.InfoLog("Server reflection is ON")
 			}
 
-			// Prepare repositories and servicies for dependency injection
-			sampleRepository := repository.NewSampleRepository()
-			sampleService := service.NewSampleService(sampleRepository)
-
 			// Register gRPC handler
-			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(db, sampleService))
+			pb.RegisterSampleServiceServer(server, getHandler(db))
 
 			// Run
 			go func() {
@@ -101,4 +98,16 @@ func closeDB(db *gorm.DB) {
 		return
 	}
 	util.InfoLog("DB connection closed successfully")
+}
+
+func getHandler(db *gorm.DB) pb.SampleServiceServer {
+	// Prepare repositories and servicies for dependency injection
+	userRepository := repository.NewUserRepository()
+	getUserInfoService := service.NewGetUserInfoService(userRepository)
+	createUserService := service.NewCreateUserService(userRepository)
+
+	return handler.NewBundle(
+		handler.NewCreateUserHandler(db, createUserService),
+		handler.NewGetUserInfoHandler(db, getUserInfoService),
+	)
 }

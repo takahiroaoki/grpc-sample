@@ -9,7 +9,7 @@ import (
 )
 
 func ValidateReq() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		var err error
 		switch req := req.(type) {
 		case *pb.GetUserInfoRequest:

@@ -4,12 +4,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCmdRoot() *cobra.Command {
-	rootCmd := &cobra.Command{
+func NewBundle() *cobra.Command {
+	bundle := &cobra.Command{
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd.Help()
 		},
 	}
-	rootCmd.AddCommand(newCmdServer())
-	return rootCmd
+	bundle.AddCommand(newServerCmd())
+	return bundle
 }

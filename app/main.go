@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	rootCmd := cmd.NewCmdRoot()
-	if err := rootCmd.Execute(); err != nil {
+	if err := cmd.NewBundle().Execute(); err != nil {
 		util.FatalLog(fmt.Sprintf("Failed to execute the command. Error: %v", err))
 	}
 }

@@ -1,31 +1,67 @@
 package util
 
-import "log"
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/takahiroaoki/go-env/app/constant"
+)
+
+var logger *log.Logger
 
 func init() {
-	log.SetFlags(log.Lmicroseconds)
+	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime|log.LUTC|log.Lmicroseconds)
 }
 
 func generalLog(category string, v string) {
-	log.Printf("[%v] %v", category, v)
+	logger.Printf("[%v] %v", category, v)
+}
+
+func addContextInfo(ctx context.Context, v string) string {
+	for _, key := range constant.ContextKeysForLog() {
+		val := ctx.Value(key)
+		if val == nil {
+			val = "undefined"
+		}
+		v = fmt.Sprintf("%v: %v, %v", key, val, v)
+	}
+	return v
 }
 
 func InfoLog(v string) {
 	generalLog("INFO", v)
 }
 
+func InfoLogWithContext(ctx context.Context, v string) {
+	InfoLog(addContextInfo(ctx, v))
+}
+
 func WarnLog(v string) {
 	generalLog("WARN", v)
+}
+
+func WarnLogWithContext(ctx context.Context, v string) {
+	WarnLog(addContextInfo(ctx, v))
 }
 
 func ErrorLog(v string) {
 	generalLog("ERROR", v)
 }
 
+func ErrorLogWithContext(ctx context.Context, v string) {
+	ErrorLog(addContextInfo(ctx, v))
+}
+
 func PerfLog(v string) {
 	generalLog("PERF", v)
 }
 
+func PerfLogWithContext(ctx context.Context, v string) {
+	PerfLog(addContextInfo(ctx, v))
+}
+
 func FatalLog(v string) {
-	log.Fatalf("[Fatal] %v", v)
+	logger.Fatalf("[Fatal] %v", v)
 }

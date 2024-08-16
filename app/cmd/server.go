@@ -59,12 +59,8 @@ func newCmdServer() *cobra.Command {
 				util.InfoLog("Server reflection is ON")
 			}
 
-			// Prepare repositories and servicies for dependency injection
-			sampleRepository := repository.NewSampleRepository()
-			sampleService := service.NewSampleService(sampleRepository)
-
 			// Register gRPC handler
-			pb.RegisterSampleServiceServer(server, handler.NewSampleHandler(db, sampleService))
+			pb.RegisterSampleServiceServer(server, getBundleServer(db))
 
 			// Run
 			go func() {
@@ -101,4 +97,16 @@ func closeDB(db *gorm.DB) {
 		return
 	}
 	util.InfoLog("DB connection closed successfully")
+}
+
+func getBundleServer(db *gorm.DB) *handler.BundleServer {
+	// Prepare repositories and servicies for dependency injection
+	userRepository := repository.NewUserRepository()
+	getUserInfoService := service.NewGetUserInfoService(userRepository)
+	createUserService := service.NewCreateUserService(userRepository)
+
+	return handler.NewBundleServer(
+		handler.NewCreateUserHandler(db, createUserService),
+		handler.NewGetUserInfoHandler(db, getUserInfoService),
+	)
 }

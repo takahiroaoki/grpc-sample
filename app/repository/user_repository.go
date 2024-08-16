@@ -5,15 +5,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type SampleRepository interface {
+type UserRepository interface {
 	SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error)
 	CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error)
 }
 
-type SampleRepositoryImpl struct {
+type UserRepositoryImpl struct {
 }
 
-func (r *SampleRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
+func (r *UserRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
 	var user entity.User
 	if err := db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, err
@@ -22,13 +22,13 @@ func (r *SampleRepositoryImpl) SelectOneUserByUserId(db *gorm.DB, userId string)
 	return &user, nil
 }
 
-func (r *SampleRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error) {
+func (r *UserRepositoryImpl) CreateOneUser(db *gorm.DB, u entity.User) (*entity.User, error) {
 	if err := db.Create(&u).Error; err != nil {
 		return nil, err
 	}
 	return &u, nil
 }
 
-func NewSampleRepository() SampleRepository {
-	return &SampleRepositoryImpl{}
+func NewUserRepository() UserRepository {
+	return &UserRepositoryImpl{}
 }

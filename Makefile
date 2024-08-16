@@ -28,7 +28,7 @@ run-server-ref:
 # test
 test:proto-go mockgen
 	cd /workspaces/go-env/app \
-	&& go test ./handler ./interceptor/validator ./repository ./service
+	&& go test ./handler ./repository ./service
 
 mockgen:
 	rm -f ./app/testutil/mock/*_mock.go \

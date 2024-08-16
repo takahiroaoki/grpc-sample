@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/takahiroaoki/go-env/app/constant"
 	"github.com/takahiroaoki/go-env/app/entity"
 	"github.com/takahiroaoki/go-env/app/pb"
 	"github.com/takahiroaoki/go-env/app/service"
@@ -19,7 +21,11 @@ type createUserHandlerImpl struct {
 	createUserService service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (h *createUserHandlerImpl) createUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	if err := h.validate(ctx, req); err != nil {
+		return nil, err
+	}
+
 	var (
 		u   *entity.User
 		err error
@@ -36,6 +42,13 @@ func (h *createUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUser
 	return &pb.CreateUserResponse{
 		Id: strconv.FormatUint(uint64(u.ID), 10),
 	}, nil
+}
+
+func (h *createUserHandlerImpl) validate(ctx context.Context, req *pb.CreateUserRequest) error {
+	rules := make([]*validation.FieldRules, 0)
+	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(constant.MailRegexp())))
+
+	return validation.ValidateStructWithContext(ctx, req, rules...)
 }
 
 func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) CreateUserHandler {

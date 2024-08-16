@@ -50,6 +50,7 @@ func newCmdServer() *cobra.Command {
 			}
 			server := grpc.NewServer(grpc.UnaryInterceptor(
 				middleware.ChainUnaryServer(
+					interceptor.SetContext(),
 					interceptor.Log(),
 					interceptor.ValidateReq(),
 				),

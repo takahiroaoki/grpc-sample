@@ -14,12 +14,12 @@ type CreateUserHandler interface {
 	createUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
 }
 
-type CreateUserHandlerImpl struct {
+type createUserHandlerImpl struct {
 	db                *gorm.DB
 	createUserService service.CreateUserService
 }
 
-func (h *CreateUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (h *createUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	var (
 		u   *entity.User
 		err error
@@ -39,7 +39,7 @@ func (h *CreateUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUser
 }
 
 func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) CreateUserHandler {
-	return &CreateUserHandlerImpl{
+	return &createUserHandlerImpl{
 		db:                db,
 		createUserService: createUserService,
 	}

@@ -10,14 +10,14 @@ type CreateUserService interface {
 	CreateUser(db *gorm.DB, u entity.User) (*entity.User, error)
 }
 
-type CreateUserServiceImpl struct {
+type createUserServiceImpl struct {
 	userRepository repository.UserRepository
 }
 
-func (s *CreateUserServiceImpl) CreateUser(db *gorm.DB, u entity.User) (*entity.User, error) {
+func (s *createUserServiceImpl) CreateUser(db *gorm.DB, u entity.User) (*entity.User, error) {
 	return s.userRepository.CreateOneUser(db, u)
 }
 
 func NewCreateUserService(userRepository repository.UserRepository) CreateUserService {
-	return &CreateUserServiceImpl{userRepository: userRepository}
+	return &createUserServiceImpl{userRepository: userRepository}
 }

@@ -13,12 +13,12 @@ type GetUserInfoHandler interface {
 	getUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error)
 }
 
-type GetUserInfoHandlerImpl struct {
+type getUserInfoHandlerImpl struct {
 	db                 *gorm.DB
 	getUserInfoService service.GetUserInfoService
 }
 
-func (h *GetUserInfoHandlerImpl) getUserInfo(_ context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) getUserInfo(_ context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	u, err := h.getUserInfoService.GetUserByUserId(h.db, req.GetId())
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (h *GetUserInfoHandlerImpl) getUserInfo(_ context.Context, req *pb.GetUserI
 }
 
 func NewGetUserInfoHandler(db *gorm.DB, getUserInfoService service.GetUserInfoService) GetUserInfoHandler {
-	return &GetUserInfoHandlerImpl{
+	return &getUserInfoHandlerImpl{
 		db:                 db,
 		getUserInfoService: getUserInfoService,
 	}

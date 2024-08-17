@@ -9,52 +9,88 @@ import (
 	"github.com/takahiroaoki/go-env/app/testutil"
 	"github.com/takahiroaoki/go-env/app/testutil/mock"
 	"github.com/takahiroaoki/go-env/app/util"
+	"gorm.io/gorm"
 )
 
-func TestGetUserInfoService_GetUserById_Success(t *testing.T) {
+func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
-
-	userId := "1"
-	expected := &entity.User{
-		Email: "user@example.com",
-	}
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockUserRepository(ctrl)
-	mockRepository.EXPECT().SelectOneUserByUserId(db, userId).Return(&entity.User{
-		Email: "user@example.com",
-	}, nil)
 
-	service := NewGetUserInfoService(mockRepository)
-	actual, err := service.GetUserByUserId(db, userId)
-	if assert.NoError(t, err) {
-		assert.Equal(t, expected, actual)
+	type fields struct {
+		userRepository *mock.MockUserRepository
 	}
-}
+	type args struct {
+		db     *gorm.DB
+		userId string
+	}
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		mockFunc       func(mockRepository *mock.MockUserRepository)
+		expected       *entity.User
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name: "Success",
+			fields: fields{
+				userRepository: mockRepository,
+			},
+			args: args{
+				db:     db,
+				userId: "1",
+			},
+			mockFunc: func(mockRepository *mock.MockUserRepository) {
+				mockRepository.EXPECT().SelectOneUserByUserId(db, "1").Return(&entity.User{
+					ID:    1,
+					Email: "user@example.com",
+				}, nil)
+			},
+			expected: &entity.User{
+				ID:    1,
+				Email: "user@example.com",
+			},
+			expectErr: false,
+		},
+		{
+			name: "Error",
+			fields: fields{
+				userRepository: mockRepository,
+			},
+			args: args{
+				db:     db,
+				userId: "1",
+			},
+			mockFunc: func(mockRepository *mock.MockUserRepository) {
+				mockRepository.EXPECT().SelectOneUserByUserId(db, "1").Return(nil, util.NewError("err"))
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "err",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			s := &getUserInfoServiceImpl{
+				userRepository: tt.fields.userRepository,
+			}
+			tt.mockFunc(tt.fields.userRepository)
+			actual, err := s.GetUserByUserId(tt.args.db, tt.args.userId)
 
-func TestGetUserInfoService_GetUserById_Error(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	userId := "1"
-	var expected *entity.User
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockRepository := mock.NewMockUserRepository(ctrl)
-	mockRepository.EXPECT().SelectOneUserByUserId(db, userId).Return(nil, util.NewError("err"))
-
-	service := NewGetUserInfoService(mockRepository)
-	actual, err := service.GetUserByUserId(db, userId)
-
-	if assert.Error(t, err) {
-		assert.Equal(t, "err", err.Error())
-		assert.Equal(t, expected, actual)
+			assert.Equal(t, tt.expected, actual)
+			if tt.expectErr {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErrMsg, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }

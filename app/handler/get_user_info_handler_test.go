@@ -11,176 +11,222 @@ import (
 	"github.com/takahiroaoki/go-env/app/testutil"
 	"github.com/takahiroaoki/go-env/app/testutil/mock"
 	"github.com/takahiroaoki/go-env/app/util"
+	"gorm.io/gorm"
 )
 
-func TestGetUserInfoHandler_execute_Success(t *testing.T) {
+func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-	userId := "1"
-	expected := &pb.GetUserInfoResponse{
-		Id:    "1",
-		Email: "user@example.com",
-	}
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockService := mock.NewMockGetUserInfoService(ctrl)
-	mockService.EXPECT().GetUserByUserId(db, userId).Return(&entity.User{
-		ID:    uint(1),
-		Email: "user@example.com",
-	}, nil)
 
-	handler := NewGetUserInfoHandler(db, mockService)
-	actual, err := handler.execute(ctx, &pb.GetUserInfoRequest{
-		Id: userId,
-	})
-	if assert.NoError(t, err) {
-		assert.Equal(t, expected, actual)
+	type fields struct {
+		db                 *gorm.DB
+		getUserInfoService *mock.MockGetUserInfoService
+	}
+	type args struct {
+		ctx context.Context
+		req *pb.GetUserInfoRequest
+	}
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		mockFunc       func(mockRepository *mock.MockGetUserInfoService)
+		expected       *pb.GetUserInfoResponse
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name: "Success",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{
+					Id: "1",
+				},
+			},
+			mockFunc: func(mockService *mock.MockGetUserInfoService) {
+				mockService.EXPECT().GetUserByUserId(db, "1").Return(&entity.User{
+					ID:    1,
+					Email: "user@example.com",
+				}, nil)
+			},
+			expected: &pb.GetUserInfoResponse{
+				Id:    "1",
+				Email: "user@example.com",
+			},
+			expectErr: false,
+		},
+		{
+			name: "Error(validation)",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{
+					Id: "invalid value",
+				},
+			},
+			mockFunc: func(mockService *mock.MockGetUserInfoService) {
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), gomock.Any()).MaxTimes(0)
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "id: must contain digits only.",
+		},
+		{
+			name: "Error(getUserInfoService.GetUserByUserId)",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{
+					Id: "1",
+				},
+			},
+			mockFunc: func(mockService *mock.MockGetUserInfoService) {
+				mockService.EXPECT().GetUserByUserId(db, "1").Return(nil, util.NewError("err"))
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "err",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			h := &getUserInfoHandlerImpl{
+				db:                 tt.fields.db,
+				getUserInfoService: tt.fields.getUserInfoService,
+			}
+			tt.mockFunc(tt.fields.getUserInfoService)
+			actual, err := h.execute(tt.args.ctx, tt.args.req)
+
+			assert.Equal(t, tt.expected, actual)
+			if tt.expectErr {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErrMsg, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
-func TestGetUserInfoHandler_execute_Error_validation(t *testing.T) {
+func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-	userId := "invalid value"
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockService := mock.NewMockGetUserInfoService(ctrl)
-	mockService.EXPECT().GetUserByUserId(gomock.Any(), gomock.Any()).MaxTimes(0)
-
-	handler := NewGetUserInfoHandler(db, mockService)
-	actual, err := handler.execute(ctx, &pb.GetUserInfoRequest{
-		Id: userId,
-	})
-	assert.Nil(t, actual)
-	assert.Error(t, err)
-}
-
-func TestGetUserInfoHandler_execute_Error_service(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-	userId := "1"
-	var expected *pb.GetUserInfoResponse
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockService := mock.NewMockGetUserInfoService(ctrl)
-	mockService.EXPECT().GetUserByUserId(db, userId).Return(nil, util.NewError("err"))
-
-	handler := NewGetUserInfoHandler(db, mockService)
-	actual, err := handler.execute(ctx, &pb.GetUserInfoRequest{
-		Id: userId,
-	})
-	if assert.Error(t, err) {
-		assert.Equal(t, "err", err.Error())
-		assert.Equal(t, expected, actual)
-	}
-}
-
-func TestGetUserInfoHandler_validate_Success(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
-	handler := &getUserInfoHandler{
-		db:                 db,
-		getUserInfoService: mockService,
+	type fields struct {
+		db                 *gorm.DB
+		getUserInfoService *mock.MockGetUserInfoService
 	}
-	err := handler.validate(ctx, &pb.GetUserInfoRequest{
-		Id: "12345",
-	})
-	assert.NoError(t, err)
-}
-
-func TestGetUserInfoHandler_validate_Error_Id項目が存在しない(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockService := mock.NewMockGetUserInfoService(ctrl)
-
-	expected := "id: cannot be blank."
-	handler := &getUserInfoHandler{
-		db:                 db,
-		getUserInfoService: mockService,
+	type args struct {
+		ctx context.Context
+		req *pb.GetUserInfoRequest
 	}
-	err := handler.validate(ctx, &pb.GetUserInfoRequest{})
-	if assert.Error(t, err) {
-		assert.Equal(t, expected, err.Error())
+	tests := []struct {
+		name           string
+		fields         fields
+		args           args
+		expected       error
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name: "Success",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{
+					Id: "12345",
+				},
+			},
+			expected:  nil,
+			expectErr: false,
+		},
+		{
+			name: "Error(Id is nil)",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{},
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "id: cannot be blank.",
+		},
+		{
+			name: "Error(Id is empty)",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{
+					Id: "",
+				},
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "id: cannot be blank.",
+		},
+		{
+			name: "Error(Id contains invalid characters)",
+			fields: fields{
+				db:                 db,
+				getUserInfoService: mockService,
+			},
+			args: args{
+				ctx: context.Background(),
+				req: &pb.GetUserInfoRequest{
+					Id: "abc",
+				},
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "id: must contain digits only.",
+		},
 	}
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			h := &getUserInfoHandlerImpl{
+				db:                 tt.fields.db,
+				getUserInfoService: tt.fields.getUserInfoService,
+			}
 
-func TestGetUserInfoHandler_validate_Error_Idが空文字(t *testing.T) {
-	t.Parallel()
+			err := h.validate(tt.args.ctx, tt.args.req)
 
-	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockService := mock.NewMockGetUserInfoService(ctrl)
-
-	expected := "id: cannot be blank."
-	handler := &getUserInfoHandler{
-		db:                 db,
-		getUserInfoService: mockService,
-	}
-	err := handler.validate(ctx, &pb.GetUserInfoRequest{
-		Id: "",
-	})
-	if assert.Error(t, err) {
-		assert.Equal(t, expected, err.Error())
-	}
-}
-
-func TestGetUserInfoHandler_validate_Error_Idが数字以外を含む(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	ctx := context.Background()
-
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockService := mock.NewMockGetUserInfoService(ctrl)
-
-	expected := "id: must contain digits only."
-	handler := &getUserInfoHandler{
-		db:                 db,
-		getUserInfoService: mockService,
-	}
-	err := handler.validate(ctx, &pb.GetUserInfoRequest{
-		Id: "abc",
-	})
-	if assert.Error(t, err) {
-		assert.Equal(t, expected, err.Error())
+			if tt.expectErr {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErrMsg, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }

@@ -1,8 +1,8 @@
 # set up
-init:migrate-reset migrate-up proto-go
+init:db-reset migrate-up proto-go
 
-migrate-reset:
-	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/migrate_reset.sql
+db-reset:
+	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/reset.sql
 
 migrate-up:
 	migrate -path "/workspaces/go-env/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
@@ -28,6 +28,7 @@ run-server-ref:
 # test
 test:proto-go mockgen
 	cd /workspaces/go-env/app \
+	&& go clean -testcache \
 	&& go test ./handler ./repository ./service
 
 mockgen:
@@ -37,10 +38,10 @@ mockgen:
 	&& mockgen -source=./app/service/get_user_info_service.go -destination=./app/testutil/mock/get_user_info_service_mock.go -package=mock
 
 # data
-sample:
+db-sample:
 	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/sample.sql
 
-clean:
+db-clean:
 	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/clean.sql
 
 # others

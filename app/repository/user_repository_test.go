@@ -1,85 +1,171 @@
 package repository
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/go-env/app/entity"
 	"github.com/takahiroaoki/go-env/app/testutil"
+	"gorm.io/gorm"
 )
 
-func TestUserRepository_SelectOneUserByUserId_Success(t *testing.T) {
-	t.Parallel()
-
+func Test_userRepositoryImpl_CreateOneUser(t *testing.T) {
 	db, _ := testutil.GetDatabase()
 
-	userRepository := NewUserRepository()
+	type args struct {
+		db *gorm.DB
+		u  entity.User
+	}
+	tests := []struct {
+		name           string
+		args           args
+		preprocess     func(db *gorm.DB, userRepository UserRepository)
+		expected       *entity.User
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name: "Success",
+			args: args{
+				db: db,
+				u: entity.User{
+					ID:    1,
+					Email: "CreateOneUser@example.com",
+				},
+			},
+			preprocess: func(db *gorm.DB, userRepository UserRepository) {
+				if err := testutil.CleanDB(db); err != nil {
+					t.FailNow()
+				}
+			},
+			expected: &entity.User{
+				ID:    1,
+				Email: "CreateOneUser@example.com",
+			},
+			expectErr: false,
+		},
+		{
+			name: "Success(Email has 320 length)",
+			args: args{
+				db: db,
+				u: entity.User{
+					ID:    1,
+					Email: strings.Repeat("a", 308) + "@example.com",
+				},
+			},
+			preprocess: func(db *gorm.DB, userRepository UserRepository) {
+				if err := testutil.CleanDB(db); err != nil {
+					t.FailNow()
+				}
+			},
+			expected: &entity.User{
+				ID:    1,
+				Email: strings.Repeat("a", 308) + "@example.com",
+			},
+			expectErr: false,
+		},
+		{
+			name: "Error(Email has 321 length)",
+			args: args{
+				db: db,
+				u: entity.User{
+					Email: strings.Repeat("a", 309) + "@example.com",
+				},
+			},
+			preprocess: func(db *gorm.DB, userRepository UserRepository) {
+				if err := testutil.CleanDB(db); err != nil {
+					t.FailNow()
+				}
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "Error 1406 (22001): Data too long for column 'email' at row 1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &userRepositoryImpl{}
+			if tt.preprocess != nil {
+				tt.preprocess(db, r)
+			}
+			actual, err := r.CreateOneUser(tt.args.db, tt.args.u)
 
-	userId := "1"
-	expected := "user@example.com"
-
-	userRepository.CreateOneUser(db, entity.User{
-		Email: "user@example.com",
-	})
-
-	actual, err := userRepository.SelectOneUserByUserId(db, userId)
-	if assert.NoError(t, err) {
-		assert.Equal(t, expected, actual.Email)
+			assert.Equal(t, tt.expected, actual)
+			if tt.expectErr {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErrMsg, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
-func TestUserRepository_SelectOneUserByUserId_Error(t *testing.T) {
-	t.Parallel()
-
+func Test_userRepositoryImpl_SelectOneUserByUserId(t *testing.T) {
 	db, _ := testutil.GetDatabase()
 
-	userRepository := NewUserRepository()
-
-	userId := "invalid id"
-	var expected *entity.User
-
-	actual, err := userRepository.SelectOneUserByUserId(db, userId)
-	if assert.Error(t, err) {
-		assert.Equal(t, "record not found", err.Error())
-		assert.Equal(t, expected, actual)
+	type args struct {
+		db     *gorm.DB
+		userId string
 	}
-}
-
-func TestUserRepository_CreateOneUser_Success(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	userRepository := NewUserRepository()
-
-	u := entity.User{
-		Email: "user@example.com",
+	tests := []struct {
+		name           string
+		args           args
+		preprocess     func(db *gorm.DB, userRepository UserRepository)
+		expected       *entity.User
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name: "Success",
+			args: args{
+				db:     db,
+				userId: "1",
+			},
+			preprocess: func(db *gorm.DB, userRepository UserRepository) {
+				if err := testutil.CleanDB(db); err != nil {
+					t.FailNow()
+				}
+				if _, err := userRepository.CreateOneUser(db, entity.User{
+					ID:    1,
+					Email: "repository@example.com",
+				}); err != nil {
+					t.FailNow()
+				}
+			},
+			expected: &entity.User{
+				ID:    1,
+				Email: "repository@example.com",
+			},
+			expectErr: false,
+		},
+		{
+			name: "Error",
+			args: args{
+				db:     db,
+				userId: "no existing value",
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "record not found",
+		},
 	}
-	expected := "user@example.com"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &userRepositoryImpl{}
+			if tt.preprocess != nil {
+				tt.preprocess(db, r)
+			}
+			actual, err := r.SelectOneUserByUserId(tt.args.db, tt.args.userId)
 
-	actual, err := userRepository.CreateOneUser(db, u)
-	if assert.NoError(t, err) {
-		assert.Equal(t, expected, actual.Email)
+			assert.Equal(t, tt.expected, actual)
+			if tt.expectErr {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErrMsg, err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
-}
-
-func TestUserRepository_CreateOneUser_Error(t *testing.T) {
-	t.Parallel()
-
-	db, _ := testutil.GetDatabase()
-
-	userRepository := NewUserRepository()
-
-	u := entity.User{
-		Email: "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789@example.com",
-	}
-	var expected *entity.User
-
-	actual, err := userRepository.CreateOneUser(db, u)
-
-	if assert.Error(t, err) {
-		assert.Equal(t, "Error 1406 (22001): Data too long for column 'email' at row 1", err.Error())
-		assert.Equal(t, expected, actual)
-	}
-
 }

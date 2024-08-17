@@ -11,12 +11,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type getUserInfoHandler struct {
+type getUserInfoHandlerImpl struct {
 	db                 *gorm.DB
 	getUserInfoService service.GetUserInfoService
 }
 
-func (h *getUserInfoHandler) execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	if err := h.validate(ctx, req); err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (h *getUserInfoHandler) execute(ctx context.Context, req *pb.GetUserInfoReq
 	}, nil
 }
 
-func (h *getUserInfoHandler) validate(ctx context.Context, req *pb.GetUserInfoRequest) error {
+func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *pb.GetUserInfoRequest) error {
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.Id, validation.Required, is.Digit))
 
@@ -40,7 +40,7 @@ func (h *getUserInfoHandler) validate(ctx context.Context, req *pb.GetUserInfoRe
 }
 
 func NewGetUserInfoHandler(db *gorm.DB, getUserInfoService service.GetUserInfoService) Handler[*pb.GetUserInfoRequest, *pb.GetUserInfoResponse] {
-	return &getUserInfoHandler{
+	return &getUserInfoHandlerImpl{
 		db:                 db,
 		getUserInfoService: getUserInfoService,
 	}

@@ -4,21 +4,23 @@ import (
 	"context"
 	"strconv"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/takahiroaoki/go-env/app/pb"
 	"github.com/takahiroaoki/go-env/app/service"
 	"gorm.io/gorm"
 )
-
-type GetUserInfoHandler interface {
-	getUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error)
-}
 
 type getUserInfoHandlerImpl struct {
 	db                 *gorm.DB
 	getUserInfoService service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) getUserInfo(_ context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+	if err := h.validate(ctx, req); err != nil {
+		return nil, err
+	}
+
 	u, err := h.getUserInfoService.GetUserByUserId(h.db, req.GetId())
 	if err != nil {
 		return nil, err
@@ -30,7 +32,14 @@ func (h *getUserInfoHandlerImpl) getUserInfo(_ context.Context, req *pb.GetUserI
 	}, nil
 }
 
-func NewGetUserInfoHandler(db *gorm.DB, getUserInfoService service.GetUserInfoService) GetUserInfoHandler {
+func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *pb.GetUserInfoRequest) error {
+	rules := make([]*validation.FieldRules, 0)
+	rules = append(rules, validation.Field(&req.Id, validation.Required, is.Digit))
+
+	return validation.ValidateStructWithContext(ctx, req, rules...)
+}
+
+func NewGetUserInfoHandler(db *gorm.DB, getUserInfoService service.GetUserInfoService) Handler[*pb.GetUserInfoRequest, *pb.GetUserInfoResponse] {
 	return &getUserInfoHandlerImpl{
 		db:                 db,
 		getUserInfoService: getUserInfoService,

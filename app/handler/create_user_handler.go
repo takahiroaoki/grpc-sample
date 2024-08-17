@@ -4,22 +4,24 @@ import (
 	"context"
 	"strconv"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/takahiroaoki/go-env/app/constant"
 	"github.com/takahiroaoki/go-env/app/entity"
 	"github.com/takahiroaoki/go-env/app/pb"
 	"github.com/takahiroaoki/go-env/app/service"
 	"gorm.io/gorm"
 )
 
-type CreateUserHandler interface {
-	createUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
-}
-
 type createUserHandlerImpl struct {
 	db                *gorm.DB
 	createUserService service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (h *createUserHandlerImpl) execute(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	if err := h.validate(ctx, req); err != nil {
+		return nil, err
+	}
+
 	var (
 		u   *entity.User
 		err error
@@ -38,7 +40,14 @@ func (h *createUserHandlerImpl) createUser(_ context.Context, req *pb.CreateUser
 	}, nil
 }
 
-func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) CreateUserHandler {
+func (h *createUserHandlerImpl) validate(ctx context.Context, req *pb.CreateUserRequest) error {
+	rules := make([]*validation.FieldRules, 0)
+	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(constant.MailRegexp())))
+
+	return validation.ValidateStructWithContext(ctx, req, rules...)
+}
+
+func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) Handler[*pb.CreateUserRequest, *pb.CreateUserResponse] {
 	return &createUserHandlerImpl{
 		db:                db,
 		createUserService: createUserService,

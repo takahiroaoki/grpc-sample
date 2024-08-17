@@ -52,7 +52,6 @@ func newServerCmd() *cobra.Command {
 				middleware.ChainUnaryServer(
 					interceptor.SetContext(),
 					interceptor.Log(),
-					interceptor.ValidateReq(),
 				),
 			))
 			if refFlg {

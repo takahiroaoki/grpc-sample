@@ -13,7 +13,7 @@ import (
 	"github.com/takahiroaoki/go-env/app/util"
 )
 
-func TestGetUserInfoHandler_getUserInfo_Success(t *testing.T) {
+func TestGetUserInfoHandler_execute_Success(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -35,7 +35,7 @@ func TestGetUserInfoHandler_getUserInfo_Success(t *testing.T) {
 	}, nil)
 
 	handler := NewGetUserInfoHandler(db, mockService)
-	actual, err := handler.getUserInfo(ctx, &pb.GetUserInfoRequest{
+	actual, err := handler.execute(ctx, &pb.GetUserInfoRequest{
 		Id: userId,
 	})
 	if assert.NoError(t, err) {
@@ -43,7 +43,7 @@ func TestGetUserInfoHandler_getUserInfo_Success(t *testing.T) {
 	}
 }
 
-func TestGetUserInfoHandler_getUserInfo_Error_validation(t *testing.T) {
+func TestGetUserInfoHandler_execute_Error_validation(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -58,14 +58,14 @@ func TestGetUserInfoHandler_getUserInfo_Error_validation(t *testing.T) {
 	mockService.EXPECT().GetUserByUserId(gomock.Any(), gomock.Any()).MaxTimes(0)
 
 	handler := NewGetUserInfoHandler(db, mockService)
-	actual, err := handler.getUserInfo(ctx, &pb.GetUserInfoRequest{
+	actual, err := handler.execute(ctx, &pb.GetUserInfoRequest{
 		Id: userId,
 	})
 	assert.Nil(t, actual)
 	assert.Error(t, err)
 }
 
-func TestGetUserInfoHandler_getUserInfo_Error_service(t *testing.T) {
+func TestGetUserInfoHandler_execute_Error_service(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -81,7 +81,7 @@ func TestGetUserInfoHandler_getUserInfo_Error_service(t *testing.T) {
 	mockService.EXPECT().GetUserByUserId(db, userId).Return(nil, util.NewError("err"))
 
 	handler := NewGetUserInfoHandler(db, mockService)
-	actual, err := handler.getUserInfo(ctx, &pb.GetUserInfoRequest{
+	actual, err := handler.execute(ctx, &pb.GetUserInfoRequest{
 		Id: userId,
 	})
 	if assert.Error(t, err) {
@@ -102,7 +102,7 @@ func TestGetUserInfoHandler_validate_Success(t *testing.T) {
 
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
-	handler := &getUserInfoHandlerImpl{
+	handler := &getUserInfoHandler{
 		db:                 db,
 		getUserInfoService: mockService,
 	}
@@ -125,7 +125,7 @@ func TestGetUserInfoHandler_validate_Error_Id項目が存在しない(t *testing
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	expected := "id: cannot be blank."
-	handler := &getUserInfoHandlerImpl{
+	handler := &getUserInfoHandler{
 		db:                 db,
 		getUserInfoService: mockService,
 	}
@@ -148,7 +148,7 @@ func TestGetUserInfoHandler_validate_Error_Idが空文字(t *testing.T) {
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	expected := "id: cannot be blank."
-	handler := &getUserInfoHandlerImpl{
+	handler := &getUserInfoHandler{
 		db:                 db,
 		getUserInfoService: mockService,
 	}
@@ -173,7 +173,7 @@ func TestGetUserInfoHandler_validate_Error_Idが数字以外を含む(t *testing
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	expected := "id: must contain digits only."
-	handler := &getUserInfoHandlerImpl{
+	handler := &getUserInfoHandler{
 		db:                 db,
 		getUserInfoService: mockService,
 	}

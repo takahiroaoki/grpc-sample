@@ -14,7 +14,7 @@ import (
 	"github.com/takahiroaoki/go-env/app/util"
 )
 
-func TestCreateUserHandler_createUser_Success(t *testing.T) {
+func TestCreateUserHandler_execute_Success(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -37,7 +37,7 @@ func TestCreateUserHandler_createUser_Success(t *testing.T) {
 	}, nil)
 
 	handler := NewCreateUserHandler(db, mockService)
-	actual, err := handler.createUser(ctx, &pb.CreateUserRequest{
+	actual, err := handler.execute(ctx, &pb.CreateUserRequest{
 		Email: u.Email,
 	})
 	if assert.NoError(t, err) {
@@ -45,7 +45,7 @@ func TestCreateUserHandler_createUser_Success(t *testing.T) {
 	}
 }
 
-func TestCreateUserHandler_createUser_Error_service(t *testing.T) {
+func TestCreateUserHandler_execute_Error_service(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -63,7 +63,7 @@ func TestCreateUserHandler_createUser_Error_service(t *testing.T) {
 	mockService.EXPECT().CreateUser(gomock.Any(), u).Return(nil, util.NewError("err"))
 
 	handler := NewCreateUserHandler(db, mockService)
-	actual, err := handler.createUser(ctx, &pb.CreateUserRequest{
+	actual, err := handler.execute(ctx, &pb.CreateUserRequest{
 		Email: u.Email,
 	})
 	if assert.Error(t, err) {
@@ -72,7 +72,7 @@ func TestCreateUserHandler_createUser_Error_service(t *testing.T) {
 	}
 }
 
-func TestCreateUserHandler_createUser_Error_validation(t *testing.T) {
+func TestCreateUserHandler_execute_Error_validation(t *testing.T) {
 	t.Parallel()
 
 	db, _ := testutil.GetDatabase()
@@ -89,7 +89,7 @@ func TestCreateUserHandler_createUser_Error_validation(t *testing.T) {
 	mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any()).MaxTimes(0)
 
 	handler := NewCreateUserHandler(db, mockService)
-	actual, err := handler.createUser(ctx, &pb.CreateUserRequest{
+	actual, err := handler.execute(ctx, &pb.CreateUserRequest{
 		Email: u.Email,
 	})
 	assert.Nil(t, actual)
@@ -108,7 +108,7 @@ func TestCreateUserHandler_validate_Success(t *testing.T) {
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	handler := &createUserHandlerImpl{
+	handler := &createUserHandler{
 		db:                db,
 		createUserService: mockService,
 	}
@@ -130,7 +130,7 @@ func TestCreateUserHandler_validate_Success_Emailの桁数境界値(t *testing.T
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	handler := &createUserHandlerImpl{
+	handler := &createUserHandler{
 		db:                db,
 		createUserService: mockService,
 	}
@@ -153,7 +153,7 @@ func TestCreateUserHandler_validate_Error_Email項目が存在しない(t *testi
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	handler := &createUserHandlerImpl{
+	handler := &createUserHandler{
 		db:                db,
 		createUserService: mockService,
 	}
@@ -176,7 +176,7 @@ func TestCreateUserHandler_validate_Error_Emailが空文字(t *testing.T) {
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	handler := &createUserHandlerImpl{
+	handler := &createUserHandler{
 		db:                db,
 		createUserService: mockService,
 	}
@@ -201,7 +201,7 @@ func TestCreateUserHandler_validate_Error_Emailが桁数オーバー(t *testing.
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	handler := &createUserHandlerImpl{
+	handler := &createUserHandler{
 		db:                db,
 		createUserService: mockService,
 	}
@@ -227,7 +227,7 @@ func TestCreateUserHandler_validate_Error_Emailがフォーマットエラー(t 
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	handler := &createUserHandlerImpl{
+	handler := &createUserHandler{
 		db:                db,
 		createUserService: mockService,
 	}

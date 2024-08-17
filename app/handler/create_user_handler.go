@@ -12,16 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type CreateUserHandler interface {
-	createUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
-}
-
-type createUserHandlerImpl struct {
+type createUserHandler struct {
 	db                *gorm.DB
 	createUserService service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) createUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (h *createUserHandler) execute(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if err := h.validate(ctx, req); err != nil {
 		return nil, err
 	}
@@ -44,15 +40,15 @@ func (h *createUserHandlerImpl) createUser(ctx context.Context, req *pb.CreateUs
 	}, nil
 }
 
-func (h *createUserHandlerImpl) validate(ctx context.Context, req *pb.CreateUserRequest) error {
+func (h *createUserHandler) validate(ctx context.Context, req *pb.CreateUserRequest) error {
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(constant.MailRegexp())))
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
 }
 
-func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) CreateUserHandler {
-	return &createUserHandlerImpl{
+func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) Handler[*pb.CreateUserRequest, *pb.CreateUserResponse] {
+	return &createUserHandler{
 		db:                db,
 		createUserService: createUserService,
 	}

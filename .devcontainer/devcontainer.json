@@ -1,8 +1,8 @@
 {
-	"name": "go-env",
+	"name": "grpc-sample",
 	"dockerComposeFile": "docker-compose.yml",
     "service": "demo-app",
-	"workspaceFolder": "/workspaces/go-env",
+	"workspaceFolder": "/mnt/grpc-sample",
 	"customizations": {
 		"vscode": {
 			"extensions": [

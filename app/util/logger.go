@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/takahiroaoki/go-env/app/constant"
+	"github.com/takahiroaoki/grpc-sample/app/constant"
 )
 
 var logger *log.Logger

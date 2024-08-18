@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/takahiroaoki/go-env/app/cmd"
-	"github.com/takahiroaoki/go-env/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/cmd"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func main() {

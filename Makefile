@@ -2,13 +2,13 @@
 init:db-reset migrate-up proto-go
 
 db-reset:
-	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/reset.sql
+	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/reset.sql
 
 migrate-up:
-	migrate -path "/workspaces/go-env/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
+	migrate -path "/mnt/grpc-sample/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
 
 migrate-down:
-	migrate -path "/workspaces/go-env/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" down
+	migrate -path "/mnt/grpc-sample/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" down
 
 proto-go:
 	protoc --proto_path=proto \
@@ -18,16 +18,16 @@ proto-go:
 
 # run server
 run-server:
-	cd /workspaces/go-env/app \
+	cd /mnt/grpc-sample/app \
 	&& go run main.go server
 
 run-server-ref:
-	cd /workspaces/go-env/app \
+	cd /mnt/grpc-sample/app \
 	&& go run main.go server -r true
 
 # test
 test:proto-go mockgen
-	cd /workspaces/go-env/app \
+	cd /mnt/grpc-sample/app \
 	&& go clean -testcache \
 	&& go test ./handler ./repository ./service
 
@@ -39,15 +39,15 @@ mockgen:
 
 # data
 db-sample:
-	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/sample.sql
+	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/sample.sql
 
 db-clean:
-	mysql -h demo-mysql -u dev-user -p < /workspaces/go-env/devutil/clean.sql
+	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/clean.sql
 
 # others
 mysql:
 	mysql -h demo-mysql -D demodb -u dev-user -p
 
 lint:
-	cd /workspaces/go-env/app \
+	cd /mnt/grpc-sample/app \
 	&& golangci-lint run

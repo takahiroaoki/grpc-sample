@@ -1,6 +1,6 @@
-# go-env
+# grpc-sample
 
-This is the sample project written with golang.
+This is the sample grpc server written with golang.
 
 ## Requirement
 Docker Desktop

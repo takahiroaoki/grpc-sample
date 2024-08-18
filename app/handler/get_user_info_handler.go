@@ -6,8 +6,8 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/takahiroaoki/go-env/app/pb"
-	"github.com/takahiroaoki/go-env/app/service"
+	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/service"
 	"gorm.io/gorm"
 )
 

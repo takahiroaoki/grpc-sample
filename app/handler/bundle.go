@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/takahiroaoki/go-env/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/pb"
 )
 
 type bundle struct {

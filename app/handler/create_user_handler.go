@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/takahiroaoki/go-env/app/constant"
-	"github.com/takahiroaoki/go-env/app/entity"
-	"github.com/takahiroaoki/go-env/app/pb"
-	"github.com/takahiroaoki/go-env/app/service"
+	"github.com/takahiroaoki/grpc-sample/app/constant"
+	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/service"
 	"gorm.io/gorm"
 )
 

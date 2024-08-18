@@ -1,4 +1,4 @@
-# go-env
+# grpc-sample
 
 This is the sample project written with golang.
 

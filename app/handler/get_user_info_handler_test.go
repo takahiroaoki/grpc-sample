@@ -6,11 +6,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/go-env/app/entity"
-	"github.com/takahiroaoki/go-env/app/pb"
-	"github.com/takahiroaoki/go-env/app/testutil"
-	"github.com/takahiroaoki/go-env/app/testutil/mock"
-	"github.com/takahiroaoki/go-env/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/testutil"
+	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 	"gorm.io/gorm"
 )
 

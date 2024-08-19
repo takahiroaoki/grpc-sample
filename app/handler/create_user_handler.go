@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/takahiroaoki/grpc-sample/app/constant"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 	"gorm.io/gorm"
@@ -42,7 +42,7 @@ func (h *createUserHandlerImpl) execute(ctx context.Context, req *pb.CreateUserR
 
 func (h *createUserHandlerImpl) validate(ctx context.Context, req *pb.CreateUserRequest) error {
 	rules := make([]*validation.FieldRules, 0)
-	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(constant.MailRegexp())))
+	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
 }

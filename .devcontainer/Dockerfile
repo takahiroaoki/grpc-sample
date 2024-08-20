@@ -2,14 +2,12 @@ FROM golang:1.22.4-alpine3.20
 
 RUN apk update \
     && apk add git~=2.45.2 \
-        curl~=8.9.0 \
         mysql-client~=10.11.8 \
         golangci-lint~=1.57.2 \
         make~=4.4.1 \
         protobuf~=24.4
 
-WORKDIR /bin
-RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.1/migrate.linux-amd64.tar.gz | tar xz \
+RUN go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1 \
     && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
     && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
     && go install github.com/golang/mock/mockgen@v1.6

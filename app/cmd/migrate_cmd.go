@@ -39,21 +39,36 @@ func newMigrate() (*migrate.Migrate, error) {
 	return migrate.NewWithSourceInstance("httpfs", rsc, config.GetDataBaseURL())
 }
 
+func runTemplate(fn func(_m *migrate.Migrate) error) error {
+	m, err := newMigrate()
+	if err != nil {
+		util.FatalLog(fmt.Sprintf("Failed to make migrate instance: %v", err))
+	}
+	defer func() {
+		srcErr, dbErr := m.Close()
+		if srcErr != nil {
+			util.ErrorLog(fmt.Sprintf("Source close error: %v", srcErr))
+		}
+		if dbErr != nil {
+			util.ErrorLog(fmt.Sprintf("Database close error: %v", dbErr))
+		}
+	}()
+	if err := fn(m); err != nil {
+		return err
+	}
+	util.InfoLog("Migration finished successfully")
+	return nil
+}
+
 func newMigrateUpCmd() *cobra.Command {
 	migrateUpCmd := &cobra.Command{
 		Use:   "up",
 		Short: "Up migration command.",
 		Long:  "Up migration command.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			m, err := newMigrate()
-			if err != nil {
-				util.FatalLog(fmt.Sprintf("Failed to make migrate instance: %v", err))
-			}
-			if err := m.Up(); err != nil {
-				return err
-			}
-			util.InfoLog("Up migration finished successfully")
-			return nil
+			return runTemplate(func(m *migrate.Migrate) error {
+				return m.Up()
+			})
 		},
 	}
 	return migrateUpCmd
@@ -65,15 +80,9 @@ func newMigrateDownCmd() *cobra.Command {
 		Short: "Down migration command.",
 		Long:  "Down migration command.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			m, err := newMigrate()
-			if err != nil {
-				util.FatalLog(fmt.Sprintf("Failed to make migrate instance: %v", err))
-			}
-			if err := m.Down(); err != nil {
-				return err
-			}
-			util.InfoLog("Down migration finished successfully")
-			return nil
+			return runTemplate(func(m *migrate.Migrate) error {
+				return m.Down()
+			})
 		},
 	}
 	return migrateDownCmd
@@ -94,16 +103,9 @@ func newMigrateVerCmd() *cobra.Command {
 				util.FatalLog("The argument for version must be numeric")
 			}
 
-			m, err := newMigrate()
-			if err != nil {
-				util.FatalLog(fmt.Sprintf("Failed to make migrate instance: %v", err))
-			}
-			if err := m.Migrate(uint(ver)); err != nil {
-				return err
-			}
-
-			util.InfoLog("Migration versioning finished successfully")
-			return nil
+			return runTemplate(func(m *migrate.Migrate) error {
+				return m.Migrate(uint(ver))
+			})
 		},
 	}
 	return migrateVerCmd
@@ -124,15 +126,9 @@ func newMigrateForceCmd() *cobra.Command {
 				util.FatalLog("The argument for version must be numeric")
 			}
 
-			m, err := newMigrate()
-			if err != nil {
-				util.FatalLog(fmt.Sprintf("Failed to make migrate instance: %v", err))
-			}
-			if err := m.Force(ver); err != nil {
-				return err
-			}
-			util.InfoLog("Force migration finished successfully")
-			return nil
+			return runTemplate(func(m *migrate.Migrate) error {
+				return m.Force(ver)
+			})
 		},
 	}
 	return migrateForceCmd

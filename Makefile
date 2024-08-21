@@ -5,10 +5,12 @@ db-reset:
 	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/reset.sql
 
 migrate-up:
-	migrate -path "/mnt/grpc-sample/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" up
+	cd /mnt/grpc-sample/app \
+	&& go run main.go migrate up
 
 migrate-down:
-	migrate -path "/mnt/grpc-sample/migration" -database "mysql://root:password@tcp(demo-mysql:3306)/demodb" down
+	cd /mnt/grpc-sample/app \
+	&& go run main.go migrate down
 
 proto-go:
 	protoc --proto_path=proto \

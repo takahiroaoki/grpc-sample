@@ -6,10 +6,15 @@ import (
 
 func NewBundle() *cobra.Command {
 	bundle := &cobra.Command{
+		SilenceUsage:  true,
+		SilenceErrors: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			_ = cmd.Help()
 		},
 	}
-	bundle.AddCommand(newServerCmd())
+	bundle.AddCommand(
+		newServerCmd(),
+		newMigrateCmd(),
+	)
 	return bundle
 }

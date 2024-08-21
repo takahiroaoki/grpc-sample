@@ -7,7 +7,6 @@ RUN apk update \
         make~=4.4.1 \
         protobuf~=24.4
 
-RUN go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1 \
-    && go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
     && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
     && go install github.com/golang/mock/mockgen@v1.6

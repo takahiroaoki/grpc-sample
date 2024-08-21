@@ -51,7 +51,8 @@ $ make lint
 
 ### Create migration files
 ```
-$ migrate create -ext sql -dir ${PATH_TO_MIGRATION_DIR} -seq ${MIGRATION_FILE_NAME}
+$ go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
+$ migrate create -ext sql -dir /mnt/grpc-sample/app/resource/migration -seq ${MIGRATION_FILE_NAME}
 ```
 
 ### Connect to mysql container from app container

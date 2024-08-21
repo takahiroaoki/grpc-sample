@@ -1,5 +1,5 @@
 # set up
-init:db-reset migrate-up proto-go
+init:proto-go db-reset migrate-up
 
 db-reset:
 	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/reset.sql

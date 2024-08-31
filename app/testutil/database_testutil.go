@@ -1,22 +1,25 @@
 package testutil
 
 import (
-	"github.com/takahiroaoki/grpc-sample/app/config"
-	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/DATA-DOG/go-sqlmock"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func GetDatabase() (*gorm.DB, error) {
-	return gorm.Open(
-		mysql.Open(config.GetDataSourceName()),
-		&gorm.Config{
-			SkipDefaultTransaction: false,
-		},
-	)
-}
+func GetTestDB() (*gorm.DB, sqlmock.Sqlmock, error) {
+	sqlDB, sqlMock, err := sqlmock.New()
+	if err != nil {
+		return nil, nil, err
+	}
 
-func CleanDB(db *gorm.DB) error {
-	err := db.Where("true").Delete(&entity.User{}).Error
-	return err
+	db, err := gorm.Open(mysql.New(
+		mysql.Config{
+			Conn:                      sqlDB,
+			SkipInitializeWithVersion: true,
+		},
+	), &gorm.Config{})
+	if err != nil {
+		return nil, nil, err
+	}
+	return db, sqlMock, nil
 }

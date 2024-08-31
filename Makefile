@@ -31,7 +31,7 @@ run-server-ref:
 test:proto-go mockgen
 	cd /mnt/grpc-sample/app \
 	&& go clean -testcache \
-	&& go test ./handler ./repository ./service
+	&& go test ./...
 
 mockgen:
 	rm -f ./app/testutil/mock/*_mock.go \

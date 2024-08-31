@@ -3,9 +3,10 @@
 This is the sample grpc server written with golang.
 
 ## Requirement
-Docker Desktop
+- Docker Desktop
+- VSCode & Dev Container Extension
 
-※The maintainer use codespaces.
+※The maintainer uses codespaces.
 
 ## Tech stack
 - Go 1.22

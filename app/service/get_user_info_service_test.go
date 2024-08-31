@@ -15,7 +15,8 @@ import (
 func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	t.Parallel()
 
-	db, _ := testutil.GetDatabase()
+	db, _, err := testutil.GetTestDB()
+	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

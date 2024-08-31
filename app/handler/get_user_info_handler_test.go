@@ -17,7 +17,8 @@ import (
 func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 	t.Parallel()
 
-	db, _ := testutil.GetDatabase()
+	db, _, err := testutil.GetTestDB()
+	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -127,7 +128,8 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 	t.Parallel()
 
-	db, _ := testutil.GetDatabase()
+	db, _, err := testutil.GetTestDB()
+	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

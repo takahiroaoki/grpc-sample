@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
@@ -18,7 +19,8 @@ import (
 func Test_createUserHandlerImpl_execute(t *testing.T) {
 	t.Parallel()
 
-	db, _ := testutil.GetDatabase()
+	db, sqlMock, err := testutil.GetTestDB()
+	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -36,7 +38,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 		name           string
 		fields         fields
 		args           args
-		mockFunc       func(mockRepository *mock.MockCreateUserService)
+		mockFunc       func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
 		expected       *pb.CreateUserResponse
 		expectErr      bool
 		expectedErrMsg string
@@ -53,13 +55,15 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 					Email: "user@example.com",
 				},
 			},
-			mockFunc: func(mockService *mock.MockCreateUserService) {
+			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
+				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
+				sqlMock.ExpectCommit()
 			},
 			expected: &pb.CreateUserResponse{
 				Id: "1",
@@ -78,7 +82,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 					Email: "invalid value",
 				},
 			},
-			mockFunc: func(mockService *mock.MockCreateUserService) {
+			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
 				mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any()).MaxTimes(0)
 			},
 			expected:       nil,
@@ -97,10 +101,12 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 					Email: "user@example.com",
 				},
 			},
-			mockFunc: func(mockService *mock.MockCreateUserService) {
+			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
+				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(nil, util.NewError("err"))
+				sqlMock.ExpectRollback()
 			},
 			expected:       nil,
 			expectErr:      true,
@@ -114,7 +120,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 				db:                tt.fields.db,
 				createUserService: tt.fields.createUserService,
 			}
-			tt.mockFunc(tt.fields.createUserService)
+			tt.mockFunc(sqlMock, tt.fields.createUserService)
 			actual, err := h.execute(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
@@ -131,7 +137,8 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 func Test_createUserHandlerImpl_validate(t *testing.T) {
 	t.Parallel()
 
-	db, _ := testutil.GetDatabase()
+	db, _, err := testutil.GetTestDB()
+	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 

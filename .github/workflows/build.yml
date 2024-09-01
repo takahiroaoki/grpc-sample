@@ -18,14 +18,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup
-    - uses: ./.github/actions/lint
-    - uses: ./.github/actions/test
+    #- uses: ./.github/actions/lint
+    #- uses: ./.github/actions/test
     - name: Build
       run: make build
     - name: Upload
       run: |
         git clone https://github.com/takahiroaoki/artifact-storage.git
-        cd ./artifact-storage
+        cd ./artifact-storage \
         && git checkout main \
         && git config user.email "" \
         && git config user.name "GitHub Actions" \

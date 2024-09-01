@@ -26,7 +26,7 @@ jobs:
       env:
         ARTIFACT_STORAGE_DEPLOY_KEY: ${{ secrets.ARTIFACT_STORAGE_DEPLOY_KEY }}
       run: |
-        echo ${ARTIFACT_STORAGE_DEPLOY_KEY} > ~/deploy_key.pem
+        echo $ARTIFACT_STORAGE_DEPLOY_KEY > ~/deploy_key.pem
         chmod 600 ~/deploy_key.pem
         git clone https://github.com/takahiroaoki/artifact-storage.git
         cd ./artifact-storage \

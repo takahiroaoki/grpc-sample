@@ -25,3 +25,8 @@ jobs:
       run: |
         make build
         echo "option: ${{ github.event.inputs.environment }}"
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: grpc-sample
+        path: ./app/grpc-sample

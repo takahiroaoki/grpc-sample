@@ -31,7 +31,7 @@ jobs:
         && git config user.email "" \
         && git config user.name "GitHub Actions" \
         && mkdir -p ./grpc-sample/${{ github.event.inputs.environment }} \
-        && ls
+        && echo $(ls)
         && mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }} \
         && git add . \
         && git commit -m ":sparkles: Build by GitHub Actions" \

@@ -32,8 +32,8 @@ jobs:
       run: |
         echo ${{ secrets.ARTIFACT_STORAGE_DEPLOY_KEY }} > ~/deploy_key.pem
         chmod 600 ~/deploy_key.pem
-        git config user.email ""
-        git config user.name "GitHub Actions"
+        git config --global user.email ""
+        git config --global user.name "GitHub Actions"
     - name: Upload
       working-directory: artifact-storage
       env:

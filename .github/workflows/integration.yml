@@ -1,10 +1,10 @@
-name: integration
+name: Integration
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -13,14 +13,14 @@ jobs:
     container:
       image: golang:1.22.4-alpine3.20
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/setup
-    - uses: ./.github/actions/lint
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
   test:
     runs-on: ubuntu-latest
     container:
       image: golang:1.22.4-alpine3.20
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/setup
-    - uses: ./.github/actions/test
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/test

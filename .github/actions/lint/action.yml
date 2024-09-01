@@ -1,6 +1,8 @@
+name: Lint
+description: Lint
 runs:
-  using: "Composite"
+  using: "composite"
   steps:
-  - name: Lint
-    run: make lint
-    shell: sh
+    - name: Lint
+      run: make lint
+      shell: sh

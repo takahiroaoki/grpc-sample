@@ -1,19 +1,21 @@
+name: Setup
+description: Setup
 runs:
-  using: "Composite"
+  using: "composite"
   steps:
-  - name: Install
-    run: |
-      apk update \
-        && apk add git~=2.45.2 \
-        golangci-lint~=1.57.2 \
-        make~=4.4.1 \
-        protobuf~=24.4
-      go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
-        && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
-        && go install github.com/golang/mock/mockgen@v1.6
-    shell: sh
-  - name: Generate Code
-    run: |
-      make proto-go
-      make mockgen
-    shell: sh
+    - name: Install
+      run: |
+        apk update \
+          && apk add git~=2.45.2 \
+          golangci-lint~=1.57.2 \
+          make~=4.4.1 \
+          protobuf~=24.4
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
+          && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
+          && go install github.com/golang/mock/mockgen@v1.6
+      shell: sh
+    - name: Generate Code
+      run: |
+        make proto-go
+        make mockgen
+      shell: sh

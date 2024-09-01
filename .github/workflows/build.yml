@@ -1,4 +1,4 @@
-name: build
+name: Build
 
 on:
   workflow_dispatch:
@@ -6,9 +6,10 @@ on:
       environment:
         type: choice
         required: true
+        description: For which environment the build artifact is.
         options:
-        - "dev"
-        - "prod"
+          - "dev"
+          - "prd"
 
 jobs:
   build:
@@ -16,17 +17,26 @@ jobs:
     container:
       image: golang:1.22.4-alpine3.20
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/setup
-    - uses: ./.github/actions/lint
-    - uses: ./.github/actions/test
-    # TODO: upload to s3
-    - name: Build
-      run: |
-        make build
-        echo "option: ${{ github.event.inputs.environment }}"
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: grpc-sample
-        path: ./app/grpc-sample
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/lint
+      - uses: ./.github/actions/test
+      - name: Build
+        run: make build
+      - name: Checkout to artifact-storage
+        uses: actions/checkout@v4
+        with:
+          repository: takahiroaoki/artifact-storage.git
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: artifact-storage
+          ref: main
+      - name: Upload
+        working-directory: artifact-storage
+        run: |
+          git config --local user.email ""
+          git config --local user.name "GitHub Actions"
+          mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
+          mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
+          git add .
+          git commit -m ":sparkles: Build by GitHub Actions"
+          git push

@@ -5,11 +5,11 @@ db-reset:
 	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/reset.sql
 
 migrate-up:
-	cd /mnt/grpc-sample/app \
+	cd ./app \
 	&& go run main.go migrate up
 
 migrate-down:
-	cd /mnt/grpc-sample/app \
+	cd ./app \
 	&& go run main.go migrate down
 
 proto-go:
@@ -20,18 +20,18 @@ proto-go:
 
 # run server
 run-server:
-	cd /mnt/grpc-sample/app \
+	cd ./app \
 	&& go run main.go server
 
 run-server-ref:
-	cd /mnt/grpc-sample/app \
+	cd ./app \
 	&& go run main.go server -r true
 
 # test
 test:proto-go mockgen
-	cd /mnt/grpc-sample/app \
+	cd ./app \
 	&& go clean -testcache \
-	&& go test ./...
+	&& go test -v ./...
 
 mockgen:
 	rm -f ./app/testutil/mock/*_mock.go \
@@ -46,10 +46,19 @@ db-sample:
 db-clean:
 	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/clean.sql
 
+# build
+build:
+	go env -w CGO_ENABLED=0
+	go env -w GOOS=linux
+	go env -w GOARCH=amd64
+	cd app \
+	&& go build -o grpc-sample
+
+
 # others
 mysql:
 	mysql -h demo-mysql -D demodb -u dev-user -p
 
 lint:
-	cd /mnt/grpc-sample/app \
+	cd ./app \
 	&& golangci-lint run

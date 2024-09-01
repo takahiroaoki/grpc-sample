@@ -30,7 +30,7 @@ jobs:
         chmod 600 ~/deploy_key.pem
         git clone https://github.com/takahiroaoki/artifact-storage.git
         cd ./artifact-storage \
-        && git remote set-url origin "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/takahiroaoki/artifact-storage.git" \
+        && git remote set-url origin "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/takahiroaoki/artifact-storage.git" \
         && git config user.email "" \
         && git config user.name "GitHub Actions"
     - name: Upload

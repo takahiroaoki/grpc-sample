@@ -26,7 +26,7 @@ jobs:
           && go install github.com/golang/mock/mockgen@v1.6
     - name: Generate Code
       run: |
-        make progo-go
+        make proto-go
         make mockgen
 
     - name: Lint

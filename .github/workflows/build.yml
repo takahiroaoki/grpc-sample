@@ -28,6 +28,8 @@ jobs:
         git clone https://github.com/takahiroaoki/artifact-storage.git
         cd ./artifact-storage
         git checkout main
+        git config --global user.email ""
+        git config --global user.name "GitHub Actions"
         mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
         git add .
         git commit -m ":sparkles: Build by GitHub Actions"

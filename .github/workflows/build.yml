@@ -26,12 +26,12 @@ jobs:
     - name: Upload
       run: |
         git clone https://github.com/takahiroaoki/artifact-storage.git
-        cd ./artifact-storage
-        git checkout main
-        git config user.email ""
-        git config user.name "GitHub Actions"
-        mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
-        mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
-        git add .
-        git commit -m ":sparkles: Build by GitHub Actions"
-        git push
+        cd ./artifact-storage \
+        && git checkout main \
+        && git config user.email "" \
+        && git config user.name "GitHub Actions" \
+        && mkdir -p ./grpc-sample/${{ github.event.inputs.environment }} \
+        && mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }} \
+        && git add . \
+        && git commit -m ":sparkles: Build by GitHub Actions" \
+        && git push

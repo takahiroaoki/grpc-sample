@@ -1,4 +1,4 @@
-name: build
+name: Build
 
 on:
   workflow_dispatch:
@@ -19,11 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      #- uses: ./.github/actions/lint
-      #- uses: ./.github/actions/test
+      - uses: ./.github/actions/lint
+      - uses: ./.github/actions/test
       - name: Build
         run: make build
-      - name: Artifact Storage
+      - name: Checkout to artifact-storage
         uses: actions/checkout@v4
         with:
           repository: takahiroaoki/artifact-storage.git

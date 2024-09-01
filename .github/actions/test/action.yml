@@ -1,0 +1,6 @@
+runs:
+  using: "Composite"
+  steps:
+  - name: Test
+    run: cd app && go test -v ./...
+    shell: sh

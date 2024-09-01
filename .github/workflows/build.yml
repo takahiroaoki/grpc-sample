@@ -30,6 +30,8 @@ jobs:
     - name: Upload
       working-directory: artifact-storage
       run: |
+        git config user.email ""
+        git config user.name "GitHub Actions"
         git checkout main
         git pull
         mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}

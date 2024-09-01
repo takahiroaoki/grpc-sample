@@ -6,12 +6,10 @@ on:
       environment:
         type: choice
         required: true
+        description: For which environment the build artifact is.
         options:
-        - "dev"
-        - "prd"
-env:
-  ARTIFACT_STORAGE_REPO: takahiroaoki/artifact-storage.git
-  ARTIFACT_STORAGE_DEPLOY_KEY: ${{ secrets.ARTIFACT_STORAGE_DEPLOY_KEY }}
+          - "dev"
+          - "prd"
 
 jobs:
   build:
@@ -19,30 +17,27 @@ jobs:
     container:
       image: golang:1.22.4-alpine3.20
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/setup
-    #- uses: ./.github/actions/lint
-    #- uses: ./.github/actions/test
-    - name: Build
-      run: make build
-    - name: Setup Git
-      run: |
-        echo $ARTIFACT_STORAGE_DEPLOY_KEY > ~/deploy_key.pem
-        chmod 600 ~/deploy_key.pem
-        git clone https://github.com/$ARTIFACT_STORAGE_REPO
-        cd ./artifact-storage \
-        && git remote set-url origin "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/$ARTIFACT_STORAGE_REPO" \
-        && git config user.email "" \
-        && git config user.name "GitHub Actions"
-    - name: Upload
-      working-directory: artifact-storage
-      env:
-        GIT_SSH_COMMAND: ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null
-      run: |
-        git checkout main
-        git pull
-        mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
-        mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
-        git add .
-        git commit -m ":sparkles: Build by GitHub Actions"
-        git push
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      #- uses: ./.github/actions/lint
+      #- uses: ./.github/actions/test
+      - name: Build
+        run: make build
+      - name: Artifact Storage
+        uses: actions/checkout@v4
+        with:
+          repository: takahiroaoki/artifact-storage.git
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          path: artifact-storage
+      - name: Upload
+        working-directory: artifact-storage
+        run: |
+          git config --local user.email ""
+          git config --local user.name "GitHub Actions"
+          git checkout main
+          git pull
+          mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
+          mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
+          git add .
+          git commit -m ":sparkles: Build by GitHub Actions"
+          git push

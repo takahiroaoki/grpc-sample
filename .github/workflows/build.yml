@@ -22,16 +22,18 @@ jobs:
     #- uses: ./.github/actions/test
     - name: Build
       run: make build
+    - name: Checkout to artifact-storage
+      uses: actions/checkout@v4
+      with:
+        repository: takahiroaoki/artifact-storage
+        path: artifact-storage
     - name: Upload
+      working-directory: artifact-storage
       run: |
-        git clone https://github.com/takahiroaoki/artifact-storage.git
-        cd ./artifact-storage \
-        && git checkout main \
-        && git config user.email "" \
-        && git config user.name "GitHub Actions" \
-        && mkdir -p ./grpc-sample/${{ github.event.inputs.environment }} \
-        && ls \
-        && mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }} \
-        && git add . \
-        && git commit -m ":sparkles: Build by GitHub Actions" \
-        && git push
+        git checkout main
+        git pull
+        mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
+        mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
+        git add .
+        git commit -m ":sparkles: Build by GitHub Actions"
+        git push

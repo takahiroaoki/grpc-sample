@@ -29,13 +29,12 @@ jobs:
           repository: takahiroaoki/artifact-storage.git
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: artifact-storage
+          ref: main
       - name: Upload
         working-directory: artifact-storage
         run: |
           git config --local user.email ""
           git config --local user.name "GitHub Actions"
-          git checkout main
-          git pull
           mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
           mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
           git add .

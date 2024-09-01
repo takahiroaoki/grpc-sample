@@ -1,0 +1,32 @@
+name: grpc-sample
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: golang:1.22.4-alpine3.20
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install
+      run: |
+        apk update \
+          && apk add git~=2.45.2 \
+          golangci-lint~=1.57.2 \
+          make~=4.4.1 \
+          protobuf~=24.4
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
+          && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
+          && go install github.com/golang/mock/mockgen@v1.6
+
+    - name: Lint
+      run: cd app && golangci-lint run
+
+    - name: Test
+      run: cd app && go test -v ./...

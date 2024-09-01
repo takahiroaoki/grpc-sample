@@ -21,21 +21,16 @@ jobs:
     - uses: ./.github/actions/lint
     - uses: ./.github/actions/test
     - name: Build
-      run: |
-        make build
-    - uses: actions/checkout@v4
-      with:
-        repository: takahiroaoki/artifact-storage
-        path: artifact-storage
+      run: make build
     - name: Upload
-      working-directory: artifact-storage
       run: |
-        git checkout main \
-        && git pull \
-        # && git config user.email "" \
-        # && git config user.name "GitHub Actions" \
+        git clone https://github.com/takahiroaoki/artifact-storage.git
+        cd ./artifact-storage
+        && git checkout main \
+        && git config user.email "" \
+        && git config user.name "GitHub Actions" \
         && mkdir -p ./grpc-sample/${{ github.event.inputs.environment }} \
-        && echo $(ls)
+        && ls
         && mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }} \
         && git add . \
         && git commit -m ":sparkles: Build by GitHub Actions" \

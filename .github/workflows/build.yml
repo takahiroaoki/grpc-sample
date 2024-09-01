@@ -30,8 +30,11 @@ jobs:
     - name: Upload
       working-directory: artifact-storage
       run: |
-        git config user.email ""
-        git config user.name "GitHub Actions"
+        echo ${{ secrets.ARTIFACT_STORAGE_DEPLOY_KEY }} > ~/deploy_key.pem
+        chmod 600 ~/deploy_key.pem
+        export GIT_SSH_COMMAND="ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null"
+        #git config user.email ""
+        #git config user.name "GitHub Actions"
         git checkout main
         git pull
         mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}

@@ -26,11 +26,11 @@ jobs:
       env:
         ARTIFACT_STORAGE_DEPLOY_KEY: ${{ secrets.ARTIFACT_STORAGE_DEPLOY_KEY }}
       run: |
-        echo $ARTIFACT_STORAGE_DEPLOY_KEY > ~/deploy_key.pem
+        echo ${ARTIFACT_STORAGE_DEPLOY_KEY} > ~/deploy_key.pem
         chmod 600 ~/deploy_key.pem
         git clone https://github.com/takahiroaoki/artifact-storage.git
         cd ./artifact-storage \
-        && git config remote.origin.url "https://github.com/takahiroaoki/artifact-storage.git" \
+        && git remote set-url origin "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/takahiroaoki/artifact-storage.git" \
         && git config user.email "" \
         && git config user.name "GitHub Actions"
     - name: Upload

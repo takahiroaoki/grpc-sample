@@ -8,7 +8,7 @@ on:
         required: true
         options:
         - "dev"
-        - "prod"
+        - "prd"
 
 jobs:
   build:
@@ -20,13 +20,15 @@ jobs:
     - uses: ./.github/actions/setup
     - uses: ./.github/actions/lint
     - uses: ./.github/actions/test
-    # TODO: upload to s3
     - name: Build
       run: |
         make build
-        echo "option: ${{ github.event.inputs.environment }}"
     - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: grpc-sample
-        path: ./app/grpc-sample
+      run: |
+        git clone https://github.com/takahiroaoki/artifact-storage.git
+        cd ./artifact-storage
+        git checkout main
+        mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
+        git add .
+        git commit -m ":sparkles: Build by GitHub Actions"
+        git push

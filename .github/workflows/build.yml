@@ -22,19 +22,23 @@ jobs:
     #- uses: ./.github/actions/test
     - name: Build
       run: make build
+
     - name: Checkout to artifact-storage
       uses: actions/checkout@v4
       with:
         repository: takahiroaoki/artifact-storage
         path: artifact-storage
-    - name: Upload
-      working-directory: artifact-storage
+    - name: Setup Git
       run: |
         echo ${{ secrets.ARTIFACT_STORAGE_DEPLOY_KEY }} > ~/deploy_key.pem
         chmod 600 ~/deploy_key.pem
-        export GIT_SSH_COMMAND="ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null"
         git config user.email ""
         git config user.name "GitHub Actions"
+    - name: Upload
+      working-directory: artifact-storage
+      env:
+        GIT_SSH_COMMAND: ssh -i ~/deploy_key.pem -o StrictHostKeyChecking=no -F /dev/null
+      run: |
         git checkout main
         git pull
         mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}

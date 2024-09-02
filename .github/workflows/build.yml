@@ -3,13 +3,10 @@ name: Build
 on:
   workflow_dispatch:
     inputs:
-      environment:
-        type: choice
+      build_version:
+        type: string
         required: true
-        description: For which environment the build artifact is.
-        options:
-          - "dev"
-          - "prd"
+        description: grpc-sample-${build_bersion}
 
 jobs:
   build:
@@ -21,7 +18,12 @@ jobs:
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/test
       - name: Build
-        run: make build
+        working-directory: app
+        run: |
+          go env -w CGO_ENABLED=0
+          go env -w GOOS=linux
+          go env -w GOARCH=amd64
+          go build -o grpc-sample-${{ github.event.inputs.build_version }}
       - name: Checkout to artifact-storage
         uses: actions/checkout@v4
         with:
@@ -34,8 +36,8 @@ jobs:
         run: |
           git config --local user.email ""
           git config --local user.name "GitHub Actions"
-          mkdir -p ./grpc-sample/${{ github.event.inputs.environment }}
-          mv -f ../app/grpc-sample ./grpc-sample/${{ github.event.inputs.environment }}
+          mkdir -p ./grpc-sample
+          mv -n ../app/grpc-sample-${{ github.event.inputs.build_version }} ./grpc-sample/
           git add .
           git commit -m ":sparkles: Build by GitHub Actions"
           git push

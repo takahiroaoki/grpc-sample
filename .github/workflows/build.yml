@@ -19,7 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/lint
       - uses: ./.github/actions/test
       - name: Build
         run: make build

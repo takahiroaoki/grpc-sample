@@ -1,1 +1,1 @@
-DELETE FROM users;
+DELETE FROM grpc_sample.users;

@@ -48,11 +48,8 @@ db-clean:
 
 # build
 build:
-	go env -w CGO_ENABLED=0
-	go env -w GOOS=linux
-	go env -w GOARCH=amd64
 	cd app \
-	&& go build -o grpc-sample
+	&& CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o grpc-sample
 
 
 # others

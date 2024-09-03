@@ -2,7 +2,7 @@
 init:proto-go db-reset migrate-up
 
 db-reset:
-	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/reset.sql
+	mysql -h demo-mysql -u dev-user -D demodb -p < /mnt/grpc-sample/devutil/reset.sql
 
 migrate-up:
 	cd ./app \
@@ -41,10 +41,10 @@ mockgen:
 
 # data
 db-sample:
-	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/sample.sql
+	mysql -h demo-mysql -u dev-user -D demodb -p < /mnt/grpc-sample/devutil/sample.sql
 
 db-clean:
-	mysql -h demo-mysql -u dev-user -p < /mnt/grpc-sample/devutil/clean.sql
+	mysql -h demo-mysql -u dev-user -D demodb -p < /mnt/grpc-sample/devutil/clean.sql
 
 # build
 build:
@@ -54,7 +54,7 @@ build:
 
 # others
 mysql:
-	mysql -h demo-mysql -u dev-user -p
+	mysql -h demo-mysql -D demodb -u dev-user -p
 
 lint:
 	cd ./app \

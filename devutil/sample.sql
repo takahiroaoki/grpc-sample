@@ -1,4 +1,4 @@
-INSERT INTO grpc_sample.users (
+INSERT INTO users (
     email
 ) VALUES (
     'user@example.com'

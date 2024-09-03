@@ -1,4 +1,4 @@
-CREATE TABLE users(
+CREATE TABLE grpc_sample.users(
     id INT NOT NULL AUTO_INCREMENT,
     email VARCHAR(320) NOT NULL,
 

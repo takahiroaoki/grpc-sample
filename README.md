@@ -6,7 +6,7 @@ This is the sample grpc server written with golang.
 - Docker Desktop
 - VSCode & Dev Container Extension
 
-※The maintainer uses codespaces.
+※I use codespaces.
 
 ## Tech stack
 - Go 1.22
@@ -46,6 +46,12 @@ Building binary file can be achieved by ./github/workflows/build.yml via GitHub 
 The artifact would be uploaded to [artifact-storage](https://github.com/takahiroaoki/artifact-storage).
 
 That workflow needs personal access token as PERSONAL_ACCESS_TOKEN.
+
+## Deploy
+
+I prepared deploy system for development purpose. See the following repositories.
+- [packer-container](https://github.com/takahiroaoki/packer-container)
+- [tf-container](https://github.com/takahiroaoki/tf-container)
 
 ## Appendix
 ### Unit test

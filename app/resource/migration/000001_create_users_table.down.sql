@@ -1,1 +1,1 @@
-DROP TABLE grpc_sample.users;
+DROP TABLE users;

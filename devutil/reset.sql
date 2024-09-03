@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS demodb.schema_migrations;
-DROP TABLE IF EXISTS demodb.users;
+DROP TABLE IF EXISTS schema_migrations;
+DROP TABLE IF EXISTS users;

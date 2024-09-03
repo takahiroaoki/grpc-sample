@@ -1,1 +1,1 @@
-DROP TABLE demodb.users;
+DROP TABLE users;

@@ -1,1 +1,1 @@
-DELETE FROM demodb.users;
+DELETE FROM users;

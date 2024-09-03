@@ -1,9 +1,12 @@
 name: Build
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      build_version:
+        type: string
+        required: true
+        description: grpc-sample-${build_bersion}
 
 jobs:
   build:
@@ -20,7 +23,7 @@ jobs:
           go env -w CGO_ENABLED=0
           go env -w GOOS=linux
           go env -w GOARCH=amd64
-          go build -o grpc-sample-${{ github.ref_name }}
+          go build -o grpc-sample-${{ github.event.inputs.build_version }}
       - name: Checkout to artifact-storage
         uses: actions/checkout@v4
         with:
@@ -34,7 +37,7 @@ jobs:
           git config --local user.email ""
           git config --local user.name "GitHub Actions"
           mkdir -p ./grpc-sample
-          mv -n ../app/grpc-sample-${{ github.ref_name }} ./grpc-sample/
+          mv -n ../app/grpc-sample-${{ github.event.inputs.build_version }} ./grpc-sample/
           git add .
           git commit -m ":sparkles: Build by GitHub Actions"
           git push

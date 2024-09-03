@@ -1,4 +1,4 @@
-INSERT INTO demodb.users (
+INSERT INTO users (
     email
 ) VALUES (
     'user@example.com'

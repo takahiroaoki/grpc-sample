@@ -8,8 +8,8 @@ import (
 
 type bundle struct {
 	pb.UnimplementedSampleServiceServer
-	createUserHandler  Handler[*pb.CreateUserRequest, *pb.CreateUserResponse]
-	getUserInfoHandler Handler[*pb.GetUserInfoRequest, *pb.GetUserInfoResponse]
+	createUserHandler  CreateUserHandler
+	getUserInfoHandler GetUserInfoHandler
 }
 
 func (s *bundle) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
@@ -21,8 +21,8 @@ func (s *bundle) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*
 }
 
 func NewBundle(
-	createUserHandler Handler[*pb.CreateUserRequest, *pb.CreateUserResponse],
-	getUserInfoHandler Handler[*pb.GetUserInfoRequest, *pb.GetUserInfoResponse],
+	createUserHandler CreateUserHandler,
+	getUserInfoHandler GetUserInfoHandler,
 ) pb.SampleServiceServer {
 	return &bundle{
 		createUserHandler:  createUserHandler,

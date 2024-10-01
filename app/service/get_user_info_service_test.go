@@ -6,34 +6,34 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
-	"gorm.io/gorm"
 )
 
 func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	t.Parallel()
 
-	db, _, err := testutil.GetTestDB()
+	dbw, _, err := testutil.GetTestDBWrapper()
 	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock.NewMockUserRepository(ctrl)
+	mockRepository := mock.NewMockDemoRepository(ctrl)
 
 	type fields struct {
-		userRepository *mock.MockUserRepository
+		demoRepository *mock.MockDemoRepository
 	}
 	type args struct {
-		db     *gorm.DB
+		dbw    infra.DBWrapper
 		userId string
 	}
 	tests := []struct {
 		name           string
 		fields         fields
 		args           args
-		mockFunc       func(mockRepository *mock.MockUserRepository)
+		mockFunc       func(mockRepository *mock.MockDemoRepository)
 		expected       *entity.User
 		expectErr      bool
 		expectedErrMsg string
@@ -41,14 +41,14 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		{
 			name: "Success",
 			fields: fields{
-				userRepository: mockRepository,
+				demoRepository: mockRepository,
 			},
 			args: args{
-				db:     db,
+				dbw:    dbw,
 				userId: "1",
 			},
-			mockFunc: func(mockRepository *mock.MockUserRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId(db, "1").Return(&entity.User{
+			mockFunc: func(mockRepository *mock.MockDemoRepository) {
+				mockRepository.EXPECT().SelectOneUserByUserId(dbw, "1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -62,14 +62,14 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		{
 			name: "Error",
 			fields: fields{
-				userRepository: mockRepository,
+				demoRepository: mockRepository,
 			},
 			args: args{
-				db:     db,
+				dbw:    dbw,
 				userId: "1",
 			},
-			mockFunc: func(mockRepository *mock.MockUserRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId(db, "1").Return(nil, util.NewError("err"))
+			mockFunc: func(mockRepository *mock.MockDemoRepository) {
+				mockRepository.EXPECT().SelectOneUserByUserId(dbw, "1").Return(nil, util.NewError("err"))
 			},
 			expected:       nil,
 			expectErr:      true,
@@ -80,10 +80,10 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			s := &getUserInfoServiceImpl{
-				userRepository: tt.fields.userRepository,
+				demoRepository: tt.fields.demoRepository,
 			}
-			tt.mockFunc(tt.fields.userRepository)
-			actual, err := s.GetUserByUserId(tt.args.db, tt.args.userId)
+			tt.mockFunc(tt.fields.demoRepository)
+			actual, err := s.GetUserByUserId(tt.args.dbw, tt.args.userId)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

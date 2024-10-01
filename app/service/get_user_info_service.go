@@ -2,23 +2,15 @@ package service
 
 import (
 	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"gorm.io/gorm"
 )
 
-type GetUserInfoService interface {
-	GetUserByUserId(db *gorm.DB, userId string) (*entity.User, error)
-}
-
 type getUserInfoServiceImpl struct {
-	userRepository repository.UserRepository
+	demoRepository repository.DemoRepository
 }
 
-func (s *getUserInfoServiceImpl) GetUserByUserId(db *gorm.DB, userId string) (*entity.User, error) {
-	user, err := s.userRepository.SelectOneUserByUserId(db, userId)
+func (s *getUserInfoServiceImpl) GetUserByUserId(dbw infra.DBWrapper, userId string) (*entity.User, error) {
+	user, err := s.demoRepository.SelectOneUserByUserId(dbw, userId)
 	return user, err
-}
-
-func NewGetUserInfoService(userRepository repository.UserRepository) GetUserInfoService {
-	return &getUserInfoServiceImpl{userRepository: userRepository}
 }

@@ -6,13 +6,13 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/service"
-	"gorm.io/gorm"
 )
 
 type getUserInfoHandlerImpl struct {
-	db                 *gorm.DB
+	dbw                infra.DBWrapper
 	getUserInfoService service.GetUserInfoService
 }
 
@@ -21,7 +21,7 @@ func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInf
 		return nil, err
 	}
 
-	u, err := h.getUserInfoService.GetUserByUserId(h.db, req.GetId())
+	u, err := h.getUserInfoService.GetUserByUserId(h.dbw, req.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -37,11 +37,4 @@ func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *pb.GetUserIn
 	rules = append(rules, validation.Field(&req.Id, validation.Required, is.Digit))
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
-}
-
-func NewGetUserInfoHandler(db *gorm.DB, getUserInfoService service.GetUserInfoService) Handler[*pb.GetUserInfoRequest, *pb.GetUserInfoResponse] {
-	return &getUserInfoHandlerImpl{
-		db:                 db,
-		getUserInfoService: getUserInfoService,
-	}
 }

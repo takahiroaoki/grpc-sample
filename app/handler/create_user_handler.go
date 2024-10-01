@@ -7,13 +7,13 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
+	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/service"
-	"gorm.io/gorm"
 )
 
 type createUserHandlerImpl struct {
-	db                *gorm.DB
+	dbw               infra.DBWrapper
 	createUserService service.CreateUserService
 }
 
@@ -26,8 +26,8 @@ func (h *createUserHandlerImpl) execute(ctx context.Context, req *pb.CreateUserR
 		u   *entity.User
 		err error
 	)
-	err = h.db.Transaction(func(tx *gorm.DB) error {
-		u, err = h.createUserService.CreateUser(tx, entity.User{
+	err = h.dbw.Transaction(func(dbw infra.DBWrapper) error {
+		u, err = h.createUserService.CreateUser(dbw, entity.User{
 			Email: req.GetEmail(),
 		})
 		return err
@@ -45,11 +45,4 @@ func (h *createUserHandlerImpl) validate(ctx context.Context, req *pb.CreateUser
 	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
-}
-
-func NewCreateUserHandler(db *gorm.DB, createUserService service.CreateUserService) Handler[*pb.CreateUserRequest, *pb.CreateUserResponse] {
-	return &createUserHandlerImpl{
-		db:                db,
-		createUserService: createUserService,
-	}
 }

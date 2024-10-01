@@ -9,17 +9,17 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
-	"gorm.io/gorm"
 )
 
 func Test_createUserHandlerImpl_execute(t *testing.T) {
 	t.Parallel()
 
-	db, sqlMock, err := testutil.GetTestDB()
+	dbw, sqlMock, err := testutil.GetTestDBWrapper()
 	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -27,7 +27,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 	mockService := mock.NewMockCreateUserService(ctrl)
 
 	type fields struct {
-		db                *gorm.DB
+		dbw               infra.DBWrapper
 		createUserService *mock.MockCreateUserService
 	}
 	type args struct {
@@ -46,7 +46,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 		{
 			name: "Success",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -73,7 +73,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 		{
 			name: "Error(validation)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -92,7 +92,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 		{
 			name: "Error(createUserService.CreateUser)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -117,7 +117,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			h := &createUserHandlerImpl{
-				db:                tt.fields.db,
+				dbw:               tt.fields.dbw,
 				createUserService: tt.fields.createUserService,
 			}
 			tt.mockFunc(sqlMock, tt.fields.createUserService)
@@ -137,7 +137,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 func Test_createUserHandlerImpl_validate(t *testing.T) {
 	t.Parallel()
 
-	db, _, err := testutil.GetTestDB()
+	dbw, _, err := testutil.GetTestDBWrapper()
 	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -145,7 +145,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	mockService := mock.NewMockCreateUserService(ctrl)
 
 	type fields struct {
-		db                *gorm.DB
+		dbw               infra.DBWrapper
 		createUserService *mock.MockCreateUserService
 	}
 	type args struct {
@@ -163,7 +163,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Success",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -177,7 +177,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Success(Email right boundary safe)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -191,7 +191,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Email right boundary over)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -206,7 +206,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Email is nil)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -219,7 +219,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Email is empty)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -234,7 +234,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Email is in an invalid format)",
 			fields: fields{
-				db:                db,
+				dbw:               dbw,
 				createUserService: mockService,
 			},
 			args: args{
@@ -251,7 +251,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			h := &createUserHandlerImpl{
-				db:                tt.fields.db,
+				dbw:               tt.fields.dbw,
 				createUserService: tt.fields.createUserService,
 			}
 			err := h.validate(tt.args.ctx, tt.args.req)

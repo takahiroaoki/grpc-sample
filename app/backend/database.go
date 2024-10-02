@@ -3,11 +3,13 @@ package backend
 import (
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 type DBClient interface {
 	repository.DemoRepository
+	CloseDB() error
 }
 
 type dbClientImpl struct {
@@ -34,6 +36,30 @@ func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, error) {
 		return nil, err
 	}
 	return &u, nil
+}
+
+func (dbc *dbClientImpl) CloseDB() error {
+	sqlDB, err := dbc.db.DB()
+	if err != nil {
+		return err
+	}
+	if err := sqlDB.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewDBClientFromDSN(dataSourceName string) (DBClient, error) {
+	db, err := gorm.Open(
+		mysql.Open(dataSourceName),
+		&gorm.Config{
+			SkipDefaultTransaction: true,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return NewDBClient(db), nil
 }
 
 func NewDBClient(db *gorm.DB) DBClient {

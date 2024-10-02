@@ -14,12 +14,11 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/handler"
 	"github.com/takahiroaoki/grpc-sample/app/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 func newServerCmd() *cobra.Command {
@@ -32,16 +31,18 @@ func newServerCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// Prepare db client
-			db, err := gorm.Open(
-				mysql.Open(config.GetDataSourceName()),
-				&gorm.Config{
-					SkipDefaultTransaction: true,
-				},
-			)
+			dbc, err := backend.NewDBClientFromDSN(config.GetDataSourceName())
 			if err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to get DB connection. Error: %v", err))
 			}
-			defer closeDB(db)
+			defer func() {
+				err := dbc.CloseDB()
+				if err != nil {
+					util.FatalLog("Failed to close db connection")
+					return
+				}
+				util.InfoLog("DB connection closed successfully")
+			}()
 
 			// Prepare grpc server settings
 			lis, err := net.Listen("tcp", ":8080")
@@ -60,7 +61,6 @@ func newServerCmd() *cobra.Command {
 			}
 
 			// Register gRPC handler
-			dbc := backend.NewDBClient(db)
 			pb.RegisterSampleServiceServer(server, getHandler(dbc))
 
 			// Run
@@ -86,26 +86,12 @@ func newServerCmd() *cobra.Command {
 	return serverCmd
 }
 
-// closeDB Close DB connection. This method must be called after gracefully stop of server.
-func closeDB(db *gorm.DB) {
-	sqlDB, err := db.DB()
-	if err != nil {
-		util.FatalLog("Failed to close db connection")
-		return
-	}
-	if err := sqlDB.Close(); err != nil {
-		util.FatalLog("Failed to close db connection")
-		return
-	}
-	util.InfoLog("DB connection closed successfully")
-}
-
-func getHandler(dbc backend.DBClient) pb.SampleServiceServer {
+func getHandler(dr repository.DemoRepository) pb.SampleServiceServer {
 	getUserInfoService := service.NewGetUserInfoService()
 	createUserService := service.NewCreateUserService()
 
 	return handler.NewBundle(
-		handler.NewCreateUserHandler(dbc, createUserService),
-		handler.NewGetUserInfoHandler(dbc, getUserInfoService),
+		handler.NewCreateUserHandler(dr, createUserService),
+		handler.NewGetUserInfoHandler(dr, getUserInfoService),
 	)
 }

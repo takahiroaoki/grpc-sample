@@ -60,7 +60,8 @@ func newServerCmd() *cobra.Command {
 			}
 
 			// Register gRPC handler
-			pb.RegisterSampleServiceServer(server, getHandler(db))
+			dbc := backend.NewDBClient(db)
+			pb.RegisterSampleServiceServer(server, getHandler(dbc))
 
 			// Run
 			go func() {
@@ -99,13 +100,12 @@ func closeDB(db *gorm.DB) {
 	util.InfoLog("DB connection closed successfully")
 }
 
-func getHandler(db *gorm.DB) pb.SampleServiceServer {
-	dbWrapper := backend.NewDBWrapper(db)
+func getHandler(dbc backend.DBClient) pb.SampleServiceServer {
 	getUserInfoService := service.NewGetUserInfoService()
 	createUserService := service.NewCreateUserService()
 
 	return handler.NewBundle(
-		handler.NewCreateUserHandler(dbWrapper, createUserService),
-		handler.NewGetUserInfoHandler(dbWrapper, getUserInfoService),
+		handler.NewCreateUserHandler(dbc, createUserService),
+		handler.NewGetUserInfoHandler(dbc, getUserInfoService),
 	)
 }

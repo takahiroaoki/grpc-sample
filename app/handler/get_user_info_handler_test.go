@@ -6,9 +6,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
@@ -17,7 +17,7 @@ import (
 func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 	t.Parallel()
 
-	dbw, _, err := testutil.GetTestDBWrapper()
+	dbc, _, err := testutil.GetMockDBClient()
 	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -25,8 +25,8 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	type fields struct {
-		dbw                backend.DBWrapper
-		getUserInfoService *mock.MockGetUserInfoService
+		dr   repository.DemoRepository
+		guis *mock.MockGetUserInfoService
 	}
 	type args struct {
 		ctx context.Context
@@ -44,8 +44,8 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 		{
 			name: "Success",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -54,7 +54,7 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbw, "1").Return(&entity.User{
+				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -68,8 +68,8 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 		{
 			name: "Error(validation)",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -87,8 +87,8 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 		{
 			name: "Error(getUserInfoService.GetUserByUserId)",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -97,7 +97,7 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbw, "1").Return(nil, util.NewError("err"))
+				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, util.NewError("err"))
 			},
 			expected:       nil,
 			expectErr:      true,
@@ -108,10 +108,10 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			h := &getUserInfoHandlerImpl{
-				dbw:                tt.fields.dbw,
-				getUserInfoService: tt.fields.getUserInfoService,
+				dr:   tt.fields.dr,
+				guis: tt.fields.guis,
 			}
-			tt.mockFunc(tt.fields.getUserInfoService)
+			tt.mockFunc(tt.fields.guis)
 			actual, err := h.execute(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
@@ -128,7 +128,7 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 	t.Parallel()
 
-	dbw, _, err := testutil.GetTestDBWrapper()
+	dbc, _, err := testutil.GetMockDBClient()
 	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -136,8 +136,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	type fields struct {
-		dbw                backend.DBWrapper
-		getUserInfoService *mock.MockGetUserInfoService
+		dr   repository.DemoRepository
+		guis *mock.MockGetUserInfoService
 	}
 	type args struct {
 		ctx context.Context
@@ -154,8 +154,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Success",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -169,8 +169,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Id is nil)",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -183,8 +183,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Id is empty)",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -199,8 +199,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		{
 			name: "Error(Id contains invalid characters)",
 			fields: fields{
-				dbw:                dbw,
-				getUserInfoService: mockService,
+				dr:   dbc,
+				guis: mockService,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -217,8 +217,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			h := &getUserInfoHandlerImpl{
-				dbw:                tt.fields.dbw,
-				getUserInfoService: tt.fields.getUserInfoService,
+				dr:   tt.fields.dr,
+				guis: tt.fields.guis,
 			}
 
 			err := h.validate(tt.args.ctx, tt.args.req)

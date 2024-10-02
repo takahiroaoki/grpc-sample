@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
@@ -17,10 +17,10 @@ type CreateUserHandler interface {
 	Handler[pb.CreateUserRequest, pb.CreateUserResponse]
 }
 
-func NewCreateUserHandler(dbw backend.DBWrapper, createUserService service.CreateUserService) CreateUserHandler {
+func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
 	return &createUserHandlerImpl{
-		dbw:               dbw,
-		createUserService: createUserService,
+		dr:  dr,
+		cus: cus,
 	}
 }
 
@@ -28,9 +28,9 @@ type GetUserInfoHandler interface {
 	Handler[pb.GetUserInfoRequest, pb.GetUserInfoResponse]
 }
 
-func NewGetUserInfoHandler(dbw backend.DBWrapper, getUserInfoService service.GetUserInfoService) GetUserInfoHandler {
+func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {
 	return &getUserInfoHandlerImpl{
-		dbw:                dbw,
-		getUserInfoService: getUserInfoService,
+		dr:   dr,
+		guis: guis,
 	}
 }

@@ -6,39 +6,38 @@ import (
 	"gorm.io/gorm"
 )
 
-type DBWrapper interface {
-	Transaction(func(dbw DBWrapper) error) error
+type DBClient interface {
 	repository.DemoRepository
 }
 
-type dbWrapperImpl struct {
+type dbClientImpl struct {
 	db *gorm.DB
 }
 
-func (dbw *dbWrapperImpl) Transaction(fn func(txw DBWrapper) error) error {
-	return dbw.db.Transaction(func(tx *gorm.DB) error {
-		return fn(NewDBWrapper(tx))
+func (dbc *dbClientImpl) Transaction(fn func(dr repository.DemoRepository) error) error {
+	return dbc.db.Transaction(func(tx *gorm.DB) error {
+		return fn(NewDBClient(tx))
 	})
 }
 
-func (dbw *dbWrapperImpl) SelectOneUserByUserId(userId string) (*entity.User, error) {
+func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, error) {
 	var user entity.User
-	if err := dbw.db.Where("id = ?", userId).First(&user).Error; err != nil {
+	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func (dbw *dbWrapperImpl) CreateOneUser(u entity.User) (*entity.User, error) {
-	if err := dbw.db.Create(&u).Error; err != nil {
+func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, error) {
+	if err := dbc.db.Create(&u).Error; err != nil {
 		return nil, err
 	}
 	return &u, nil
 }
 
-func NewDBWrapper(db *gorm.DB) DBWrapper {
-	return &dbWrapperImpl{
+func NewDBClient(db *gorm.DB) DBClient {
+	return &dbClientImpl{
 		db: db,
 	}
 }

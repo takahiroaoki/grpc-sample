@@ -64,7 +64,6 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			s := &getUserInfoServiceImpl{}
 			tt.mockFunc(tt.args.dr)
 			actual, err := s.GetUserByUserId(tt.args.dr, tt.args.userId)

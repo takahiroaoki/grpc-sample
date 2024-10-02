@@ -115,7 +115,6 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			h := &createUserHandlerImpl{
 				dr:  tt.fields.dr,
 				cus: tt.fields.cus,
@@ -249,7 +248,6 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			h := &createUserHandlerImpl{
 				dr:  tt.fields.dr,
 				cus: tt.fields.cus,

@@ -72,7 +72,6 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			s := &createUserServiceImpl{}
 			tt.mockFunc(tt.args.dr)
 			actual, err := s.CreateUser(tt.args.dr, tt.args.u)

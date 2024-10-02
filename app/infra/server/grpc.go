@@ -3,11 +3,11 @@ package server
 import (
 	"context"
 
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
-	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 	"github.com/takahiroaoki/grpc-sample/app/handler"
 	"github.com/takahiroaoki/grpc-sample/app/infra/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/repository"
+	"github.com/takahiroaoki/grpc-sample/app/service"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

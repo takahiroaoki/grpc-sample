@@ -14,7 +14,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/handler"
 	"github.com/takahiroaoki/grpc-sample/app/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 	"google.golang.org/grpc"
@@ -102,9 +101,8 @@ func closeDB(db *gorm.DB) {
 
 func getHandler(db *gorm.DB) pb.SampleServiceServer {
 	dbWrapper := backend.NewDBWrapper(db)
-	demoRepository := repository.NewDemoRepository()
-	getUserInfoService := service.NewGetUserInfoService(demoRepository)
-	createUserService := service.NewCreateUserService(demoRepository)
+	getUserInfoService := service.NewGetUserInfoService()
+	createUserService := service.NewCreateUserService()
 
 	return handler.NewBundle(
 		handler.NewCreateUserHandler(dbWrapper, createUserService),

@@ -5,9 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 )
@@ -15,23 +13,17 @@ import (
 func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	t.Parallel()
 
-	dbw, _, err := testutil.GetTestDBWrapper()
-	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockDemoRepository(ctrl)
 
-	type fields struct {
-		demoRepository *mock.MockDemoRepository
-	}
 	type args struct {
-		dbw backend.DBWrapper
-		u   entity.User
+		dr *mock.MockDemoRepository
+		u  entity.User
 	}
 	tests := []struct {
 		name           string
-		fields         fields
 		args           args
 		mockFunc       func(mockRepository *mock.MockDemoRepository)
 		expected       *entity.User
@@ -40,17 +32,14 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			fields: fields{
-				demoRepository: mockRepository,
-			},
 			args: args{
-				dbw: dbw,
+				dr: mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().CreateOneUser(dbw, entity.User{
+				mockRepository.EXPECT().CreateOneUser(entity.User{
 					Email: "user@example.com",
 				}).Return(&entity.User{
 					ID:    1,
@@ -65,17 +54,14 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 		},
 		{
 			name: "Error",
-			fields: fields{
-				demoRepository: mockRepository,
-			},
 			args: args{
-				dbw: dbw,
+				dr: mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().CreateOneUser(dbw, entity.User{
+				mockRepository.EXPECT().CreateOneUser(entity.User{
 					Email: "user@example.com",
 				}).Return(nil, util.NewError("err"))
 			},
@@ -87,11 +73,9 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			s := &createUserServiceImpl{
-				demoRepository: tt.fields.demoRepository,
-			}
-			tt.mockFunc(tt.fields.demoRepository)
-			actual, err := s.CreateUser(tt.args.dbw, tt.args.u)
+			s := &createUserServiceImpl{}
+			tt.mockFunc(tt.args.dr)
+			actual, err := s.CreateUser(tt.args.dr, tt.args.u)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

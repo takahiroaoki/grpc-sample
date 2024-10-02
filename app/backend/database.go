@@ -1,4 +1,4 @@
-package infra
+package backend
 
 import "gorm.io/gorm"
 

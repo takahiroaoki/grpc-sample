@@ -2,12 +2,12 @@ package testutil
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func GetTestDBWrapper() (infra.DBWrapper, sqlmock.Sqlmock, error) {
+func GetTestDBWrapper() (backend.DBWrapper, sqlmock.Sqlmock, error) {
 	sqlDB, sqlMock, err := sqlmock.New()
 	if err != nil {
 		return nil, nil, err
@@ -22,5 +22,5 @@ func GetTestDBWrapper() (infra.DBWrapper, sqlmock.Sqlmock, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return infra.NewDBWrapper(db), sqlMock, nil
+	return backend.NewDBWrapper(db), sqlMock, nil
 }

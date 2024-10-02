@@ -9,9 +9,9 @@ import (
 
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/spf13/cobra"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/config"
 	"github.com/takahiroaoki/grpc-sample/app/handler"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
@@ -101,7 +101,7 @@ func closeDB(db *gorm.DB) {
 }
 
 func getHandler(db *gorm.DB) pb.SampleServiceServer {
-	dbWrapper := infra.NewDBWrapper(db)
+	dbWrapper := backend.NewDBWrapper(db)
 	demoRepository := repository.NewDemoRepository()
 	getUserInfoService := service.NewGetUserInfoService(demoRepository)
 	createUserService := service.NewCreateUserService(demoRepository)

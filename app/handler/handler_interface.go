@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/takahiroaoki/grpc-sample/app/infra"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
@@ -17,7 +17,7 @@ type CreateUserHandler interface {
 	Handler[pb.CreateUserRequest, pb.CreateUserResponse]
 }
 
-func NewCreateUserHandler(dbw infra.DBWrapper, createUserService service.CreateUserService) CreateUserHandler {
+func NewCreateUserHandler(dbw backend.DBWrapper, createUserService service.CreateUserService) CreateUserHandler {
 	return &createUserHandlerImpl{
 		dbw:               dbw,
 		createUserService: createUserService,
@@ -28,7 +28,7 @@ type GetUserInfoHandler interface {
 	Handler[pb.GetUserInfoRequest, pb.GetUserInfoResponse]
 }
 
-func NewGetUserInfoHandler(dbw infra.DBWrapper, getUserInfoService service.GetUserInfoService) GetUserInfoHandler {
+func NewGetUserInfoHandler(dbw backend.DBWrapper, getUserInfoService service.GetUserInfoService) GetUserInfoHandler {
 	return &getUserInfoHandlerImpl{
 		dbw:                dbw,
 		getUserInfoService: getUserInfoService,

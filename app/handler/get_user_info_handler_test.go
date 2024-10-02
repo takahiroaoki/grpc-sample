@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
@@ -25,7 +25,7 @@ func Test_getUserInfoHandlerImpl_execute(t *testing.T) {
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	type fields struct {
-		dbw                infra.DBWrapper
+		dbw                backend.DBWrapper
 		getUserInfoService *mock.MockGetUserInfoService
 	}
 	type args struct {
@@ -136,7 +136,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 	mockService := mock.NewMockGetUserInfoService(ctrl)
 
 	type fields struct {
-		dbw                infra.DBWrapper
+		dbw                backend.DBWrapper
 		getUserInfoService *mock.MockGetUserInfoService
 	}
 	type args struct {

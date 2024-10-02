@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"

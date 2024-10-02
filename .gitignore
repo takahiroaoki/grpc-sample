@@ -22,7 +22,7 @@ go.work
 go.work.sum
 
 # Generated files for grpc
-app/pb/*.pb.go
+app/infra/pb/*.pb.go
 
 # Generated files for test
 app/testutil/mock/*_mock.go

@@ -8,7 +8,7 @@ import (
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 )
 
 type getUserInfoHandlerImpl struct {

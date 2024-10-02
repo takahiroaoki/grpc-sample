@@ -9,7 +9,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 )
 
 type createUserHandlerImpl struct {

@@ -7,7 +7,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
-type Handler[Req, Res any] interface {
+type handler[Req, Res any] interface {
 	Execute(ctx context.Context, req *Req) (*Res, error)
 	validate(ctx context.Context, req *Req) error
 }
@@ -35,7 +35,7 @@ func (cur *CreateUserResponse) Id() string {
 }
 
 type CreateUserHandler interface {
-	Handler[CreateUserRequest, CreateUserResponse]
+	handler[CreateUserRequest, CreateUserResponse]
 }
 
 func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
@@ -73,7 +73,7 @@ func (guihr *GetUserInfoResponse) Email() string {
 }
 
 type GetUserInfoHandler interface {
-	Handler[GetUserInfoRequest, GetUserInfoResponse]
+	handler[GetUserInfoRequest, GetUserInfoResponse]
 }
 
 func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {

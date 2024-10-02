@@ -16,7 +16,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
-func Test_createUserHandlerImpl_execute(t *testing.T) {
+func Test_createUserHandlerImpl_Execute(t *testing.T) {
 	t.Parallel()
 
 	dbc, sqlMock, err := testutil.GetMockDBClient()
@@ -120,7 +120,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 				cus: tt.fields.cus,
 			}
 			tt.mockFunc(sqlMock, tt.fields.cus)
-			actual, err := h.execute(tt.args.ctx, tt.args.req)
+			actual, err := h.Execute(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

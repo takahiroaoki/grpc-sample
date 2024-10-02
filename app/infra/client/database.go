@@ -1,4 +1,4 @@
-package backend
+package client
 
 import (
 	"github.com/takahiroaoki/grpc-sample/app/entity"

@@ -16,7 +16,7 @@ type getUserInfoHandlerImpl struct {
 	guis service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) Execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	if err := h.validate(ctx, req); err != nil {
 		return nil, err
 	}

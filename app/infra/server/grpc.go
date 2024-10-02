@@ -5,7 +5,7 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/handler"
 	"github.com/takahiroaoki/grpc-sample/app/infra/interceptor"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 	"github.com/takahiroaoki/grpc-sample/app/util"
@@ -22,11 +22,18 @@ type sampleServiceServerImpl struct {
 }
 
 func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	return s.createUserHandler.Execute(ctx, req)
+	res, err := s.createUserHandler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()))
+	return &pb.CreateUserResponse{
+		Id: res.Id(),
+	}, err
 }
 
 func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	return s.getUserInfoHandler.Execute(ctx, req)
+	res, err := s.getUserInfoHandler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()))
+	return &pb.GetUserInfoResponse{
+		Id:    res.Id(),
+		Email: res.Email(),
+	}, err
 }
 
 func newSampleServiceServer(dr repository.DemoRepository) pb.SampleServiceServer {

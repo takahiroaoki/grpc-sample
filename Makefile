@@ -14,8 +14,8 @@ migrate-down:
 
 proto-go:
 	protoc --proto_path=proto \
-		--go_out=app/pb --go_opt=paths=source_relative \
-		--go-grpc_out=app/pb --go-grpc_opt=paths=source_relative \
+		--go_out=app/infra/pb --go_opt=paths=source_relative \
+		--go-grpc_out=app/infra/pb --go-grpc_opt=paths=source_relative \
 		sample.proto
 
 # run server

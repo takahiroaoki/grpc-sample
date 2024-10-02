@@ -7,7 +7,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
@@ -30,14 +29,14 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		req *pb.GetUserInfoRequest
+		req *GetUserInfoRequest
 	}
 	tests := []struct {
 		name           string
 		fields         fields
 		args           args
 		mockFunc       func(mockRepository *mock.MockGetUserInfoService)
-		expected       *pb.GetUserInfoResponse
+		expected       *GetUserInfoResponse
 		expectErr      bool
 		expectedErrMsg string
 	}{
@@ -49,8 +48,8 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{
-					Id: "1",
+				req: &GetUserInfoRequest{
+					id: "1",
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
@@ -59,9 +58,9 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 					Email: "user@example.com",
 				}, nil)
 			},
-			expected: &pb.GetUserInfoResponse{
-				Id:    "1",
-				Email: "user@example.com",
+			expected: &GetUserInfoResponse{
+				id:    "1",
+				email: "user@example.com",
 			},
 			expectErr: false,
 		},
@@ -73,8 +72,8 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{
-					Id: "invalid value",
+				req: &GetUserInfoRequest{
+					id: "invalid value",
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
@@ -92,8 +91,8 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{
-					Id: "1",
+				req: &GetUserInfoRequest{
+					id: "1",
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
@@ -140,7 +139,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		req *pb.GetUserInfoRequest
+		req *GetUserInfoRequest
 	}
 	tests := []struct {
 		name           string
@@ -158,8 +157,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{
-					Id: "12345",
+				req: &GetUserInfoRequest{
+					id: "12345",
 				},
 			},
 			expected:  nil,
@@ -173,7 +172,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{},
+				req: &GetUserInfoRequest{},
 			},
 			expected:       nil,
 			expectErr:      true,
@@ -187,8 +186,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{
-					Id: "",
+				req: &GetUserInfoRequest{
+					id: "",
 				},
 			},
 			expected:       nil,
@@ -203,8 +202,8 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.GetUserInfoRequest{
-					Id: "abc",
+				req: &GetUserInfoRequest{
+					id: "abc",
 				},
 			},
 			expected:       nil,

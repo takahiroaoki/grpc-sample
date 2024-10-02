@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 
-	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
@@ -13,8 +12,30 @@ type Handler[Req, Res any] interface {
 	validate(ctx context.Context, req *Req) error
 }
 
+/*
+ * CreateUser
+ */
+
+type CreateUserRequest struct {
+	email string
+}
+
+func NewCreateUserRequest(email string) *CreateUserRequest {
+	return &CreateUserRequest{
+		email: email,
+	}
+}
+
+type CreateUserResponse struct {
+	id string
+}
+
+func (cur *CreateUserResponse) Id() string {
+	return cur.id
+}
+
 type CreateUserHandler interface {
-	Handler[pb.CreateUserRequest, pb.CreateUserResponse]
+	Handler[CreateUserRequest, CreateUserResponse]
 }
 
 func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
@@ -24,8 +45,35 @@ func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserSe
 	}
 }
 
+/*
+ * GetUserInfo
+ */
+
+type GetUserInfoRequest struct {
+	id string
+}
+
+func NewGetUserInfoRequest(id string) *GetUserInfoRequest {
+	return &GetUserInfoRequest{
+		id: id,
+	}
+}
+
+type GetUserInfoResponse struct {
+	id    string
+	email string
+}
+
+func (guihr *GetUserInfoResponse) Id() string {
+	return guihr.id
+}
+
+func (guihr *GetUserInfoResponse) Email() string {
+	return guihr.email
+}
+
 type GetUserInfoHandler interface {
-	Handler[pb.GetUserInfoRequest, pb.GetUserInfoResponse]
+	Handler[GetUserInfoRequest, GetUserInfoResponse]
 }
 
 func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {

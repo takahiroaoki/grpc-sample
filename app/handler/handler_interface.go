@@ -3,13 +3,13 @@ package handler
 import (
 	"context"
 
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
+	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type Handler[Req, Res any] interface {
-	execute(ctx context.Context, req *Req) (*Res, error)
+	Execute(ctx context.Context, req *Req) (*Res, error)
 	validate(ctx context.Context, req *Req) error
 }
 

@@ -2,12 +2,12 @@ package testutil
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/takahiroaoki/grpc-sample/app/backend"
+	"github.com/takahiroaoki/grpc-sample/app/infra/client"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func GetMockDBClient() (backend.DBClient, sqlmock.Sqlmock, error) {
+func GetMockDBClient() (client.DBClient, sqlmock.Sqlmock, error) {
 	sqlDB, sqlMock, err := sqlmock.New()
 	if err != nil {
 		return nil, nil, err
@@ -22,5 +22,5 @@ func GetMockDBClient() (backend.DBClient, sqlmock.Sqlmock, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return backend.NewDBClient(db), sqlMock, nil
+	return client.NewDBClient(db), sqlMock, nil
 }

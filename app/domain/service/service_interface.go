@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 )
 
 type CreateUserService interface {

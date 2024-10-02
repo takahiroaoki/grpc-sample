@@ -6,9 +6,9 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
+	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type getUserInfoHandlerImpl struct {
@@ -16,7 +16,7 @@ type getUserInfoHandlerImpl struct {
 	guis service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) Execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	if err := h.validate(ctx, req); err != nil {
 		return nil, err
 	}

@@ -1,8 +1,8 @@
-package backend
+package client
 
 import (
-	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

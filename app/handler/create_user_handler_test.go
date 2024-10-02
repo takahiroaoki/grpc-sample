@@ -8,15 +8,15 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
-func Test_createUserHandlerImpl_execute(t *testing.T) {
+func Test_createUserHandlerImpl_Execute(t *testing.T) {
 	t.Parallel()
 
 	dbc, sqlMock, err := testutil.GetMockDBClient()
@@ -115,13 +115,12 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			h := &createUserHandlerImpl{
 				dr:  tt.fields.dr,
 				cus: tt.fields.cus,
 			}
 			tt.mockFunc(sqlMock, tt.fields.cus)
-			actual, err := h.execute(tt.args.ctx, tt.args.req)
+			actual, err := h.Execute(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {
@@ -249,7 +248,6 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			h := &createUserHandlerImpl{
 				dr:  tt.fields.dr,
 				cus: tt.fields.cus,

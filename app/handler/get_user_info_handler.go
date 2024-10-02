@@ -6,14 +6,14 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type getUserInfoHandlerImpl struct {
-	dbw                backend.DBWrapper
-	getUserInfoService service.GetUserInfoService
+	dr   repository.DemoRepository
+	guis service.GetUserInfoService
 }
 
 func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
@@ -21,7 +21,7 @@ func (h *getUserInfoHandlerImpl) execute(ctx context.Context, req *pb.GetUserInf
 		return nil, err
 	}
 
-	u, err := h.getUserInfoService.GetUserByUserId(h.dbw, req.GetId())
+	u, err := h.guis.GetUserByUserId(h.dr, req.GetId())
 	if err != nil {
 		return nil, err
 	}

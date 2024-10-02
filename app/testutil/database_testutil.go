@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetTestDBWrapper() (backend.DBWrapper, sqlmock.Sqlmock, error) {
+func GetMockDBClient() (backend.DBClient, sqlmock.Sqlmock, error) {
 	sqlDB, sqlMock, err := sqlmock.New()
 	if err != nil {
 		return nil, nil, err
@@ -22,5 +22,5 @@ func GetTestDBWrapper() (backend.DBWrapper, sqlmock.Sqlmock, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return backend.NewDBWrapper(db), sqlMock, nil
+	return backend.NewDBClient(db), sqlMock, nil
 }

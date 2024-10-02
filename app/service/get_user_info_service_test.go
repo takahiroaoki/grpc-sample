@@ -5,9 +5,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 )
@@ -15,23 +13,17 @@ import (
 func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	t.Parallel()
 
-	dbw, _, err := testutil.GetTestDBWrapper()
-	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockDemoRepository(ctrl)
 
-	type fields struct {
-		demoRepository *mock.MockDemoRepository
-	}
 	type args struct {
-		dbw    backend.DBWrapper
+		dr     *mock.MockDemoRepository
 		userId string
 	}
 	tests := []struct {
 		name           string
-		fields         fields
 		args           args
 		mockFunc       func(mockRepository *mock.MockDemoRepository)
 		expected       *entity.User
@@ -40,15 +32,12 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			fields: fields{
-				demoRepository: mockRepository,
-			},
 			args: args{
-				dbw:    dbw,
+				dr:     mockRepository,
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId(dbw, "1").Return(&entity.User{
+				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -61,15 +50,12 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		},
 		{
 			name: "Error",
-			fields: fields{
-				demoRepository: mockRepository,
-			},
 			args: args{
-				dbw:    dbw,
+				dr:     mockRepository,
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId(dbw, "1").Return(nil, util.NewError("err"))
+				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, util.NewError("err"))
 			},
 			expected:       nil,
 			expectErr:      true,
@@ -79,11 +65,9 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			s := &getUserInfoServiceImpl{
-				demoRepository: tt.fields.demoRepository,
-			}
-			tt.mockFunc(tt.fields.demoRepository)
-			actual, err := s.GetUserByUserId(tt.args.dbw, tt.args.userId)
+			s := &getUserInfoServiceImpl{}
+			tt.mockFunc(tt.args.dr)
+			actual, err := s.GetUserByUserId(tt.args.dr, tt.args.userId)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

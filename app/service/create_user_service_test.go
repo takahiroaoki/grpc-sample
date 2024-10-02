@@ -24,6 +24,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}
 	tests := []struct {
 		name           string
+		service        *createUserServiceImpl
 		args           args
 		mockFunc       func(mockRepository *mock.MockDemoRepository)
 		expected       *entity.User
@@ -31,7 +32,8 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 		expectedErrMsg string
 	}{
 		{
-			name: "Success",
+			name:    "Success",
+			service: &createUserServiceImpl{},
 			args: args{
 				dr: mockRepository,
 				u: entity.User{
@@ -53,7 +55,21 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "Error",
+			name:    "Error(service is nil)",
+			service: nil,
+			args: args{
+				dr: mockRepository,
+				u: entity.User{
+					Email: "user@example.com",
+				},
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "*createUserServiceImpl is nil",
+		},
+		{
+			name:    "Error(CreateOneUser)",
+			service: &createUserServiceImpl{},
 			args: args{
 				dr: mockRepository,
 				u: entity.User{
@@ -72,9 +88,10 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &createUserServiceImpl{}
-			tt.mockFunc(tt.args.dr)
-			actual, err := s.CreateUser(tt.args.dr, tt.args.u)
+			if tt.mockFunc != nil {
+				tt.mockFunc(tt.args.dr)
+			}
+			actual, err := tt.service.CreateUser(tt.args.dr, tt.args.u)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

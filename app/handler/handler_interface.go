@@ -31,6 +31,9 @@ type CreateUserResponse struct {
 }
 
 func (cur *CreateUserResponse) Id() string {
+	if cur == nil {
+		return ""
+	}
 	return cur.id
 }
 
@@ -65,10 +68,16 @@ type GetUserInfoResponse struct {
 }
 
 func (guihr *GetUserInfoResponse) Id() string {
+	if guihr == nil {
+		return ""
+	}
 	return guihr.id
 }
 
 func (guihr *GetUserInfoResponse) Email() string {
+	if guihr == nil {
+		return ""
+	}
 	return guihr.email
 }
 

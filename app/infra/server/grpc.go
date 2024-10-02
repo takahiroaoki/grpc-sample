@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 
 	"github.com/takahiroaoki/grpc-sample/app/handler"
 	"github.com/takahiroaoki/grpc-sample/app/infra/interceptor"
@@ -22,6 +23,9 @@ type sampleServiceServerImpl struct {
 }
 
 func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	if s == nil {
+		return nil, errors.New("*sampleServiceServerImpl is nil")
+	}
 	res, err := s.createUserHandler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()))
 	return &pb.CreateUserResponse{
 		Id: res.Id(),
@@ -29,6 +33,9 @@ func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.Create
 }
 
 func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+	if s == nil {
+		return nil, errors.New("*sampleServiceServerImpl is nil")
+	}
 	res, err := s.getUserInfoHandler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()))
 	return &pb.GetUserInfoResponse{
 		Id:    res.Id(),

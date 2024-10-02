@@ -10,7 +10,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 )
@@ -25,17 +24,13 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	type fields struct {
-		dr  repository.DemoRepository
-		cus *mock.MockCreateUserService
-	}
 	type args struct {
 		ctx context.Context
 		req *CreateUserRequest
 	}
 	tests := []struct {
 		name           string
-		fields         fields
+		handler        *createUserHandlerImpl
 		args           args
 		mockFunc       func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
 		expected       *CreateUserResponse
@@ -44,7 +39,7 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -70,8 +65,21 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "Error(validation)",
-			fields: fields{
+			name:    "Error(handler is nil)",
+			handler: nil,
+			args: args{
+				ctx: context.Background(),
+				req: &CreateUserRequest{
+					email: "invalid value",
+				},
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "*createUserHandlerImpl is nil",
+		},
+		{
+			name: "Error(validate)",
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -89,8 +97,8 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			expectedErrMsg: "email: must be in a valid format.",
 		},
 		{
-			name: "Error(createUserService.CreateUser)",
-			fields: fields{
+			name: "Error(CreateUser)",
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -114,12 +122,10 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := &createUserHandlerImpl{
-				dr:  tt.fields.dr,
-				cus: tt.fields.cus,
+			if tt.mockFunc != nil {
+				tt.mockFunc(sqlMock, mockService)
 			}
-			tt.mockFunc(sqlMock, tt.fields.cus)
-			actual, err := h.Execute(tt.args.ctx, tt.args.req)
+			actual, err := tt.handler.Execute(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {
@@ -142,17 +148,13 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 
 	mockService := mock.NewMockCreateUserService(ctrl)
 
-	type fields struct {
-		dr  repository.DemoRepository
-		cus *mock.MockCreateUserService
-	}
 	type args struct {
 		ctx context.Context
 		req *CreateUserRequest
 	}
 	tests := []struct {
 		name           string
-		fields         fields
+		handler        *createUserHandlerImpl
 		args           args
 		expected       error
 		expectErr      bool
@@ -160,7 +162,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -173,8 +175,20 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			expectErr: false,
 		},
 		{
+			name:    "Error(handler is nil)",
+			handler: nil,
+			args: args{
+				ctx: context.Background(),
+				req: &CreateUserRequest{
+					email: strings.Repeat("a", 309) + "@example.com",
+				},
+			},
+			expectErr:      true,
+			expectedErrMsg: "*createUserHandlerImpl is nil",
+		},
+		{
 			name: "Success(Email right boundary safe)",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -188,7 +202,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		},
 		{
 			name: "Error(Email right boundary over)",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -203,7 +217,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		},
 		{
 			name: "Error(Email is nil)",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -216,7 +230,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		},
 		{
 			name: "Error(Email is empty)",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -231,7 +245,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		},
 		{
 			name: "Error(Email is in an invalid format)",
-			fields: fields{
+			handler: &createUserHandlerImpl{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -247,11 +261,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := &createUserHandlerImpl{
-				dr:  tt.fields.dr,
-				cus: tt.fields.cus,
-			}
-			err := h.validate(tt.args.ctx, tt.args.req)
+			err := tt.handler.validate(tt.args.ctx, tt.args.req)
 
 			if tt.expectErr {
 				assert.Error(t, err)

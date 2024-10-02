@@ -1,6 +1,8 @@
 package client
 
 import (
+	"errors"
+
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"gorm.io/driver/mysql"
@@ -17,12 +19,18 @@ type dbClientImpl struct {
 }
 
 func (dbc *dbClientImpl) Transaction(fn func(dr repository.DemoRepository) error) error {
+	if dbc == nil {
+		return errors.New("*dbClientImpl is nil")
+	}
 	return dbc.db.Transaction(func(tx *gorm.DB) error {
 		return fn(NewDBClient(tx))
 	})
 }
 
 func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, error) {
+	if dbc == nil {
+		return nil, errors.New("*dbClientImpl is nil")
+	}
 	var user entity.User
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, err
@@ -32,6 +40,9 @@ func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, err
 }
 
 func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, error) {
+	if dbc == nil {
+		return nil, errors.New("*dbClientImpl is nil")
+	}
 	if err := dbc.db.Create(&u).Error; err != nil {
 		return nil, err
 	}
@@ -39,6 +50,9 @@ func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, error) {
 }
 
 func (dbc *dbClientImpl) CloseDB() error {
+	if dbc == nil {
+		return errors.New("*dbClientImpl is nil")
+	}
 	sqlDB, err := dbc.db.DB()
 	if err != nil {
 		return err

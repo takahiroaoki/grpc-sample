@@ -5,7 +5,7 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	"github.com/takahiroaoki/grpc-sample/app/pb"
 )
 
 type Handler[Req, Res any] interface {

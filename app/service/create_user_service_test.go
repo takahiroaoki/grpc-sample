@@ -1,13 +1,13 @@
 package service
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_createUserServiceImpl_CreateUser(t *testing.T) {
@@ -63,7 +63,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
 				mockRepository.EXPECT().CreateOneUser(entity.User{
 					Email: "user@example.com",
-				}).Return(nil, util.NewError("err"))
+				}).Return(nil, errors.New("err"))
 			},
 			expected:       nil,
 			expectErr:      true,

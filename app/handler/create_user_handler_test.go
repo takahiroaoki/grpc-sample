@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_createUserHandlerImpl_Execute(t *testing.T) {
@@ -104,7 +104,7 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(nil, util.NewError("err"))
+				}).Return(nil, errors.New("err"))
 				sqlMock.ExpectRollback()
 			},
 			expected:       nil,

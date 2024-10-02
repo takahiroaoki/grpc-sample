@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -10,7 +11,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
@@ -96,7 +96,7 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, util.NewError("err"))
+				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, errors.New("err"))
 			},
 			expected:       nil,
 			expectErr:      true,

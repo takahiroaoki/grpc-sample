@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -17,6 +18,10 @@ type createUserHandlerImpl struct {
 }
 
 func (h *createUserHandlerImpl) Execute(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+	if h == nil {
+		return nil, errors.New("*createUserHandlerImpl is nil")
+	}
+
 	if err := h.validate(ctx, req); err != nil {
 		return nil, err
 	}
@@ -40,6 +45,9 @@ func (h *createUserHandlerImpl) Execute(ctx context.Context, req *CreateUserRequ
 }
 
 func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserRequest) error {
+	if h == nil {
+		return errors.New("*createUserHandlerImpl is nil")
+	}
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
 

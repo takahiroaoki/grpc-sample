@@ -24,6 +24,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}
 	tests := []struct {
 		name           string
+		service        *getUserInfoServiceImpl
 		args           args
 		mockFunc       func(mockRepository *mock.MockDemoRepository)
 		expected       *entity.User
@@ -31,7 +32,8 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		expectedErrMsg string
 	}{
 		{
-			name: "Success",
+			name:    "Success",
+			service: &getUserInfoServiceImpl{},
 			args: args{
 				dr:     mockRepository,
 				userId: "1",
@@ -49,7 +51,19 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "Error",
+			name:    "Error(service is nil)",
+			service: nil,
+			args: args{
+				dr:     mockRepository,
+				userId: "1",
+			},
+			expected:       nil,
+			expectErr:      true,
+			expectedErrMsg: "*getUserInfoServiceImpl is nil",
+		},
+		{
+			name:    "Error(SelectOneUserByUserId)",
+			service: &getUserInfoServiceImpl{},
 			args: args{
 				dr:     mockRepository,
 				userId: "1",
@@ -64,9 +78,10 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &getUserInfoServiceImpl{}
-			tt.mockFunc(tt.args.dr)
-			actual, err := s.GetUserByUserId(tt.args.dr, tt.args.userId)
+			if tt.mockFunc != nil {
+				tt.mockFunc(tt.args.dr)
+			}
+			actual, err := tt.service.GetUserByUserId(tt.args.dr, tt.args.userId)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

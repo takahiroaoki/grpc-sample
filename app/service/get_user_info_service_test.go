@@ -1,13 +1,13 @@
 package service
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
@@ -55,7 +55,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, util.NewError("err"))
+				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, errors.New("err"))
 			},
 			expected:       nil,
 			expectErr:      true,

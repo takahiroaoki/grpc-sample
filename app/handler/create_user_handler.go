@@ -7,7 +7,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
@@ -17,7 +16,7 @@ type createUserHandlerImpl struct {
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) Execute(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (h *createUserHandlerImpl) Execute(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
 	if err := h.validate(ctx, req); err != nil {
 		return nil, err
 	}
@@ -28,21 +27,21 @@ func (h *createUserHandlerImpl) Execute(ctx context.Context, req *pb.CreateUserR
 	)
 	err = h.dr.Transaction(func(dr repository.DemoRepository) error {
 		u, err = h.cus.CreateUser(dr, entity.User{
-			Email: req.GetEmail(),
+			Email: req.email,
 		})
 		return err
 	})
 	if err != nil {
 		return nil, err
 	}
-	return &pb.CreateUserResponse{
-		Id: strconv.FormatUint(uint64(u.ID), 10),
+	return &CreateUserResponse{
+		id: strconv.FormatUint(uint64(u.ID), 10),
 	}, nil
 }
 
-func (h *createUserHandlerImpl) validate(ctx context.Context, req *pb.CreateUserRequest) error {
+func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserRequest) error {
 	rules := make([]*validation.FieldRules, 0)
-	rules = append(rules, validation.Field(&req.Email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
+	rules = append(rules, validation.Field(&req.email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
 }

@@ -20,9 +20,3 @@
 # Go workspace file
 go.work
 go.work.sum
-
-# Generated files for grpc
-app/pb/*.pb.go
-
-# Generated files for test
-app/testutil/mock/*_mock.go

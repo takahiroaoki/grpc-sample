@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 
@@ -9,11 +10,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_createUserHandlerImpl_Execute(t *testing.T) {
@@ -32,14 +31,14 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		req *pb.CreateUserRequest
+		req *CreateUserRequest
 	}
 	tests := []struct {
 		name           string
 		fields         fields
 		args           args
 		mockFunc       func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
-		expected       *pb.CreateUserResponse
+		expected       *CreateUserResponse
 		expectErr      bool
 		expectedErrMsg string
 	}{
@@ -51,8 +50,8 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: "user@example.com",
+				req: &CreateUserRequest{
+					email: "user@example.com",
 				},
 			},
 			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
@@ -65,8 +64,8 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 				}, nil)
 				sqlMock.ExpectCommit()
 			},
-			expected: &pb.CreateUserResponse{
-				Id: "1",
+			expected: &CreateUserResponse{
+				id: "1",
 			},
 			expectErr: false,
 		},
@@ -78,8 +77,8 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: "invalid value",
+				req: &CreateUserRequest{
+					email: "invalid value",
 				},
 			},
 			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
@@ -97,15 +96,15 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: "user@example.com",
+				req: &CreateUserRequest{
+					email: "user@example.com",
 				},
 			},
 			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
 				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(nil, util.NewError("err"))
+				}).Return(nil, errors.New("err"))
 				sqlMock.ExpectRollback()
 			},
 			expected:       nil,
@@ -149,7 +148,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		req *pb.CreateUserRequest
+		req *CreateUserRequest
 	}
 	tests := []struct {
 		name           string
@@ -167,8 +166,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: "user@example.com",
+				req: &CreateUserRequest{
+					email: "user@example.com",
 				},
 			},
 			expectErr: false,
@@ -181,8 +180,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: strings.Repeat("a", 308) + "@example.com",
+				req: &CreateUserRequest{
+					email: strings.Repeat("a", 308) + "@example.com",
 				},
 			},
 			expectErr: false,
@@ -195,8 +194,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: strings.Repeat("a", 309) + "@example.com",
+				req: &CreateUserRequest{
+					email: strings.Repeat("a", 309) + "@example.com",
 				},
 			},
 			expectErr:      true,
@@ -210,7 +209,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{},
+				req: &CreateUserRequest{},
 			},
 			expectErr:      true,
 			expectedErrMsg: "email: cannot be blank.",
@@ -223,8 +222,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: "",
+				req: &CreateUserRequest{
+					email: "",
 				},
 			},
 			expectErr:      true,
@@ -238,8 +237,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			},
 			args: args{
 				ctx: context.Background(),
-				req: &pb.CreateUserRequest{
-					Email: "invalid format",
+				req: &CreateUserRequest{
+					email: "invalid format",
 				},
 			},
 			expectErr:      true,

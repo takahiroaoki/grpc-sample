@@ -1,13 +1,13 @@
 package service
 
 import (
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 )
 
 type CreateUserService interface {
-	CreateUser(dbw infra.DBWrapper, u entity.User) (*entity.User, error)
+	CreateUser(dbw backend.DBWrapper, u entity.User) (*entity.User, error)
 }
 
 func NewCreateUserService(demoRepository repository.DemoRepository) CreateUserService {
@@ -15,7 +15,7 @@ func NewCreateUserService(demoRepository repository.DemoRepository) CreateUserSe
 }
 
 type GetUserInfoService interface {
-	GetUserByUserId(dbw infra.DBWrapper, userId string) (*entity.User, error)
+	GetUserByUserId(dbw backend.DBWrapper, userId string) (*entity.User, error)
 }
 
 func NewGetUserInfoService(demoRepository repository.DemoRepository) GetUserInfoService {

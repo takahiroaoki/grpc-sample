@@ -5,15 +5,15 @@ import (
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type createUserHandlerImpl struct {
-	dbw               infra.DBWrapper
+	dbw               backend.DBWrapper
 	createUserService service.CreateUserService
 }
 
@@ -26,7 +26,7 @@ func (h *createUserHandlerImpl) execute(ctx context.Context, req *pb.CreateUserR
 		u   *entity.User
 		err error
 	)
-	err = h.dbw.Transaction(func(dbw infra.DBWrapper) error {
+	err = h.dbw.Transaction(func(dbw backend.DBWrapper) error {
 		u, err = h.createUserService.CreateUser(dbw, entity.User{
 			Email: req.GetEmail(),
 		})

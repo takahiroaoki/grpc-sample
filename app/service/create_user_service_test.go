@@ -5,8 +5,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 	"github.com/takahiroaoki/grpc-sample/app/util"
@@ -26,7 +26,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 		demoRepository *mock.MockDemoRepository
 	}
 	type args struct {
-		dbw infra.DBWrapper
+		dbw backend.DBWrapper
 		u   entity.User
 	}
 	tests := []struct {

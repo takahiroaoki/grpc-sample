@@ -6,13 +6,13 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type getUserInfoHandlerImpl struct {
-	dbw                infra.DBWrapper
+	dbw                backend.DBWrapper
 	getUserInfoService service.GetUserInfoService
 }
 

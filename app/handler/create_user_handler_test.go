@@ -8,8 +8,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/takahiroaoki/grpc-sample/app/backend"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/infra"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
@@ -27,7 +27,7 @@ func Test_createUserHandlerImpl_execute(t *testing.T) {
 	mockService := mock.NewMockCreateUserService(ctrl)
 
 	type fields struct {
-		dbw               infra.DBWrapper
+		dbw               backend.DBWrapper
 		createUserService *mock.MockCreateUserService
 	}
 	type args struct {
@@ -145,7 +145,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 	mockService := mock.NewMockCreateUserService(ctrl)
 
 	type fields struct {
-		dbw               infra.DBWrapper
+		dbw               backend.DBWrapper
 		createUserService *mock.MockCreateUserService
 	}
 	type args struct {

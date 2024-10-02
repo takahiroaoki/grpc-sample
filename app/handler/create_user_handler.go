@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
-	"github.com/takahiroaoki/grpc-sample/app/domain/service"
+	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
 	"github.com/takahiroaoki/grpc-sample/app/pb"
+	"github.com/takahiroaoki/grpc-sample/app/repository"
+	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type createUserHandlerImpl struct {

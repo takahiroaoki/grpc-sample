@@ -35,8 +35,8 @@ test:proto-go mockgen
 
 mockgen:
 	rm -f ./app/testutil/mock/*_mock.go \
-	&& mockgen -source=./app/domain/repository/repository_interface.go -destination=./app/testutil/mock/repository_mock.go -package=mock \
-	&& mockgen -source=./app/domain/service/service_interface.go -destination=./app/testutil/mock/service_mock.go -package=mock \
+	&& mockgen -source=./app/repository/repository_interface.go -destination=./app/testutil/mock/repository_mock.go -package=mock \
+	&& mockgen -source=./app/service/service_interface.go -destination=./app/testutil/mock/service_mock.go -package=mock \
 
 # data
 db-sample:

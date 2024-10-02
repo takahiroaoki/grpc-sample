@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/entity"
 )
 
 type DemoRepository interface {

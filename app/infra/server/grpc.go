@@ -26,7 +26,7 @@ func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.Create
 	if s == nil {
 		return nil, errors.New("*sampleServiceServerImpl is nil")
 	}
-	res, err := s.createUserHandler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()))
+	res, err := handler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()), s.createUserHandler)
 	return &pb.CreateUserResponse{
 		Id: res.Id(),
 	}, err
@@ -36,7 +36,7 @@ func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUs
 	if s == nil {
 		return nil, errors.New("*sampleServiceServerImpl is nil")
 	}
-	res, err := s.getUserInfoHandler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()))
+	res, err := handler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()), s.getUserInfoHandler)
 	return &pb.GetUserInfoResponse{
 		Id:    res.Id(),
 		Email: res.Email(),

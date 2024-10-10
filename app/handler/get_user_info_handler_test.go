@@ -12,7 +12,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 )
 
-func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
+func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 	t.Parallel()
 
 	dbc, _, err := testutil.GetMockDBClient()
@@ -73,25 +73,6 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 			expectedErrMsg: "*getUserInfoHandlerImpl is nil",
 		},
 		{
-			name: "Error(validate)",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{
-					id: "invalid value",
-				},
-			},
-			mockFunc: func(mockService *mock.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(gomock.Any(), gomock.Any()).MaxTimes(0)
-			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "id: must contain digits only.",
-		},
-		{
 			name: "Error(GetUserByUserId)",
 			handler: &getUserInfoHandlerImpl{
 				dr:   dbc,
@@ -116,7 +97,7 @@ func Test_getUserInfoHandlerImpl_Execute(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)
 			}
-			actual, err := tt.handler.Execute(tt.args.ctx, tt.args.req)
+			actual, err := tt.handler.process(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

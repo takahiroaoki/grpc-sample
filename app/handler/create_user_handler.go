@@ -17,7 +17,7 @@ type createUserHandlerImpl struct {
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) Execute(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
+func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, error) {
 	if h == nil {
 		return nil, errors.New("*createUserHandlerImpl is nil")
 	}

@@ -2,9 +2,6 @@ package handler
 
 import (
 	"context"
-
-	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"github.com/takahiroaoki/grpc-sample/app/service"
 )
 
 type handler[Req, Res any] interface {
@@ -48,13 +45,6 @@ type CreateUserHandler interface {
 	handler[CreateUserRequest, CreateUserResponse]
 }
 
-func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
-	return &createUserHandlerImpl{
-		dr:  dr,
-		cus: cus,
-	}
-}
-
 /*
  * GetUserInfo
  */
@@ -90,11 +80,4 @@ func (guihr *GetUserInfoResponse) Email() string {
 
 type GetUserInfoHandler interface {
 	handler[GetUserInfoRequest, GetUserInfoResponse]
-}
-
-func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {
-	return &getUserInfoHandlerImpl{
-		dr:   dr,
-		guis: guis,
-	}
 }

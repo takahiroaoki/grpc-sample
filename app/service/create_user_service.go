@@ -15,3 +15,7 @@ func (s *createUserServiceImpl) CreateUser(dr repository.DemoRepository, u entit
 	}
 	return dr.CreateOneUser(u)
 }
+
+func NewCreateUserService() CreateUserService {
+	return &createUserServiceImpl{}
+}

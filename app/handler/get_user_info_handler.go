@@ -44,3 +44,10 @@ func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *GetUserInfoR
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
 }
+
+func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {
+	return &getUserInfoHandlerImpl{
+		dr:   dr,
+		guis: guis,
+	}
+}

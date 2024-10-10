@@ -16,7 +16,7 @@ type getUserInfoHandlerImpl struct {
 	guis service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) Execute(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, error) {
 	if h == nil {
 		return nil, errors.New("*getUserInfoHandlerImpl is nil")
 	}

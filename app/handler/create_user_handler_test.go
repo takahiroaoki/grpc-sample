@@ -14,7 +14,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 )
 
-func Test_createUserHandlerImpl_Execute(t *testing.T) {
+func Test_createUserHandlerImpl_process(t *testing.T) {
 	t.Parallel()
 
 	dbc, sqlMock, err := testutil.GetMockDBClient()
@@ -78,25 +78,6 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			expectedErrMsg: "*createUserHandlerImpl is nil",
 		},
 		{
-			name: "Error(validate)",
-			handler: &createUserHandlerImpl{
-				dr:  dbc,
-				cus: mockService,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &CreateUserRequest{
-					email: "invalid value",
-				},
-			},
-			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
-				mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any()).MaxTimes(0)
-			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "email: must be in a valid format.",
-		},
-		{
 			name: "Error(CreateUser)",
 			handler: &createUserHandlerImpl{
 				dr:  dbc,
@@ -125,7 +106,7 @@ func Test_createUserHandlerImpl_Execute(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(sqlMock, mockService)
 			}
-			actual, err := tt.handler.Execute(tt.args.ctx, tt.args.req)
+			actual, err := tt.handler.process(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.expectErr {

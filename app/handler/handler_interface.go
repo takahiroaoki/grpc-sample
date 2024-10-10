@@ -8,8 +8,15 @@ import (
 )
 
 type handler[Req, Res any] interface {
-	Execute(ctx context.Context, req *Req) (*Res, error)
 	validate(ctx context.Context, req *Req) error
+	process(ctx context.Context, req *Req) (*Res, error)
+}
+
+func Execute[Req, Res any](ctx context.Context, req *Req, handler handler[Req, Res]) (*Res, error) {
+	if err := handler.validate(ctx, req); err != nil {
+		return nil, err
+	}
+	return handler.process(ctx, req)
 }
 
 /*

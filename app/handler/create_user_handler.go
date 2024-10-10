@@ -53,3 +53,10 @@ func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserReq
 
 	return validation.ValidateStructWithContext(ctx, req, rules...)
 }
+
+func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
+	return &createUserHandlerImpl{
+		dr:  dr,
+		cus: cus,
+	}
+}

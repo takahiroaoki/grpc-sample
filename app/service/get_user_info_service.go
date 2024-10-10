@@ -15,3 +15,7 @@ func (s *getUserInfoServiceImpl) GetUserByUserId(dr repository.DemoRepository, u
 	}
 	return dr.SelectOneUserByUserId(userId)
 }
+
+func NewGetUserInfoService() GetUserInfoService {
+	return &getUserInfoServiceImpl{}
+}

@@ -16,11 +16,6 @@ func Log() grpc.UnaryServerInterceptor {
 
 		defer func() {
 			latency := time.Since(reqAt)
-
-			if err != nil {
-				util.ErrorLogWithContext(ctx, err.Error())
-			}
-
 			util.PerfLogWithContext(ctx, fmt.Sprintf("Response: %v, Latency: %v", info.FullMethod, latency))
 		}()
 

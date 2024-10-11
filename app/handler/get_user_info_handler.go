@@ -20,9 +20,6 @@ func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRe
 	if h == nil {
 		return nil, errors.New("*getUserInfoHandlerImpl is nil")
 	}
-	if err := h.validate(ctx, req); err != nil {
-		return nil, err
-	}
 
 	u, err := h.guis.GetUserByUserId(h.dr, req.id)
 	if err != nil {

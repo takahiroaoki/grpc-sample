@@ -5,6 +5,7 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -27,24 +28,24 @@ func (dbc *dbClientImpl) Transaction(fn func(dr repository.DemoRepository) error
 	})
 }
 
-func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, error) {
+func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, util.AppError) {
 	if dbc == nil {
-		return nil, errors.New("*dbClientImpl is nil")
+		return nil, util.NewAppErrorFromMsg("*dbClientImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
 	}
 	var user entity.User
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
-		return nil, err
+		return nil, util.NewAppError(err, util.CAUSE_NOT_FOUND, util.LOG_LEVEL_INFO)
 	}
 
 	return &user, nil
 }
 
-func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, error) {
+func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, util.AppError) {
 	if dbc == nil {
-		return nil, errors.New("*dbClientImpl is nil")
+		return nil, util.NewAppErrorFromMsg("*dbClientImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
 	}
 	if err := dbc.db.Create(&u).Error; err != nil {
-		return nil, err
+		return nil, util.NewAppError(err, util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
 	}
 	return &u, nil
 }

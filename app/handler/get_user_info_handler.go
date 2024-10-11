@@ -2,13 +2,13 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/takahiroaoki/grpc-sample/app/repository"
 	"github.com/takahiroaoki/grpc-sample/app/service"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 type getUserInfoHandlerImpl struct {
@@ -16,9 +16,9 @@ type getUserInfoHandlerImpl struct {
 	guis service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, error) {
+func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, util.AppError) {
 	if h == nil {
-		return nil, errors.New("*getUserInfoHandlerImpl is nil")
+		return nil, util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
 	}
 
 	u, err := h.guis.GetUserByUserId(h.dr, req.id)
@@ -32,14 +32,18 @@ func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRe
 	}, nil
 }
 
-func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *GetUserInfoRequest) error {
+func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *GetUserInfoRequest) util.AppError {
 	if h == nil {
-		return errors.New("*getUserInfoHandlerImpl is nil")
+		return util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
 	}
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.id, validation.Required, is.Digit))
 
-	return validation.ValidateStructWithContext(ctx, req, rules...)
+	return util.NewAppError(
+		validation.ValidateStructWithContext(ctx, req, rules...),
+		util.CAUSE_INVALID_ARGUMENT,
+		util.LOG_LEVEL_INFO,
+	)
 }
 
 func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {

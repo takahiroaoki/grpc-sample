@@ -1,13 +1,13 @@
 package service
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_createUserServiceImpl_CreateUser(t *testing.T) {
@@ -23,13 +23,13 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 		u  entity.User
 	}
 	tests := []struct {
-		name           string
-		service        *createUserServiceImpl
-		args           args
-		mockFunc       func(mockRepository *mock.MockDemoRepository)
-		expected       *entity.User
-		expectErr      bool
-		expectedErrMsg string
+		name        string
+		service     *createUserServiceImpl
+		args        args
+		mockFunc    func(mockRepository *mock.MockDemoRepository)
+		expected    *entity.User
+		isError     bool
+		expectedErr util.AppError
 	}{
 		{
 			name:    "Success",
@@ -52,7 +52,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 				ID:    1,
 				Email: "user@example.com",
 			},
-			expectErr: false,
+			isError: false,
 		},
 		{
 			name:    "Error(service is nil)",
@@ -63,9 +63,9 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 					Email: "user@example.com",
 				},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "*createUserServiceImpl is nil",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("*createUserServiceImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
 		},
 		{
 			name:    "Error(CreateOneUser)",
@@ -79,11 +79,11 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
 				mockRepository.EXPECT().CreateOneUser(entity.User{
 					Email: "user@example.com",
-				}).Return(nil, errors.New("err"))
+				}).Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "err",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -94,9 +94,9 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			actual, err := tt.service.CreateUser(tt.args.dr, tt.args.u)
 
 			assert.Equal(t, tt.expected, actual)
-			if tt.expectErr {
+			if tt.isError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedErrMsg, err.Error())
+				assert.True(t, err.Is(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

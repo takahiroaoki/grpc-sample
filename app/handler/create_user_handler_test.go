@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"testing"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_createUserHandlerImpl_process(t *testing.T) {
@@ -29,13 +29,13 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 		req *CreateUserRequest
 	}
 	tests := []struct {
-		name           string
-		handler        *createUserHandlerImpl
-		args           args
-		mockFunc       func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
-		expected       *CreateUserResponse
-		expectErr      bool
-		expectedErrMsg string
+		name        string
+		handler     *createUserHandlerImpl
+		args        args
+		mockFunc    func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
+		expected    *CreateUserResponse
+		isError     bool
+		expectedErr util.AppError
 	}{
 		{
 			name: "Success",
@@ -62,7 +62,7 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 			expected: &CreateUserResponse{
 				id: "1",
 			},
-			expectErr: false,
+			isError: false,
 		},
 		{
 			name:    "Error(handler is nil)",
@@ -73,9 +73,9 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 					email: "user@example.com",
 				},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "*createUserHandlerImpl is nil",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("*createUserHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(CreateUser)",
@@ -93,12 +93,12 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(nil, errors.New("err"))
+				}).Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
 				sqlMock.ExpectRollback()
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "err",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -109,9 +109,9 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 			actual, err := tt.handler.process(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
-			if tt.expectErr {
+			if tt.isError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedErrMsg, err.Error())
+				assert.True(t, err.Is(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}
@@ -134,12 +134,12 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		req *CreateUserRequest
 	}
 	tests := []struct {
-		name           string
-		handler        *createUserHandlerImpl
-		args           args
-		expected       error
-		expectErr      bool
-		expectedErrMsg string
+		name        string
+		handler     *createUserHandlerImpl
+		args        args
+		expected    error
+		isError     bool
+		expectedErr util.AppError
 	}{
 		{
 			name: "Success",
@@ -153,7 +153,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 					email: "user@example.com",
 				},
 			},
-			expectErr: false,
+			isError: false,
 		},
 		{
 			name:    "Error(handler is nil)",
@@ -164,8 +164,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 					email: "user@example.com",
 				},
 			},
-			expectErr:      true,
-			expectedErrMsg: "*createUserHandlerImpl is nil",
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("*createUserHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Success(Email right boundary safe)",
@@ -179,7 +179,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 					email: strings.Repeat("a", 308) + "@example.com",
 				},
 			},
-			expectErr: false,
+			isError: false,
 		},
 		{
 			name: "Error(Email right boundary over)",
@@ -193,8 +193,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 					email: strings.Repeat("a", 309) + "@example.com",
 				},
 			},
-			expectErr:      true,
-			expectedErrMsg: "email: the length must be between 1 and 320.",
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("email: the length must be between 1 and 320.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Email is nil)",
@@ -206,8 +206,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				ctx: context.Background(),
 				req: &CreateUserRequest{},
 			},
-			expectErr:      true,
-			expectedErrMsg: "email: cannot be blank.",
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("email: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Email is empty)",
@@ -221,8 +221,8 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 					email: "",
 				},
 			},
-			expectErr:      true,
-			expectedErrMsg: "email: cannot be blank.",
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("email: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Email is in an invalid format)",
@@ -236,17 +236,17 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 					email: "invalid format",
 				},
 			},
-			expectErr:      true,
-			expectedErrMsg: "email: must be in a valid format.",
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("email: must be in a valid format.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.handler.validate(tt.args.ctx, tt.args.req)
 
-			if tt.expectErr {
+			if tt.isError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedErrMsg, err.Error())
+				assert.True(t, err.Is(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

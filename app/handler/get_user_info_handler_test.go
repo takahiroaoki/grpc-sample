@@ -65,7 +65,7 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				req: &GetUserInfoRequest{
-					id: "invalid value",
+					id: "1",
 				},
 			},
 			expected:       nil,
@@ -152,7 +152,9 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			handler: nil,
 			args: args{
 				ctx: context.Background(),
-				req: &GetUserInfoRequest{},
+				req: &GetUserInfoRequest{
+					id: "12345",
+				},
 			},
 			expected:       nil,
 			expectErr:      true,

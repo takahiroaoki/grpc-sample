@@ -70,7 +70,7 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				req: &CreateUserRequest{
-					email: "invalid value",
+					email: "user@example.com",
 				},
 			},
 			expected:       nil,
@@ -161,7 +161,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				req: &CreateUserRequest{
-					email: strings.Repeat("a", 309) + "@example.com",
+					email: "user@example.com",
 				},
 			},
 			expectErr:      true,

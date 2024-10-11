@@ -22,10 +22,6 @@ func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequ
 		return nil, errors.New("*createUserHandlerImpl is nil")
 	}
 
-	if err := h.validate(ctx, req); err != nil {
-		return nil, err
-	}
-
 	var (
 		u   *entity.User
 		err error

@@ -9,6 +9,10 @@ import (
 )
 
 func handleError(ctx context.Context, err util.AppError) error {
+	if err == nil {
+		return nil
+	}
+
 	switch err.LogLevel() {
 	case util.LOG_LEVEL_INFO:
 		util.InfoLogWithContext(ctx, err.Error())
@@ -20,8 +24,6 @@ func handleError(ctx context.Context, err util.AppError) error {
 	}
 
 	switch err.Cause() {
-	case util.CAUSE_UNDEFINED:
-		return nil
 	case util.CAUSE_INVALID_ARGUMENT:
 		return status.Error(codes.InvalidArgument, err.Error())
 	case util.CAUSE_NOT_FOUND:

@@ -86,7 +86,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {
 				assert.Error(t, err)
-				assert.True(t, err.Is(tt.expectedErr))
+				assert.True(t, err.Equals(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

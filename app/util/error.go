@@ -15,7 +15,7 @@ type AppError interface {
 	Error() string
 	Cause() ErrorCause
 	LogLevel() LogLevel
-	Is(err AppError) bool
+	Equals(err AppError) bool
 }
 
 type appErrorImpl struct {
@@ -45,7 +45,7 @@ func (aei *appErrorImpl) LogLevel() LogLevel {
 	return aei.logLevel
 }
 
-func (aei *appErrorImpl) Is(err AppError) bool {
+func (aei *appErrorImpl) Equals(err AppError) bool {
 	return (aei.err.Error() == err.Error()) && (aei.cause == err.Cause()) && (aei.logLevel == err.LogLevel())
 }
 

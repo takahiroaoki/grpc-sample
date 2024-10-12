@@ -1,13 +1,13 @@
 package service
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
@@ -23,13 +23,13 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		userId string
 	}
 	tests := []struct {
-		name           string
-		service        *getUserInfoServiceImpl
-		args           args
-		mockFunc       func(mockRepository *mock.MockDemoRepository)
-		expected       *entity.User
-		expectErr      bool
-		expectedErrMsg string
+		name        string
+		service     *getUserInfoServiceImpl
+		args        args
+		mockFunc    func(mockRepository *mock.MockDemoRepository)
+		expected    *entity.User
+		isError     bool
+		expectedErr util.AppError
 	}{
 		{
 			name:    "Success",
@@ -48,7 +48,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 				ID:    1,
 				Email: "user@example.com",
 			},
-			expectErr: false,
+			isError: false,
 		},
 		{
 			name:    "Error(service is nil)",
@@ -57,9 +57,9 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 				dr:     mockRepository,
 				userId: "1",
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "*getUserInfoServiceImpl is nil",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("*getUserInfoServiceImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
 		},
 		{
 			name:    "Error(SelectOneUserByUserId)",
@@ -69,11 +69,11 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, errors.New("err"))
+				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "err",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -84,9 +84,9 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			actual, err := tt.service.GetUserByUserId(tt.args.dr, tt.args.userId)
 
 			assert.Equal(t, tt.expected, actual)
-			if tt.expectErr {
+			if tt.isError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedErrMsg, err.Error())
+				assert.True(t, err.Equals(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

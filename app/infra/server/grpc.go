@@ -27,9 +27,12 @@ func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.Create
 		return nil, errors.New("*sampleServiceServerImpl is nil")
 	}
 	res, err := handler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()), s.createUserHandler)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
 	return &pb.CreateUserResponse{
 		Id: res.Id(),
-	}, err
+	}, nil
 }
 
 func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
@@ -37,10 +40,13 @@ func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUs
 		return nil, errors.New("*sampleServiceServerImpl is nil")
 	}
 	res, err := handler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()), s.getUserInfoHandler)
+	if err != nil {
+		return nil, handleError(ctx, err)
+	}
 	return &pb.GetUserInfoResponse{
 		Id:    res.Id(),
 		Email: res.Email(),
-	}, err
+	}, nil
 }
 
 func newSampleServiceServer(dr repository.DemoRepository) pb.SampleServiceServer {

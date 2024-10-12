@@ -2,14 +2,16 @@ package handler
 
 import (
 	"context"
+
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 type handler[Req, Res any] interface {
-	validate(ctx context.Context, req *Req) error
-	process(ctx context.Context, req *Req) (*Res, error)
+	validate(ctx context.Context, req *Req) util.AppError
+	process(ctx context.Context, req *Req) (*Res, util.AppError)
 }
 
-func Execute[Req, Res any](ctx context.Context, req *Req, handler handler[Req, Res]) (*Res, error) {
+func Execute[Req, Res any](ctx context.Context, req *Req, handler handler[Req, Res]) (*Res, util.AppError) {
 	if err := handler.validate(ctx, req); err != nil {
 		return nil, err
 	}

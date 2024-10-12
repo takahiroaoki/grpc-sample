@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -10,6 +9,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_getUserInfoHandlerImpl_process(t *testing.T) {
@@ -27,13 +27,13 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 		req *GetUserInfoRequest
 	}
 	tests := []struct {
-		name           string
-		handler        *getUserInfoHandlerImpl
-		args           args
-		mockFunc       func(mockRepository *mock.MockGetUserInfoService)
-		expected       *GetUserInfoResponse
-		expectErr      bool
-		expectedErrMsg string
+		name        string
+		handler     *getUserInfoHandlerImpl
+		args        args
+		mockFunc    func(mockRepository *mock.MockGetUserInfoService)
+		expected    *GetUserInfoResponse
+		isError     bool
+		expectedErr util.AppError
 	}{
 		{
 			name: "Success",
@@ -57,7 +57,7 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 				id:    "1",
 				email: "user@example.com",
 			},
-			expectErr: false,
+			isError: false,
 		},
 		{
 			name:    "Error(handler is nil)",
@@ -65,12 +65,12 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				req: &GetUserInfoRequest{
-					id: "invalid value",
+					id: "1",
 				},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "*getUserInfoHandlerImpl is nil",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(GetUserByUserId)",
@@ -85,11 +85,11 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, errors.New("err"))
+				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "err",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -100,9 +100,9 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 			actual, err := tt.handler.process(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
-			if tt.expectErr {
+			if tt.isError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedErrMsg, err.Error())
+				assert.True(t, err.Equals(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}
@@ -125,12 +125,12 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		req *GetUserInfoRequest
 	}
 	tests := []struct {
-		name           string
-		handler        *getUserInfoHandlerImpl
-		args           args
-		expected       error
-		expectErr      bool
-		expectedErrMsg string
+		name        string
+		handler     *getUserInfoHandlerImpl
+		args        args
+		expected    error
+		isError     bool
+		expectedErr util.AppError
 	}{
 		{
 			name: "Success",
@@ -144,19 +144,21 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 					id: "12345",
 				},
 			},
-			expected:  nil,
-			expectErr: false,
+			expected: nil,
+			isError:  false,
 		},
 		{
 			name:    "Error(handler is nil)",
 			handler: nil,
 			args: args{
 				ctx: context.Background(),
-				req: &GetUserInfoRequest{},
+				req: &GetUserInfoRequest{
+					id: "12345",
+				},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "*getUserInfoHandlerImpl is nil",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(Id is nil)",
@@ -168,9 +170,9 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 				ctx: context.Background(),
 				req: &GetUserInfoRequest{},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "id: cannot be blank.",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("id: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Id is empty)",
@@ -184,9 +186,9 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 					id: "",
 				},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "id: cannot be blank.",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("id: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Id contains invalid characters)",
@@ -200,18 +202,18 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 					id: "abc",
 				},
 			},
-			expected:       nil,
-			expectErr:      true,
-			expectedErrMsg: "id: must contain digits only.",
+			expected:    nil,
+			isError:     true,
+			expectedErr: util.NewAppErrorFromMsg("id: must contain digits only.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.handler.validate(tt.args.ctx, tt.args.req)
 
-			if tt.expectErr {
+			if tt.isError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedErrMsg, err.Error())
+				assert.True(t, err.Equals(tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

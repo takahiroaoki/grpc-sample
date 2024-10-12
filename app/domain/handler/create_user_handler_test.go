@@ -8,10 +8,10 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_createUserHandlerImpl_process(t *testing.T) {
@@ -35,7 +35,7 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 		mockFunc    func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
 		expected    *CreateUserResponse
 		isError     bool
-		expectedErr util.AppError
+		expectedErr domerr.DomErr
 	}{
 		{
 			name: "Success",
@@ -75,7 +75,7 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("*createUserHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
+			expectedErr: domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(CreateUser)",
@@ -93,12 +93,12 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
+				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 				sqlMock.ExpectRollback()
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -139,7 +139,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 		args        args
 		expected    error
 		isError     bool
-		expectedErr util.AppError
+		expectedErr domerr.DomErr
 	}{
 		{
 			name: "Success",
@@ -165,7 +165,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				},
 			},
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("*createUserHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
+			expectedErr: domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Success(Email right boundary safe)",
@@ -194,7 +194,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				},
 			},
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("email: the length must be between 1 and 320.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("email: the length must be between 1 and 320.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Email is nil)",
@@ -207,7 +207,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				req: &CreateUserRequest{},
 			},
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("email: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("email: cannot be blank.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Email is empty)",
@@ -222,7 +222,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				},
 			},
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("email: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("email: cannot be blank.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Email is in an invalid format)",
@@ -237,7 +237,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				},
 			},
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("email: must be in a valid format.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("email: must be in a valid format.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 	}
 	for _, tt := range tests {

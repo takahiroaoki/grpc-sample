@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/takahiroaoki/grpc-sample/app/cmd"
-	"github.com/takahiroaoki/grpc-sample/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/domain/util"
 )
 
 func main() {

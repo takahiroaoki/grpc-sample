@@ -3,32 +3,33 @@ package server
 import (
 	"context"
 
-	"github.com/takahiroaoki/grpc-sample/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func handleError(ctx context.Context, err util.AppError) error {
+func handleError(ctx context.Context, err domerr.DomErr) error {
 	if err == nil {
 		return nil
 	}
 
 	switch err.LogLevel() {
-	case util.LOG_LEVEL_INFO:
+	case domerr.LOG_LEVEL_INFO:
 		util.InfoLogWithContext(ctx, err.Error())
-	case util.LOG_LEVEL_WARN:
+	case domerr.LOG_LEVEL_WARN:
 		util.WarnLogWithContext(ctx, err.Error())
-	case util.LOG_LEVEL_ERROR:
+	case domerr.LOG_LEVEL_ERROR:
 		util.ErrorLogWithContext(ctx, err.Error())
 	default:
 	}
 
 	switch err.Cause() {
-	case util.CAUSE_INVALID_ARGUMENT:
+	case domerr.CAUSE_INVALID_ARGUMENT:
 		return status.Error(codes.InvalidArgument, err.Error())
-	case util.CAUSE_NOT_FOUND:
+	case domerr.CAUSE_NOT_FOUND:
 		return status.Error(codes.NotFound, err.Error())
-	case util.CAUSE_INTERNAL:
+	case domerr.CAUSE_INTERNAL:
 		return status.Error(codes.Internal, err.Error())
 	default:
 		return nil

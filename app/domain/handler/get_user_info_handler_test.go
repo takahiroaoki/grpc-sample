@@ -6,10 +6,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func Test_getUserInfoHandlerImpl_process(t *testing.T) {
@@ -33,7 +33,7 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 		mockFunc    func(mockRepository *mock.MockGetUserInfoService)
 		expected    *GetUserInfoResponse
 		isError     bool
-		expectedErr util.AppError
+		expectedErr domerr.DomErr
 	}{
 		{
 			name: "Success",
@@ -70,7 +70,7 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
+			expectedErr: domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(GetUserByUserId)",
@@ -85,11 +85,11 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mock.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
+				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -130,7 +130,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 		args        args
 		expected    error
 		isError     bool
-		expectedErr util.AppError
+		expectedErr domerr.DomErr
 	}{
 		{
 			name: "Success",
@@ -158,7 +158,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
+			expectedErr: domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(Id is nil)",
@@ -172,7 +172,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("id: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("id: cannot be blank.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Id is empty)",
@@ -188,7 +188,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("id: cannot be blank.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("id: cannot be blank.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 		{
 			name: "Error(Id contains invalid characters)",
@@ -204,7 +204,7 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("id: must contain digits only.", util.CAUSE_INVALID_ARGUMENT, util.LOG_LEVEL_INFO),
+			expectedErr: domerr.NewDomErrFromMsg("id: must contain digits only.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 		},
 	}
 	for _, tt := range tests {

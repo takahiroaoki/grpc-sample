@@ -9,15 +9,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/constant"
 )
 
-type LogLevel int
-
-const (
-	LOG_LEVEL_UNDEFINED LogLevel = iota
-	LOG_LEVEL_INFO
-	LOG_LEVEL_WARN
-	LOG_LEVEL_ERROR
-)
-
 var logger *log.Logger
 
 func init() {

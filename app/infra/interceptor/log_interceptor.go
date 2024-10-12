@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/takahiroaoki/grpc-sample/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/domain/util"
 	"google.golang.org/grpc"
 )
 

@@ -5,12 +5,12 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
-func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
+func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -19,27 +19,31 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	mockRepository := mock.NewMockDemoRepository(ctrl)
 
 	type args struct {
-		dr     *mock.MockDemoRepository
-		userId string
+		dr *mock.MockDemoRepository
+		u  entity.User
 	}
 	tests := []struct {
 		name        string
-		service     *getUserInfoServiceImpl
+		service     *createUserServiceImpl
 		args        args
 		mockFunc    func(mockRepository *mock.MockDemoRepository)
 		expected    *entity.User
 		isError     bool
-		expectedErr util.AppError
+		expectedErr domerr.DomErr
 	}{
 		{
 			name:    "Success",
-			service: &getUserInfoServiceImpl{},
+			service: &createUserServiceImpl{},
 			args: args{
-				dr:     mockRepository,
-				userId: "1",
+				dr: mockRepository,
+				u: entity.User{
+					Email: "user@example.com",
+				},
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(&entity.User{
+				mockRepository.EXPECT().CreateOneUser(entity.User{
+					Email: "user@example.com",
+				}).Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -54,26 +58,32 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			name:    "Error(service is nil)",
 			service: nil,
 			args: args{
-				dr:     mockRepository,
-				userId: "1",
+				dr: mockRepository,
+				u: entity.User{
+					Email: "user@example.com",
+				},
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("*getUserInfoServiceImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR),
+			expectedErr: domerr.NewDomErrFromMsg("*createUserServiceImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
-			name:    "Error(SelectOneUserByUserId)",
-			service: &getUserInfoServiceImpl{},
+			name:    "Error(CreateOneUser)",
+			service: &createUserServiceImpl{},
 			args: args{
-				dr:     mockRepository,
-				userId: "1",
+				dr: mockRepository,
+				u: entity.User{
+					Email: "user@example.com",
+				},
 			},
 			mockFunc: func(mockRepository *mock.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED))
+				mockRepository.EXPECT().CreateOneUser(entity.User{
+					Email: "user@example.com",
+				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: util.NewAppErrorFromMsg("err", util.CAUSE_UNDEFINED, util.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
@@ -81,7 +91,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(tt.args.dr)
 			}
-			actual, err := tt.service.GetUserByUserId(tt.args.dr, tt.args.userId)
+			actual, err := tt.service.CreateUser(tt.args.dr, tt.args.u)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {

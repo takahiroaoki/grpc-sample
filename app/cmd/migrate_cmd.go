@@ -10,8 +10,8 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/spf13/cobra"
 	"github.com/takahiroaoki/grpc-sample/app/config"
+	"github.com/takahiroaoki/grpc-sample/app/domain/util"
 	"github.com/takahiroaoki/grpc-sample/app/resource"
-	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func newMigrateCmd() *cobra.Command {

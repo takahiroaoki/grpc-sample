@@ -1,4 +1,4 @@
-package util
+package domerr
 
 import "errors"
 
@@ -11,55 +11,64 @@ const (
 	CAUSE_INTERNAL
 )
 
-type AppError interface {
+type LogLevel int
+
+const (
+	LOG_LEVEL_UNDEFINED LogLevel = iota
+	LOG_LEVEL_INFO
+	LOG_LEVEL_WARN
+	LOG_LEVEL_ERROR
+)
+
+type DomErr interface {
 	Error() string
 	Cause() ErrorCause
 	LogLevel() LogLevel
-	Equals(err AppError) bool
+	Equals(err DomErr) bool
 }
 
-type appErrorImpl struct {
+type domErrImpl struct {
 	err      error
 	cause    ErrorCause
 	logLevel LogLevel
 }
 
-func (aei *appErrorImpl) Error() string {
+func (aei *domErrImpl) Error() string {
 	if aei == nil || aei.err == nil {
 		return ""
 	}
 	return aei.err.Error()
 }
 
-func (aei *appErrorImpl) Cause() ErrorCause {
+func (aei *domErrImpl) Cause() ErrorCause {
 	if aei == nil || aei.err == nil {
 		return CAUSE_UNDEFINED
 	}
 	return aei.cause
 }
 
-func (aei *appErrorImpl) LogLevel() LogLevel {
+func (aei *domErrImpl) LogLevel() LogLevel {
 	if aei == nil || aei.err == nil {
 		return LOG_LEVEL_UNDEFINED
 	}
 	return aei.logLevel
 }
 
-func (aei *appErrorImpl) Equals(err AppError) bool {
+func (aei *domErrImpl) Equals(err DomErr) bool {
 	return (aei.err.Error() == err.Error()) && (aei.cause == err.Cause()) && (aei.logLevel == err.LogLevel())
 }
 
-func NewAppError(err error, cause ErrorCause, logLevel LogLevel) AppError {
+func NewDomErr(err error, cause ErrorCause, logLevel LogLevel) DomErr {
 	if err == nil {
 		return nil
 	}
-	return &appErrorImpl{
+	return &domErrImpl{
 		err:      err,
 		cause:    cause,
 		logLevel: logLevel,
 	}
 }
 
-func NewAppErrorFromMsg(msg string, cause ErrorCause, logLevel LogLevel) AppError {
-	return NewAppError(errors.New(msg), cause, logLevel)
+func NewDomErrFromMsg(msg string, cause ErrorCause, logLevel LogLevel) DomErr {
+	return NewDomErr(errors.New(msg), cause, logLevel)
 }

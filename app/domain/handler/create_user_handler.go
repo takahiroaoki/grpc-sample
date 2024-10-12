@@ -5,11 +5,11 @@ import (
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/handler/validator"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"github.com/takahiroaoki/grpc-sample/app/service"
-	"github.com/takahiroaoki/grpc-sample/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/handler/validator"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
+	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
 
 type createUserHandlerImpl struct {
@@ -17,9 +17,9 @@ type createUserHandlerImpl struct {
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, util.AppError) {
+func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
 	if h == nil {
-		return nil, util.NewAppErrorFromMsg("*createUserHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return nil, domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 
 	var (
@@ -33,9 +33,9 @@ func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequ
 		return err
 	})
 	if err != nil {
-		appErr, ok := err.(util.AppError)
+		appErr, ok := err.(domerr.DomErr)
 		if !ok {
-			return nil, util.NewAppError(err, util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+			return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 		}
 		return nil, appErr
 	}
@@ -44,17 +44,17 @@ func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequ
 	}, nil
 }
 
-func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserRequest) util.AppError {
+func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserRequest) domerr.DomErr {
 	if h == nil {
-		return util.NewAppErrorFromMsg("*createUserHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
 
-	return util.NewAppError(
+	return domerr.NewDomErr(
 		validation.ValidateStructWithContext(ctx, req, rules...),
-		util.CAUSE_INVALID_ARGUMENT,
-		util.LOG_LEVEL_INFO,
+		domerr.CAUSE_INVALID_ARGUMENT,
+		domerr.LOG_LEVEL_INFO,
 	)
 }
 

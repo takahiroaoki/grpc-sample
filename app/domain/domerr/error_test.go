@@ -1,4 +1,4 @@
-package util
+package domerr
 
 import (
 	"errors"
@@ -7,29 +7,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_appErrorImpl_Error(t *testing.T) {
+func Test_domErrImpl_Error(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		aei      *appErrorImpl
+		aei      *domErrImpl
 		expected string
 	}{
 		{
 			name: "Success",
-			aei: &appErrorImpl{
+			aei: &domErrImpl{
 				err: errors.New("err"),
 			},
 			expected: "err",
 		},
 		{
-			name:     "Success(*appErrorImpl is nil)",
+			name:     "Success(*domErrImpl is nil)",
 			aei:      nil,
 			expected: "",
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &appErrorImpl{},
+			aei:      &domErrImpl{},
 			expected: "",
 		},
 	}
@@ -40,35 +40,35 @@ func Test_appErrorImpl_Error(t *testing.T) {
 	}
 }
 
-func Test_appErrorImpl_Cause(t *testing.T) {
+func Test_domErrImpl_Cause(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		aei      *appErrorImpl
+		aei      *domErrImpl
 		expected ErrorCause
 	}{
 		{
 			name: "Success",
-			aei: &appErrorImpl{
+			aei: &domErrImpl{
 				err:   errors.New("err"),
 				cause: CAUSE_INTERNAL,
 			},
 			expected: CAUSE_INTERNAL,
 		},
 		{
-			name:     "Success(*appErrorImpl is nil)",
+			name:     "Success(*domErrImpl is nil)",
 			aei:      nil,
 			expected: CAUSE_UNDEFINED,
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &appErrorImpl{},
+			aei:      &domErrImpl{},
 			expected: CAUSE_UNDEFINED,
 		},
 		{
 			name: "Error(cause is not defined)",
-			aei: &appErrorImpl{
+			aei: &domErrImpl{
 				err: errors.New("err"),
 			},
 			expected: CAUSE_UNDEFINED,
@@ -81,35 +81,35 @@ func Test_appErrorImpl_Cause(t *testing.T) {
 	}
 }
 
-func Test_appErrorImpl_LogLevel(t *testing.T) {
+func Test_domErrImpl_LogLevel(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		aei      *appErrorImpl
+		aei      *domErrImpl
 		expected LogLevel
 	}{
 		{
 			name: "Success",
-			aei: &appErrorImpl{
+			aei: &domErrImpl{
 				err:      errors.New("err"),
 				logLevel: LOG_LEVEL_INFO,
 			},
 			expected: LOG_LEVEL_INFO,
 		},
 		{
-			name:     "Success(*appErrorImpl is nil)",
+			name:     "Success(*domErrImpl is nil)",
 			aei:      nil,
 			expected: LOG_LEVEL_UNDEFINED,
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &appErrorImpl{},
+			aei:      &domErrImpl{},
 			expected: LOG_LEVEL_UNDEFINED,
 		},
 		{
 			name: "Error(logLevel is not defined)",
-			aei: &appErrorImpl{
+			aei: &domErrImpl{
 				err: errors.New("err"),
 			},
 			expected: LOG_LEVEL_UNDEFINED,
@@ -122,23 +122,23 @@ func Test_appErrorImpl_LogLevel(t *testing.T) {
 	}
 }
 
-func Test_appErrorImpl_Equals(t *testing.T) {
+func Test_domErrImpl_Equals(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name      string
-		aei1      *appErrorImpl
-		aei2      *appErrorImpl
+		aei1      *domErrImpl
+		aei2      *domErrImpl
 		assertion assert.BoolAssertionFunc
 	}{
 		{
 			name: "True",
-			aei1: &appErrorImpl{
+			aei1: &domErrImpl{
 				err:      errors.New("err"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_INFO,
 			},
-			aei2: &appErrorImpl{
+			aei2: &domErrImpl{
 				err:      errors.New("err"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_INFO,
@@ -147,12 +147,12 @@ func Test_appErrorImpl_Equals(t *testing.T) {
 		},
 		{
 			name: "False(error message)",
-			aei1: &appErrorImpl{
+			aei1: &domErrImpl{
 				err:      errors.New("err1"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_INFO,
 			},
-			aei2: &appErrorImpl{
+			aei2: &domErrImpl{
 				err:      errors.New("err2"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_INFO,
@@ -161,12 +161,12 @@ func Test_appErrorImpl_Equals(t *testing.T) {
 		},
 		{
 			name: "False(cause)",
-			aei1: &appErrorImpl{
+			aei1: &domErrImpl{
 				err:      errors.New("err"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_INFO,
 			},
-			aei2: &appErrorImpl{
+			aei2: &domErrImpl{
 				err:      errors.New("err"),
 				cause:    CAUSE_INTERNAL,
 				logLevel: LOG_LEVEL_INFO,
@@ -175,12 +175,12 @@ func Test_appErrorImpl_Equals(t *testing.T) {
 		},
 		{
 			name: "False(logLevel)",
-			aei1: &appErrorImpl{
+			aei1: &domErrImpl{
 				err:      errors.New("err"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_INFO,
 			},
-			aei2: &appErrorImpl{
+			aei2: &domErrImpl{
 				err:      errors.New("err"),
 				cause:    CAUSE_NOT_FOUND,
 				logLevel: LOG_LEVEL_WARN,

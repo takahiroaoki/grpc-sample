@@ -3,9 +3,9 @@ package client
 import (
 	"errors"
 
-	"github.com/takahiroaoki/grpc-sample/app/entity"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"github.com/takahiroaoki/grpc-sample/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -28,24 +28,24 @@ func (dbc *dbClientImpl) Transaction(fn func(dr repository.DemoRepository) error
 	})
 }
 
-func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, util.AppError) {
+func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr) {
 	if dbc == nil {
-		return nil, util.NewAppErrorFromMsg("*dbClientImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return nil, domerr.NewDomErrFromMsg("*dbClientImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 	var user entity.User
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
-		return nil, util.NewAppError(err, util.CAUSE_NOT_FOUND, util.LOG_LEVEL_INFO)
+		return nil, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO)
 	}
 
 	return &user, nil
 }
 
-func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, util.AppError) {
+func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, domerr.DomErr) {
 	if dbc == nil {
-		return nil, util.NewAppErrorFromMsg("*dbClientImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return nil, domerr.NewDomErrFromMsg("*dbClientImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 	if err := dbc.db.Create(&u).Error; err != nil {
-		return nil, util.NewAppError(err, util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 	return &u, nil
 }

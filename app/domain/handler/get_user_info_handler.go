@@ -6,9 +6,9 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/takahiroaoki/grpc-sample/app/repository"
-	"github.com/takahiroaoki/grpc-sample/app/service"
-	"github.com/takahiroaoki/grpc-sample/app/util"
+	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
+	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
+	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
 
 type getUserInfoHandlerImpl struct {
@@ -16,9 +16,9 @@ type getUserInfoHandlerImpl struct {
 	guis service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, util.AppError) {
+func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr) {
 	if h == nil {
-		return nil, util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return nil, domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 
 	u, err := h.guis.GetUserByUserId(h.dr, req.id)
@@ -32,17 +32,17 @@ func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRe
 	}, nil
 }
 
-func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *GetUserInfoRequest) util.AppError {
+func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *GetUserInfoRequest) domerr.DomErr {
 	if h == nil {
-		return util.NewAppErrorFromMsg("*getUserInfoHandlerImpl is nil", util.CAUSE_INTERNAL, util.LOG_LEVEL_ERROR)
+		return domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.id, validation.Required, is.Digit))
 
-	return util.NewAppError(
+	return domerr.NewDomErr(
 		validation.ValidateStructWithContext(ctx, req, rules...),
-		util.CAUSE_INVALID_ARGUMENT,
-		util.LOG_LEVEL_INFO,
+		domerr.CAUSE_INVALID_ARGUMENT,
+		domerr.LOG_LEVEL_INFO,
 	)
 }
 

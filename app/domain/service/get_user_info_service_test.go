@@ -52,17 +52,6 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			isError: false,
 		},
 		{
-			name:    "Error(service is nil)",
-			service: nil,
-			args: args{
-				dr:     mockRepository,
-				userId: "1",
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("*getUserInfoServiceImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
-		},
-		{
 			name:    "Error(SelectOneUserByUserId)",
 			service: &getUserInfoServiceImpl{},
 			args: args{

@@ -18,10 +18,6 @@ type createUserHandlerImpl struct {
 }
 
 func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
-	if h == nil {
-		return nil, domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
-	}
-
 	var (
 		u   *entity.User
 		err error
@@ -45,9 +41,6 @@ func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequ
 }
 
 func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserRequest) domerr.DomErr {
-	if h == nil {
-		return domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
-	}
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
 

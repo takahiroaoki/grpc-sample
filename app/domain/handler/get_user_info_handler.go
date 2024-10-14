@@ -17,10 +17,6 @@ type getUserInfoHandlerImpl struct {
 }
 
 func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr) {
-	if h == nil {
-		return nil, domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
-	}
-
 	u, err := h.guis.GetUserByUserId(h.dr, req.id)
 	if err != nil {
 		return nil, err
@@ -33,9 +29,6 @@ func (h *getUserInfoHandlerImpl) process(ctx context.Context, req *GetUserInfoRe
 }
 
 func (h *getUserInfoHandlerImpl) validate(ctx context.Context, req *GetUserInfoRequest) domerr.DomErr {
-	if h == nil {
-		return domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
-	}
 	rules := make([]*validation.FieldRules, 0)
 	rules = append(rules, validation.Field(&req.id, validation.Required, is.Digit))
 

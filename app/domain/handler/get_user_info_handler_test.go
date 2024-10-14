@@ -60,19 +60,6 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 			isError: false,
 		},
 		{
-			name:    "Error(handler is nil)",
-			handler: nil,
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{
-					id: "1",
-				},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
-		},
-		{
 			name: "Error(GetUserByUserId)",
 			handler: &getUserInfoHandlerImpl{
 				dr:   dbc,
@@ -146,19 +133,6 @@ func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
 			},
 			expected: nil,
 			isError:  false,
-		},
-		{
-			name:    "Error(handler is nil)",
-			handler: nil,
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{
-					id: "12345",
-				},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("*getUserInfoHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Error(Id is nil)",

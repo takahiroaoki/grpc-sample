@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"errors"
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
@@ -23,9 +22,6 @@ type sampleServiceServerImpl struct {
 }
 
 func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	if s == nil {
-		return nil, errors.New("*sampleServiceServerImpl is nil")
-	}
 	res, err := handler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()), s.createUserHandler)
 	if err != nil {
 		return nil, handleError(ctx, err)
@@ -36,9 +32,6 @@ func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.Create
 }
 
 func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	if s == nil {
-		return nil, errors.New("*sampleServiceServerImpl is nil")
-	}
 	res, err := handler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()), s.getUserInfoHandler)
 	if err != nil {
 		return nil, handleError(ctx, err)

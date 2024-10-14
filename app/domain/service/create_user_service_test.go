@@ -56,19 +56,6 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			isError: false,
 		},
 		{
-			name:    "Error(service is nil)",
-			service: nil,
-			args: args{
-				dr: mockRepository,
-				u: entity.User{
-					Email: "user@example.com",
-				},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("*createUserServiceImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
-		},
-		{
 			name:    "Error(CreateOneUser)",
 			service: &createUserServiceImpl{},
 			args: args{

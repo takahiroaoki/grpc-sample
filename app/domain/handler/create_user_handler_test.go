@@ -65,19 +65,6 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 			isError: false,
 		},
 		{
-			name:    "Error(handler is nil)",
-			handler: nil,
-			args: args{
-				ctx: context.Background(),
-				req: &CreateUserRequest{
-					email: "user@example.com",
-				},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
-		},
-		{
 			name: "Error(CreateUser)",
 			handler: &createUserHandlerImpl{
 				dr:  dbc,
@@ -154,18 +141,6 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 				},
 			},
 			isError: false,
-		},
-		{
-			name:    "Error(handler is nil)",
-			handler: nil,
-			args: args{
-				ctx: context.Background(),
-				req: &CreateUserRequest{
-					email: "user@example.com",
-				},
-			},
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("*createUserHandlerImpl is nil", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},
 		{
 			name: "Success(Email right boundary safe)",

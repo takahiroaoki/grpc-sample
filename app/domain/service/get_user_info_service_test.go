@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
+	"github.com/takahiroaoki/grpc-sample/app/testutil"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 )
 
@@ -86,7 +87,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {
 				assert.Error(t, err)
-				assert.True(t, err.Equals(tt.expectedErr))
+				assert.True(t, testutil.SameDomainErrors(err, tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

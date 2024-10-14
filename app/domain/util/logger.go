@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/takahiroaoki/grpc-sample/app/constant"
 )
+
+var contextKeysForLog = []ContextKey{REQUEST_ID}
 
 var logger *log.Logger
 
@@ -20,7 +20,7 @@ func generalLog(category string, v string) {
 }
 
 func addContextInfo(ctx context.Context, v string) string {
-	for _, key := range constant.ContextKeysForLog() {
+	for _, key := range contextKeysForLog {
 		val := ctx.Value(key)
 		if val != nil {
 			v = fmt.Sprintf("%v: %v, %v", key, val, v)

@@ -111,7 +111,7 @@ func Test_createUserHandlerImpl_process(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {
 				assert.Error(t, err)
-				assert.True(t, err.Equals(tt.expectedErr))
+				assert.True(t, testutil.SameDomainErrors(err, tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}
@@ -246,7 +246,7 @@ func Test_createUserHandlerImpl_validate(t *testing.T) {
 
 			if tt.isError {
 				assert.Error(t, err)
-				assert.True(t, err.Equals(tt.expectedErr))
+				assert.True(t, testutil.SameDomainErrors(err, tt.expectedErr))
 			} else {
 				assert.NoError(t, err)
 			}

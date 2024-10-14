@@ -24,7 +24,6 @@ type DomErr interface {
 	Error() string
 	Cause() ErrorCause
 	LogLevel() LogLevel
-	Equals(err DomErr) bool
 }
 
 type domErrImpl struct {
@@ -52,10 +51,6 @@ func (aei *domErrImpl) LogLevel() LogLevel {
 		return LOG_LEVEL_UNDEFINED
 	}
 	return aei.logLevel
-}
-
-func (aei *domErrImpl) Equals(err DomErr) bool {
-	return (aei.err.Error() == err.Error()) && (aei.cause == err.Cause()) && (aei.logLevel == err.LogLevel())
 }
 
 func NewDomErr(err error, cause ErrorCause, logLevel LogLevel) DomErr {

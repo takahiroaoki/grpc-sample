@@ -12,7 +12,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
 )
 
-func Test_getUserInfoHandlerImpl_process(t *testing.T) {
+func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	t.Parallel()
 
 	dbc, _, err := testutil.GetMockDBClient()
@@ -84,107 +84,9 @@ func Test_getUserInfoHandlerImpl_process(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)
 			}
-			actual, err := tt.handler.process(tt.args.ctx, tt.args.req)
+			actual, err := tt.handler.Invoke(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
-			if tt.isError {
-				assert.Error(t, err)
-				assert.True(t, testutil.SameDomainErrors(err, tt.expectedErr))
-			} else {
-				assert.NoError(t, err)
-			}
-		})
-	}
-}
-
-func Test_getUserInfoHandlerImpl_validate(t *testing.T) {
-	t.Parallel()
-
-	dbc, _, err := testutil.GetMockDBClient()
-	assert.NoError(t, err)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockService := mock.NewMockGetUserInfoService(ctrl)
-
-	type args struct {
-		ctx context.Context
-		req *GetUserInfoRequest
-	}
-	tests := []struct {
-		name        string
-		handler     *getUserInfoHandlerImpl
-		args        args
-		expected    error
-		isError     bool
-		expectedErr domerr.DomErr
-	}{
-		{
-			name: "Success",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{
-					id: "12345",
-				},
-			},
-			expected: nil,
-			isError:  false,
-		},
-		{
-			name: "Error(Id is nil)",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("id: cannot be blank.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
-		},
-		{
-			name: "Error(Id is empty)",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{
-					id: "",
-				},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("id: cannot be blank.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
-		},
-		{
-			name: "Error(Id contains invalid characters)",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: &GetUserInfoRequest{
-					id: "abc",
-				},
-			},
-			expected:    nil,
-			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("id: must contain digits only.", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.handler.validate(tt.args.ctx, tt.args.req)
-
 			if tt.isError {
 				assert.Error(t, err)
 				assert.True(t, testutil.SameDomainErrors(err, tt.expectedErr))

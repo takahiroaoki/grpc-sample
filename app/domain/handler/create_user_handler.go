@@ -4,10 +4,8 @@ import (
 	"context"
 	"strconv"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	"github.com/takahiroaoki/grpc-sample/app/domain/handler/validator"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
@@ -17,7 +15,7 @@ type createUserHandlerImpl struct {
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
+func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
 	var (
 		u   *entity.User
 		err error
@@ -38,17 +36,6 @@ func (h *createUserHandlerImpl) process(ctx context.Context, req *CreateUserRequ
 	return &CreateUserResponse{
 		id: strconv.FormatUint(uint64(u.ID), 10),
 	}, nil
-}
-
-func (h *createUserHandlerImpl) validate(ctx context.Context, req *CreateUserRequest) domerr.DomErr {
-	rules := make([]*validation.FieldRules, 0)
-	rules = append(rules, validation.Field(&req.email, validation.Required, validation.RuneLength(1, 320), validation.Match(validator.MailRegexp())))
-
-	return domerr.NewDomErr(
-		validation.ValidateStructWithContext(ctx, req, rules...),
-		domerr.CAUSE_INVALID_ARGUMENT,
-		domerr.LOG_LEVEL_INFO,
-	)
 }
 
 func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {

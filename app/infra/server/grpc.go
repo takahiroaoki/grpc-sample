@@ -7,8 +7,8 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 	"github.com/takahiroaoki/grpc-sample/app/domain/util"
-	"github.com/takahiroaoki/grpc-sample/app/infra/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	"github.com/takahiroaoki/grpc-sample/app/infra/server/interceptor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -22,7 +22,7 @@ type sampleServiceServerImpl struct {
 }
 
 func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	res, err := handler.Execute(ctx, handler.NewCreateUserRequest(req.GetEmail()), s.createUserHandler)
+	res, err := s.createUserHandler.Invoke(ctx, handler.NewCreateUserRequest(req.GetEmail()))
 	if err != nil {
 		return nil, handleError(ctx, err)
 	}
@@ -32,7 +32,7 @@ func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.Create
 }
 
 func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	res, err := handler.Execute(ctx, handler.NewGetUserInfoRequest(req.GetId()), s.getUserInfoHandler)
+	res, err := s.getUserInfoHandler.Invoke(ctx, handler.NewGetUserInfoRequest(req.GetId()))
 	if err != nil {
 		return nil, handleError(ctx, err)
 	}
@@ -56,7 +56,8 @@ func NewGRPCServer(dr repository.DemoRepository, refFlg bool) *grpc.Server {
 	server := grpc.NewServer(grpc.UnaryInterceptor(
 		middleware.ChainUnaryServer(
 			interceptor.SetContext(),
-			interceptor.Log(),
+			interceptor.PerformanceLog(),
+			interceptor.Validate(),
 		),
 	))
 	if refFlg {

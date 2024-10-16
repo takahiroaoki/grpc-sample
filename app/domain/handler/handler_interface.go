@@ -6,18 +6,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 )
 
-type handler[Req, Res any] interface {
-	validate(ctx context.Context, req *Req) domerr.DomErr
-	process(ctx context.Context, req *Req) (*Res, domerr.DomErr)
-}
-
-func Execute[Req, Res any](ctx context.Context, req *Req, handler handler[Req, Res]) (*Res, domerr.DomErr) {
-	if err := handler.validate(ctx, req); err != nil {
-		return nil, err
-	}
-	return handler.process(ctx, req)
-}
-
 /*
  * CreateUser
  */
@@ -44,7 +32,7 @@ func (cur *CreateUserResponse) Id() string {
 }
 
 type CreateUserHandler interface {
-	handler[CreateUserRequest, CreateUserResponse]
+	Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr)
 }
 
 /*
@@ -81,5 +69,5 @@ func (guihr *GetUserInfoResponse) Email() string {
 }
 
 type GetUserInfoHandler interface {
-	handler[GetUserInfoRequest, GetUserInfoResponse]
+	Invoke(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr)
 }

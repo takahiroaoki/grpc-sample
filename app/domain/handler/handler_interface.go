@@ -31,6 +31,12 @@ func (cur *CreateUserResponse) Id() string {
 	return cur.id
 }
 
+func NewCreateUserResponse(id string) *CreateUserResponse {
+	return &CreateUserResponse{
+		id: id,
+	}
+}
+
 type CreateUserHandler interface {
 	Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr)
 }
@@ -66,6 +72,13 @@ func (guihr *GetUserInfoResponse) Email() string {
 		return ""
 	}
 	return guihr.email
+}
+
+func NewGetUserInfoResponse(id, email string) *GetUserInfoResponse {
+	return &GetUserInfoResponse{
+		id:    id,
+		email: email,
+	}
 }
 
 type GetUserInfoHandler interface {

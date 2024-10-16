@@ -1,8 +1,6 @@
 package server
 
 import (
-	"context"
-
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
@@ -19,27 +17,6 @@ type sampleServiceServerImpl struct {
 	pb.UnimplementedSampleServiceServer
 	createUserHandler  handler.CreateUserHandler
 	getUserInfoHandler handler.GetUserInfoHandler
-}
-
-func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	res, err := s.createUserHandler.Invoke(ctx, handler.NewCreateUserRequest(req.GetEmail()))
-	if err != nil {
-		return nil, handleError(ctx, err)
-	}
-	return &pb.CreateUserResponse{
-		Id: res.Id(),
-	}, nil
-}
-
-func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
-	res, err := s.getUserInfoHandler.Invoke(ctx, handler.NewGetUserInfoRequest(req.GetId()))
-	if err != nil {
-		return nil, handleError(ctx, err)
-	}
-	return &pb.GetUserInfoResponse{
-		Id:    res.Id(),
-		Email: res.Email(),
-	}, nil
 }
 
 func newSampleServiceServer(dr repository.DemoRepository) pb.SampleServiceServer {

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/util"
@@ -22,6 +23,7 @@ func handleError(ctx context.Context, err domerr.DomErr) error {
 	case domerr.LOG_LEVEL_ERROR:
 		util.ErrorLogWithContext(ctx, err.Error())
 	default:
+		util.ErrorLogWithContext(ctx, fmt.Sprintf("error with no log level: %s", err.Error()))
 	}
 
 	switch err.Cause() {
@@ -32,6 +34,7 @@ func handleError(ctx context.Context, err domerr.DomErr) error {
 	case domerr.CAUSE_INTERNAL:
 		return status.Error(codes.Internal, err.Error())
 	default:
-		return nil
+		util.ErrorLogWithContext(ctx, fmt.Sprintf("error with no cause: %s", err.Error()))
+		return status.Error(codes.Internal, err.Error())
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
-	"github.com/takahiroaoki/grpc-sample/app/domain/util"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

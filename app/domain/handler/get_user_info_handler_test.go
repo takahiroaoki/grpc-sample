@@ -9,7 +9,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
-	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/testutil/mockservice"
 )
 
 func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
@@ -20,7 +20,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockService := mock.NewMockGetUserInfoService(ctrl)
+	mockService := mockservice.NewMockGetUserInfoService(ctrl)
 
 	type args struct {
 		ctx context.Context
@@ -30,7 +30,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 		name        string
 		handler     *getUserInfoHandlerImpl
 		args        args
-		mockFunc    func(mockRepository *mock.MockGetUserInfoService)
+		mockFunc    func(mockRepository *mockservice.MockGetUserInfoService)
 		expected    *GetUserInfoResponse
 		isError     bool
 		expectedErr domerr.DomErr
@@ -47,7 +47,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 					id: "1",
 				},
 			},
-			mockFunc: func(mockService *mock.MockGetUserInfoService) {
+			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
 				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
@@ -71,7 +71,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 					id: "1",
 				},
 			},
-			mockFunc: func(mockService *mock.MockGetUserInfoService) {
+			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
 				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,

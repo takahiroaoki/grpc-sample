@@ -10,7 +10,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
-	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/testutil/mockservice"
 )
 
 func Test_createUserHandlerImpl_Invoke(t *testing.T) {
@@ -21,7 +21,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockService := mock.NewMockCreateUserService(ctrl)
+	mockService := mockservice.NewMockCreateUserService(ctrl)
 
 	type args struct {
 		ctx context.Context
@@ -31,7 +31,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 		name        string
 		handler     *createUserHandlerImpl
 		args        args
-		mockFunc    func(sqlMock sqlmock.Sqlmock, mockRepository *mock.MockCreateUserService)
+		mockFunc    func(sqlMock sqlmock.Sqlmock, mockRepository *mockservice.MockCreateUserService)
 		expected    *CreateUserResponse
 		isError     bool
 		expectedErr domerr.DomErr
@@ -48,7 +48,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 					email: "user@example.com",
 				},
 			},
-			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
+			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mockservice.MockCreateUserService) {
 				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
@@ -75,7 +75,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 					email: "user@example.com",
 				},
 			},
-			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mock.MockCreateUserService) {
+			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mockservice.MockCreateUserService) {
 				sqlMock.ExpectBegin()
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",

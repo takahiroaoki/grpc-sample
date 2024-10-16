@@ -8,7 +8,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
-	"github.com/takahiroaoki/grpc-sample/app/testutil/mock"
+	"github.com/takahiroaoki/grpc-sample/app/testutil/mockrepository"
 )
 
 func Test_createUserServiceImpl_CreateUser(t *testing.T) {
@@ -17,17 +17,17 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock.NewMockDemoRepository(ctrl)
+	mockRepository := mockrepository.NewMockDemoRepository(ctrl)
 
 	type args struct {
-		dr *mock.MockDemoRepository
+		dr *mockrepository.MockDemoRepository
 		u  entity.User
 	}
 	tests := []struct {
 		name        string
 		service     *createUserServiceImpl
 		args        args
-		mockFunc    func(mockRepository *mock.MockDemoRepository)
+		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
 		expected    *entity.User
 		isError     bool
 		expectedErr domerr.DomErr
@@ -41,7 +41,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 					Email: "user@example.com",
 				},
 			},
-			mockFunc: func(mockRepository *mock.MockDemoRepository) {
+			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
 				mockRepository.EXPECT().CreateOneUser(entity.User{
 					Email: "user@example.com",
 				}).Return(&entity.User{
@@ -64,7 +64,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 					Email: "user@example.com",
 				},
 			},
-			mockFunc: func(mockRepository *mock.MockDemoRepository) {
+			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
 				mockRepository.EXPECT().CreateOneUser(entity.User{
 					Email: "user@example.com",
 				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))

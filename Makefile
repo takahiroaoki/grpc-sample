@@ -34,9 +34,12 @@ test:proto-go mockgen
 	&& go test -v ./...
 
 mockgen:
-	rm -f ./app/testutil/mock/*_mock.go \
-	&& mockgen -source=./app/domain/repository/repository_interface.go -destination=./app/testutil/mock/repository_mock.go -package=mock \
-	&& mockgen -source=./app/domain/service/service_interface.go -destination=./app/testutil/mock/service_mock.go -package=mock \
+	rm -f ./app/testutil/mockrepository/*.go
+	rm -f ./app/testutil/mockservice/*.go
+	rm -f ./app/testutil/mockhandler/*.go
+	mockgen -source=./app/domain/repository/repository_interface.go -destination=./app/testutil/mockrepository/repository.go -package=mockrepository
+	mockgen -source=./app/domain/service/service_interface.go -destination=./app/testutil/mockservice/service.go -package=mockservice
+	mockgen -source=./app/domain/handler/handler_interface.go -destination=./app/testutil/mockhandler/handler.go -package=mockhandler
 
 # data
 db-sample:

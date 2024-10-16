@@ -8,22 +8,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type DBClient interface {
-	repository.DemoRepository
-	CloseDB() error
-}
+// check whether DBClient implements repository.DemoRepository interface
+var _ repository.DemoRepository = (*DBClient)(nil)
 
-type dbClientImpl struct {
+type DBClient struct {
 	db *gorm.DB
 }
 
-func (dbc *dbClientImpl) Transaction(fn func(dr repository.DemoRepository) error) error {
+func (dbc *DBClient) Transaction(fn func(dr repository.DemoRepository) error) error {
 	return dbc.db.Transaction(func(tx *gorm.DB) error {
 		return fn(NewDBClient(tx))
 	})
 }
 
-func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr) {
+func (dbc *DBClient) SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr) {
 	var user entity.User
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO)
@@ -32,14 +30,14 @@ func (dbc *dbClientImpl) SelectOneUserByUserId(userId string) (*entity.User, dom
 	return &user, nil
 }
 
-func (dbc *dbClientImpl) CreateOneUser(u entity.User) (*entity.User, domerr.DomErr) {
+func (dbc *DBClient) CreateOneUser(u entity.User) (*entity.User, domerr.DomErr) {
 	if err := dbc.db.Create(&u).Error; err != nil {
 		return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 	return &u, nil
 }
 
-func (dbc *dbClientImpl) CloseDB() error {
+func (dbc *DBClient) CloseDB() error {
 	sqlDB, err := dbc.db.DB()
 	if err != nil {
 		return err
@@ -50,7 +48,7 @@ func (dbc *dbClientImpl) CloseDB() error {
 	return nil
 }
 
-func NewDBClientFromDSN(dataSourceName string) (DBClient, error) {
+func NewDBClientFromDSN(dataSourceName string) (*DBClient, error) {
 	db, err := gorm.Open(
 		mysql.Open(dataSourceName),
 		&gorm.Config{
@@ -63,8 +61,8 @@ func NewDBClientFromDSN(dataSourceName string) (DBClient, error) {
 	return NewDBClient(db), nil
 }
 
-func NewDBClient(db *gorm.DB) DBClient {
-	return &dbClientImpl{
+func NewDBClient(db *gorm.DB) *DBClient {
+	return &DBClient{
 		db: db,
 	}
 }

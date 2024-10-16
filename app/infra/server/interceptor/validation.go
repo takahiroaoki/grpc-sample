@@ -6,6 +6,8 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 	"github.com/takahiroaoki/grpc-sample/app/infra/server/interceptor/validator"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func Validate() grpc.UnaryServerInterceptor {
@@ -20,7 +22,7 @@ func Validate() grpc.UnaryServerInterceptor {
 		default:
 		}
 		if err != nil {
-			return nil, err
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return handler(ctx, req)
 	}

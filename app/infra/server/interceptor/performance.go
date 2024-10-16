@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/takahiroaoki/grpc-sample/app/domain/util"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 	"google.golang.org/grpc"
 )
 
-func Log() grpc.UnaryServerInterceptor {
+func PerformanceLog() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res any, err error) {
 		reqAt := time.Now()
 		util.InfoLogWithContext(ctx, fmt.Sprintf("Request: %v", info.FullMethod))

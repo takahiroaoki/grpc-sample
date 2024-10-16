@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetMockDBClient() (client.DBClient, sqlmock.Sqlmock, error) {
+func GetMockDBClient() (*client.DBClient, sqlmock.Sqlmock, error) {
 	sqlDB, sqlMock, err := sqlmock.New()
 	if err != nil {
 		return nil, nil, err

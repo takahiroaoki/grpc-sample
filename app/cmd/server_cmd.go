@@ -9,9 +9,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/takahiroaoki/grpc-sample/app/config"
-	"github.com/takahiroaoki/grpc-sample/app/domain/util"
 	"github.com/takahiroaoki/grpc-sample/app/infra/client"
 	"github.com/takahiroaoki/grpc-sample/app/infra/server"
+	"github.com/takahiroaoki/grpc-sample/app/util"
 )
 
 func newServerCmd() *cobra.Command {

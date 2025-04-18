@@ -1,6 +1,6 @@
 module github.com/takahiroaoki/grpc-sample/app
 
-go 1.22.4
+go 1.24.1
 
 require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0

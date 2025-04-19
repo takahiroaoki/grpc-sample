@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 )
@@ -10,6 +12,6 @@ type DemoRepository interface {
 	Transaction(func(dr DemoRepository) error) error
 
 	// users table
-	SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr)
-	CreateOneUser(u entity.User) (*entity.User, domerr.DomErr)
+	SelectOneUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr)
+	CreateOneUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr)
 }

@@ -5,6 +5,7 @@
 package mockrepository
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -37,33 +38,33 @@ func (m *MockDemoRepository) EXPECT() *MockDemoRepositoryMockRecorder {
 }
 
 // CreateOneUser mocks base method.
-func (m *MockDemoRepository) CreateOneUser(u entity.User) (*entity.User, domerr.DomErr) {
+func (m *MockDemoRepository) CreateOneUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOneUser", u)
+	ret := m.ctrl.Call(m, "CreateOneUser", ctx, u)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }
 
 // CreateOneUser indicates an expected call of CreateOneUser.
-func (mr *MockDemoRepositoryMockRecorder) CreateOneUser(u interface{}) *gomock.Call {
+func (mr *MockDemoRepositoryMockRecorder) CreateOneUser(ctx, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOneUser", reflect.TypeOf((*MockDemoRepository)(nil).CreateOneUser), u)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOneUser", reflect.TypeOf((*MockDemoRepository)(nil).CreateOneUser), ctx, u)
 }
 
 // SelectOneUserByUserId mocks base method.
-func (m *MockDemoRepository) SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr) {
+func (m *MockDemoRepository) SelectOneUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SelectOneUserByUserId", userId)
+	ret := m.ctrl.Call(m, "SelectOneUserByUserId", ctx, userId)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }
 
 // SelectOneUserByUserId indicates an expected call of SelectOneUserByUserId.
-func (mr *MockDemoRepositoryMockRecorder) SelectOneUserByUserId(userId interface{}) *gomock.Call {
+func (mr *MockDemoRepositoryMockRecorder) SelectOneUserByUserId(ctx, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectOneUserByUserId", reflect.TypeOf((*MockDemoRepository)(nil).SelectOneUserByUserId), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectOneUserByUserId", reflect.TypeOf((*MockDemoRepository)(nil).SelectOneUserByUserId), ctx, userId)
 }
 
 // Transaction mocks base method.

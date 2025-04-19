@@ -48,7 +48,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(&entity.User{
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), dbc, "1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -72,7 +72,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(dbc, "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), dbc, "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,

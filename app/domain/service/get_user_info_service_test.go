@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -20,6 +21,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	mockRepository := mockrepository.NewMockDemoRepository(ctrl)
 
 	type args struct {
+		ctx    context.Context
 		dr     *mockrepository.MockDemoRepository
 		userId string
 	}
@@ -36,11 +38,12 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			name:    "Success",
 			service: &getUserInfoServiceImpl{},
 			args: args{
+				ctx:    context.Background(),
 				dr:     mockRepository,
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(&entity.User{
+				mockRepository.EXPECT().SelectOneUserByUserId(gomock.Any(), "1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -55,11 +58,12 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			name:    "Error(SelectOneUserByUserId)",
 			service: &getUserInfoServiceImpl{},
 			args: args{
+				ctx:    context.Background(),
 				dr:     mockRepository,
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId("1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				mockRepository.EXPECT().SelectOneUserByUserId(gomock.Any(), "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,
@@ -71,7 +75,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(tt.args.dr)
 			}
-			actual, err := tt.service.GetUserByUserId(tt.args.dr, tt.args.userId)
+			actual, err := tt.service.GetUserByUserId(tt.args.ctx, tt.args.dr, tt.args.userId)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {

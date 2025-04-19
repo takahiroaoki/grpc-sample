@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/takahiroaoki/grpc-sample/app/config"
-	"github.com/takahiroaoki/grpc-sample/app/infra/client"
+	"github.com/takahiroaoki/grpc-sample/app/infra/database"
 	"github.com/takahiroaoki/grpc-sample/app/infra/server"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 )
@@ -24,7 +24,7 @@ func newServerCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			// Prepare db client
-			dbc, err := client.NewDBClientFromDSN(config.GetDataSourceName())
+			dbc, err := database.NewDBClientFromDSN(config.GetDataSourceName())
 			if err != nil {
 				util.FatalLog(fmt.Sprintf("Failed to get DB connection. Error: %v", err))
 			}

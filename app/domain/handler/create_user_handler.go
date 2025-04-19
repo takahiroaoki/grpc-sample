@@ -21,7 +21,7 @@ func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserReque
 		err error
 	)
 	err = h.dr.Transaction(func(dr repository.DemoRepository) error {
-		u, err = h.cus.CreateUser(dr, entity.User{
+		u, err = h.cus.CreateUser(ctx, dr, entity.User{
 			Email: req.email,
 		})
 		return err

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
@@ -8,8 +10,8 @@ import (
 
 type createUserServiceImpl struct{}
 
-func (s *createUserServiceImpl) CreateUser(dr repository.DemoRepository, u entity.User) (*entity.User, domerr.DomErr) {
-	return dr.CreateOneUser(u)
+func (s *createUserServiceImpl) CreateUser(ctx context.Context, dr repository.DemoRepository, u entity.User) (*entity.User, domerr.DomErr) {
+	return dr.CreateOneUser(ctx, u)
 }
 
 func NewCreateUserService() CreateUserService {

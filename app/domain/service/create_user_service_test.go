@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -20,8 +21,9 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	mockRepository := mockrepository.NewMockDemoRepository(ctrl)
 
 	type args struct {
-		dr *mockrepository.MockDemoRepository
-		u  entity.User
+		ctx context.Context
+		dr  *mockrepository.MockDemoRepository
+		u   entity.User
 	}
 	tests := []struct {
 		name        string
@@ -36,13 +38,14 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			name:    "Success",
 			service: &createUserServiceImpl{},
 			args: args{
-				dr: mockRepository,
+				ctx: context.Background(),
+				dr:  mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
-				mockRepository.EXPECT().CreateOneUser(entity.User{
+				mockRepository.EXPECT().CreateOneUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(&entity.User{
 					ID:    1,
@@ -59,13 +62,14 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			name:    "Error(CreateOneUser)",
 			service: &createUserServiceImpl{},
 			args: args{
+				ctx: context.Background(),
 				dr: mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
-				mockRepository.EXPECT().CreateOneUser(entity.User{
+				mockRepository.EXPECT().CreateOneUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
@@ -79,7 +83,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(tt.args.dr)
 			}
-			actual, err := tt.service.CreateUser(tt.args.dr, tt.args.u)
+			actual, err := tt.service.CreateUser(tt.args.ctx, tt.args.dr, tt.args.u)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {

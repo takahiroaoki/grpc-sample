@@ -1,6 +1,8 @@
 package database
 
 import (
+	"context"
+
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
@@ -21,7 +23,7 @@ func (dbc *DBClient) Transaction(fn func(dr repository.DemoRepository) error) er
 	})
 }
 
-func (dbc *DBClient) SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr) {
+func (dbc *DBClient) SelectOneUserByUserId(_ context.Context, userId string) (*entity.User, domerr.DomErr) {
 	var user user
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO)
@@ -30,7 +32,7 @@ func (dbc *DBClient) SelectOneUserByUserId(userId string) (*entity.User, domerr.
 	return convertUserSchema(user), nil
 }
 
-func (dbc *DBClient) CreateOneUser(u entity.User) (*entity.User, domerr.DomErr) {
+func (dbc *DBClient) CreateOneUser(_ context.Context, u entity.User) (*entity.User, domerr.DomErr) {
 	s := convertUserEntity(u)
 	if err := dbc.db.Create(s).Error; err != nil {
 		return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)

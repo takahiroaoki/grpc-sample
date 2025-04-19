@@ -50,7 +50,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 			},
 			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mockservice.MockCreateUserService) {
 				sqlMock.ExpectBegin()
-				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
+				mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(&entity.User{
 					ID:    1,
@@ -77,7 +77,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 			},
 			mockFunc: func(sqlMock sqlmock.Sqlmock, mockService *mockservice.MockCreateUserService) {
 				sqlMock.ExpectBegin()
-				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
+				mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 				sqlMock.ExpectRollback()

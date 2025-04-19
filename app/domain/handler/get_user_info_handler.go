@@ -15,7 +15,7 @@ type getUserInfoHandlerImpl struct {
 }
 
 func (h *getUserInfoHandlerImpl) Invoke(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr) {
-	u, err := h.guis.GetUserByUserId(h.dr, req.id)
+	u, err := h.guis.GetUserByUserId(ctx, h.dr, req.id)
 	if err != nil {
 		return nil, err
 	}

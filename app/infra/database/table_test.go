@@ -13,16 +13,16 @@ func Test_convertUserEntity(t *testing.T) {
 		Email: "email",
 	}
 	expected := &user{
-		id:    1,
-		email: "email",
+		ID:    1,
+		Email: "email",
 	}
 	assert.Equal(t, expected, convertUserEntity(e))
 }
 
 func Test_convertUserSchema(t *testing.T) {
 	s := user{
-		id:    1,
-		email: "email",
+		ID:    1,
+		Email: "email",
 	}
 	expected := &entity.User{
 		ID:    1,

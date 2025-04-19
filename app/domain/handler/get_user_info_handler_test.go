@@ -28,7 +28,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		handler     *getUserInfoHandlerImpl
+		handler     *getUserInfoHandler
 		args        args
 		mockFunc    func(mockRepository *mockservice.MockGetUserInfoService)
 		expected    *GetUserInfoResponse
@@ -37,7 +37,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			handler: &getUserInfoHandlerImpl{
+			handler: &getUserInfoHandler{
 				dr:   dbc,
 				guis: mockService,
 			},
@@ -61,7 +61,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 		},
 		{
 			name: "Error(GetUserByUserId)",
-			handler: &getUserInfoHandlerImpl{
+			handler: &getUserInfoHandler{
 				dr:   dbc,
 				guis: mockService,
 			},

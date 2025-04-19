@@ -8,12 +8,12 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 )
 
-type getUserInfoServiceImpl struct{}
+type getUserInfoService struct{}
 
-func (s *getUserInfoServiceImpl) GetUserByUserId(ctx context.Context, dr repository.DemoRepository, userId string) (*entity.User, domerr.DomErr) {
+func (s *getUserInfoService) GetUserByUserId(ctx context.Context, dr repository.DemoRepository, userId string) (*entity.User, domerr.DomErr) {
 	return dr.SelectOneUserByUserId(ctx, userId)
 }
 
-func NewGetUserInfoService() GetUserInfoService {
-	return &getUserInfoServiceImpl{}
+func NewGetUserInfoService() *getUserInfoService {
+	return &getUserInfoService{}
 }

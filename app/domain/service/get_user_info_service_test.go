@@ -27,7 +27,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		service     *getUserInfoServiceImpl
+		service     *getUserInfoService
 		args        args
 		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
 		expected    *entity.User
@@ -36,7 +36,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}{
 		{
 			name:    "Success",
-			service: &getUserInfoServiceImpl{},
+			service: &getUserInfoService{},
 			args: args{
 				ctx:    context.Background(),
 				dr:     mockRepository,
@@ -56,7 +56,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		},
 		{
 			name:    "Error(SelectOneUserByUserId)",
-			service: &getUserInfoServiceImpl{},
+			service: &getUserInfoService{},
 			args: args{
 				ctx:    context.Background(),
 				dr:     mockRepository,

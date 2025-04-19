@@ -27,7 +27,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		service     *createUserServiceImpl
+		service     *createUserService
 		args        args
 		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
 		expected    *entity.User
@@ -36,7 +36,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}{
 		{
 			name:    "Success",
-			service: &createUserServiceImpl{},
+			service: &createUserService{},
 			args: args{
 				ctx: context.Background(),
 				dr:  mockRepository,
@@ -60,10 +60,10 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 		},
 		{
 			name:    "Error(CreateOneUser)",
-			service: &createUserServiceImpl{},
+			service: &createUserService{},
 			args: args{
 				ctx: context.Background(),
-				dr: mockRepository,
+				dr:  mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},

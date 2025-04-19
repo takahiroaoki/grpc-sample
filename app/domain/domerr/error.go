@@ -26,27 +26,27 @@ type DomErr interface {
 	LogLevel() LogLevel
 }
 
-type domErrImpl struct {
+type domErr struct {
 	err      error
 	cause    ErrorCause
 	logLevel LogLevel
 }
 
-func (aei *domErrImpl) Error() string {
+func (aei *domErr) Error() string {
 	if aei == nil || aei.err == nil {
 		return ""
 	}
 	return aei.err.Error()
 }
 
-func (aei *domErrImpl) Cause() ErrorCause {
+func (aei *domErr) Cause() ErrorCause {
 	if aei == nil || aei.err == nil {
 		return CAUSE_UNDEFINED
 	}
 	return aei.cause
 }
 
-func (aei *domErrImpl) LogLevel() LogLevel {
+func (aei *domErr) LogLevel() LogLevel {
 	if aei == nil || aei.err == nil {
 		return LOG_LEVEL_UNDEFINED
 	}
@@ -57,7 +57,7 @@ func NewDomErr(err error, cause ErrorCause, logLevel LogLevel) DomErr {
 	if err == nil {
 		return nil
 	}
-	return &domErrImpl{
+	return &domErr{
 		err:      err,
 		cause:    cause,
 		logLevel: logLevel,

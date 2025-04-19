@@ -9,12 +9,12 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
 
-type getUserInfoHandlerImpl struct {
+type getUserInfoHandler struct {
 	dr   repository.DemoRepository
 	guis service.GetUserInfoService
 }
 
-func (h *getUserInfoHandlerImpl) Invoke(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr) {
+func (h *getUserInfoHandler) Invoke(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr) {
 	u, err := h.guis.GetUserByUserId(ctx, h.dr, req.id)
 	if err != nil {
 		return nil, err
@@ -26,8 +26,8 @@ func (h *getUserInfoHandlerImpl) Invoke(ctx context.Context, req *GetUserInfoReq
 	}, nil
 }
 
-func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) GetUserInfoHandler {
-	return &getUserInfoHandlerImpl{
+func NewGetUserInfoHandler(dr repository.DemoRepository, guis service.GetUserInfoService) *getUserInfoHandler {
+	return &getUserInfoHandler{
 		dr:   dr,
 		guis: guis,
 	}

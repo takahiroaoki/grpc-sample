@@ -7,29 +7,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_domErrImpl_Error(t *testing.T) {
+func Test_domErr_Error(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		aei      *domErrImpl
+		aei      *domErr
 		expected string
 	}{
 		{
 			name: "Success",
-			aei: &domErrImpl{
+			aei: &domErr{
 				err: errors.New("err"),
 			},
 			expected: "err",
 		},
 		{
-			name:     "Success(*domErrImpl is nil)",
+			name:     "Success(*domErr is nil)",
 			aei:      nil,
 			expected: "",
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &domErrImpl{},
+			aei:      &domErr{},
 			expected: "",
 		},
 	}
@@ -40,35 +40,35 @@ func Test_domErrImpl_Error(t *testing.T) {
 	}
 }
 
-func Test_domErrImpl_Cause(t *testing.T) {
+func Test_domErr_Cause(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		aei      *domErrImpl
+		aei      *domErr
 		expected ErrorCause
 	}{
 		{
 			name: "Success",
-			aei: &domErrImpl{
+			aei: &domErr{
 				err:   errors.New("err"),
 				cause: CAUSE_INTERNAL,
 			},
 			expected: CAUSE_INTERNAL,
 		},
 		{
-			name:     "Success(*domErrImpl is nil)",
+			name:     "Success(*domErr is nil)",
 			aei:      nil,
 			expected: CAUSE_UNDEFINED,
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &domErrImpl{},
+			aei:      &domErr{},
 			expected: CAUSE_UNDEFINED,
 		},
 		{
 			name: "Error(cause is not defined)",
-			aei: &domErrImpl{
+			aei: &domErr{
 				err: errors.New("err"),
 			},
 			expected: CAUSE_UNDEFINED,
@@ -81,35 +81,35 @@ func Test_domErrImpl_Cause(t *testing.T) {
 	}
 }
 
-func Test_domErrImpl_LogLevel(t *testing.T) {
+func Test_domErr_LogLevel(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name     string
-		aei      *domErrImpl
+		aei      *domErr
 		expected LogLevel
 	}{
 		{
 			name: "Success",
-			aei: &domErrImpl{
+			aei: &domErr{
 				err:      errors.New("err"),
 				logLevel: LOG_LEVEL_INFO,
 			},
 			expected: LOG_LEVEL_INFO,
 		},
 		{
-			name:     "Success(*domErrImpl is nil)",
+			name:     "Success(*domErr is nil)",
 			aei:      nil,
 			expected: LOG_LEVEL_UNDEFINED,
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &domErrImpl{},
+			aei:      &domErr{},
 			expected: LOG_LEVEL_UNDEFINED,
 		},
 		{
 			name: "Error(logLevel is not defined)",
-			aei: &domErrImpl{
+			aei: &domErr{
 				err: errors.New("err"),
 			},
 			expected: LOG_LEVEL_UNDEFINED,

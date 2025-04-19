@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func Test_sampleServiceServerImpl_GetUserInfo(t *testing.T) {
+func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -47,7 +47,7 @@ func Test_sampleServiceServerImpl_GetUserInfo(t *testing.T) {
 				mockHandler.EXPECT().Invoke(ctx, handler.NewGetUserInfoRequest("id")).Return(handler.NewGetUserInfoResponse("id", "email"), nil)
 			},
 			expected: &pb.GetUserInfoResponse{
-				Id: "id",
+				Id:    "id",
 				Email: "email",
 			},
 			assertion: assert.NoError,
@@ -70,7 +70,7 @@ func Test_sampleServiceServerImpl_GetUserInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			grpcServiceServer := &sampleServiceServerImpl{
+			grpcServiceServer := &sampleServiceServer{
 				getUserInfoHandler: mockHandler,
 			}
 			if tt.mockFunc != nil {

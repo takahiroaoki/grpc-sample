@@ -29,7 +29,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		handler     *createUserHandlerImpl
+		handler     *createUserHandler
 		args        args
 		mockFunc    func(sqlMock sqlmock.Sqlmock, mockRepository *mockservice.MockCreateUserService)
 		expected    *CreateUserResponse
@@ -38,7 +38,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			handler: &createUserHandlerImpl{
+			handler: &createUserHandler{
 				dr:  dbc,
 				cus: mockService,
 			},
@@ -65,7 +65,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 		},
 		{
 			name: "Error(CreateUser)",
-			handler: &createUserHandlerImpl{
+			handler: &createUserHandler{
 				dr:  dbc,
 				cus: mockService,
 			},

@@ -7,7 +7,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 )
 
-func (s *sampleServiceServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (s *sampleServiceServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	res, err := s.createUserHandler.Invoke(ctx, handler.NewCreateUserRequest(req.GetEmail()))
 	if err != nil {
 		return nil, handleError(ctx, err)

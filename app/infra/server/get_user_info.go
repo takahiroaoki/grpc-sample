@@ -7,7 +7,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 )
 
-func (s *sampleServiceServerImpl) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
+func (s *sampleServiceServer) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {
 	res, err := s.getUserInfoHandler.Invoke(ctx, handler.NewGetUserInfoRequest(req.GetId()))
 	if err != nil {
 		return nil, handleError(ctx, err)

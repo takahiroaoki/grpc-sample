@@ -10,12 +10,12 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
 
-type createUserHandlerImpl struct {
+type createUserHandler struct {
 	dr  repository.DemoRepository
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
+func (h *createUserHandler) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
 	var (
 		u   *entity.User
 		err error
@@ -38,8 +38,8 @@ func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserReque
 	}, nil
 }
 
-func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
-	return &createUserHandlerImpl{
+func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) *createUserHandler {
+	return &createUserHandler{
 		dr:  dr,
 		cus: cus,
 	}

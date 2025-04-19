@@ -34,12 +34,12 @@ test:proto-go mockgen
 	&& go test -v ./...
 
 mockgen:
-	rm -f ./app/testutil/mockrepository/*.go
-	rm -f ./app/testutil/mockservice/*.go
-	rm -f ./app/testutil/mockhandler/*.go
-	mockgen -source=./app/domain/repository/repository_interface.go -destination=./app/testutil/mockrepository/repository.go -package=mockrepository
-	mockgen -source=./app/domain/service/service_interface.go -destination=./app/testutil/mockservice/service.go -package=mockservice
-	mockgen -source=./app/domain/handler/handler_interface.go -destination=./app/testutil/mockhandler/handler.go -package=mockhandler
+	mockgen -source=./app/domain/service/create_user_service.go -destination=./app/domain/service/create_user_service_mocks.go -package=service
+	mockgen -source=./app/domain/service/get_user_info_service.go -destination=./app/domain/service/get_user_info_service_mocks.go -package=service
+	mockgen -source=./app/domain/handler/create_user_handler.go -destination=./app/domain/handler/create_user_handler_mocks.go -package=handler
+	mockgen -source=./app/domain/handler/get_user_info_handler.go -destination=./app/domain/handler/get_user_info_handler_mocks.go -package=handler
+	mockgen -source=./app/infra/server/create_user.go -destination=./app/infra/server/create_user_mocks.go -package=server
+	mockgen -source=./app/infra/server/get_user_info.go -destination=./app/infra/server/get_user_info_mocks.go -package=server
 
 # data
 db-sample:

@@ -9,7 +9,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
-	"github.com/takahiroaoki/grpc-sample/app/testutil/mockhandler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -20,8 +19,6 @@ func Test_sampleServiceServer_CreateUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockHandler := mockhandler.NewMockCreateUserHandler(ctrl)
-
 	type args struct {
 		ctx context.Context
 		req *pb.CreateUserRequest
@@ -30,7 +27,7 @@ func Test_sampleServiceServer_CreateUser(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		mockFunc    func(ctx context.Context, mockHandler *mockhandler.MockCreateUserHandler)
+		mockFunc    func(ctx context.Context, mockHandler *MockcreateUserHandler)
 		expected    *pb.CreateUserResponse
 		assertion   assert.ErrorAssertionFunc
 		expectedErr error
@@ -43,7 +40,7 @@ func Test_sampleServiceServer_CreateUser(t *testing.T) {
 					Email: "test@test.com",
 				},
 			},
-			mockFunc: func(ctx context.Context, mockHandler *mockhandler.MockCreateUserHandler) {
+			mockFunc: func(ctx context.Context, mockHandler *MockcreateUserHandler) {
 				mockHandler.EXPECT().Invoke(ctx, handler.NewCreateUserRequest("test@test.com")).Return(handler.NewCreateUserResponse("id"), nil)
 			},
 			expected: &pb.CreateUserResponse{
@@ -59,7 +56,7 @@ func Test_sampleServiceServer_CreateUser(t *testing.T) {
 					Email: "test@test.com",
 				},
 			},
-			mockFunc: func(ctx context.Context, mockHandler *mockhandler.MockCreateUserHandler) {
+			mockFunc: func(ctx context.Context, mockHandler *MockcreateUserHandler) {
 				mockHandler.EXPECT().Invoke(ctx, handler.NewCreateUserRequest("test@test.com")).Return(nil, domerr.NewDomErrFromMsg("internal", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR))
 			},
 			expected:    nil,
@@ -69,6 +66,8 @@ func Test_sampleServiceServer_CreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			mockHandler := NewMockcreateUserHandler(ctrl)
 			grpcServiceServer := &sampleServiceServer{
 				createUserHandler: mockHandler,
 			}

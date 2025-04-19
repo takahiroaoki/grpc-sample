@@ -5,15 +5,23 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 )
 
-type createUserService struct{}
-
-func (s *createUserService) CreateUser(ctx context.Context, dr repository.DemoRepository, u entity.User) (*entity.User, domerr.DomErr) {
-	return dr.CreateOneUser(ctx, u)
+type createUserService struct {
+	cur createUserRepository
 }
 
-func NewCreateUserService() *createUserService {
-	return &createUserService{}
+type createUserRepository interface {
+	// Transaction(fn func(tx createUserRepository) error) error
+	CreateOneUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr)
+}
+
+func (s *createUserService) CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
+	return s.cur.CreateOneUser(ctx, u)
+}
+
+func NewCreateUserService(cur createUserRepository) *createUserService {
+	return &createUserService{
+		cur: cur,
+	}
 }

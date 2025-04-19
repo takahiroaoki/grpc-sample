@@ -5,15 +5,22 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 )
 
-type getUserInfoService struct{}
-
-func (s *getUserInfoService) GetUserByUserId(ctx context.Context, dr repository.DemoRepository, userId string) (*entity.User, domerr.DomErr) {
-	return dr.SelectOneUserByUserId(ctx, userId)
+type getUserInfoService struct {
+	guir getUserInfoRepository
 }
 
-func NewGetUserInfoService() *getUserInfoService {
-	return &getUserInfoService{}
+type getUserInfoRepository interface {
+	SelectOneUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr)
+}
+
+func (s *getUserInfoService) GetUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
+	return s.guir.SelectOneUserByUserId(ctx, userId)
+}
+
+func NewGetUserInfoService(guir getUserInfoRepository) *getUserInfoService {
+	return &getUserInfoService{
+		guir: guir,
+	}
 }

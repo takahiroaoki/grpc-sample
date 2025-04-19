@@ -9,7 +9,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
-	"github.com/takahiroaoki/grpc-sample/app/testutil/mockhandler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -20,8 +19,6 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockHandler := mockhandler.NewMockGetUserInfoHandler(ctrl)
-
 	type args struct {
 		ctx context.Context
 		req *pb.GetUserInfoRequest
@@ -30,7 +27,7 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		mockFunc    func(ctx context.Context, mockHandler *mockhandler.MockGetUserInfoHandler)
+		mockFunc    func(ctx context.Context, mockHandler *MockgetUserInfoHandler)
 		expected    *pb.GetUserInfoResponse
 		assertion   assert.ErrorAssertionFunc
 		expectedErr error
@@ -43,7 +40,7 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 					Id: "id",
 				},
 			},
-			mockFunc: func(ctx context.Context, mockHandler *mockhandler.MockGetUserInfoHandler) {
+			mockFunc: func(ctx context.Context, mockHandler *MockgetUserInfoHandler) {
 				mockHandler.EXPECT().Invoke(ctx, handler.NewGetUserInfoRequest("id")).Return(handler.NewGetUserInfoResponse("id", "email"), nil)
 			},
 			expected: &pb.GetUserInfoResponse{
@@ -60,7 +57,7 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 					Id: "id",
 				},
 			},
-			mockFunc: func(ctx context.Context, mockHandler *mockhandler.MockGetUserInfoHandler) {
+			mockFunc: func(ctx context.Context, mockHandler *MockgetUserInfoHandler) {
 				mockHandler.EXPECT().Invoke(ctx, handler.NewGetUserInfoRequest("id")).Return(nil, domerr.NewDomErrFromMsg("internal", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR))
 			},
 			expected:    nil,
@@ -70,6 +67,8 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			mockHandler := NewMockgetUserInfoHandler(ctrl)
 			grpcServiceServer := &sampleServiceServer{
 				getUserInfoHandler: mockHandler,
 			}

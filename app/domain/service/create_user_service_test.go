@@ -9,7 +9,6 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
 	"github.com/takahiroaoki/grpc-sample/app/testutil"
-	"github.com/takahiroaoki/grpc-sample/app/testutil/mockrepository"
 )
 
 func Test_createUserServiceImpl_CreateUser(t *testing.T) {
@@ -18,33 +17,27 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mockrepository.NewMockDemoRepository(ctrl)
-
 	type args struct {
 		ctx context.Context
-		dr  *mockrepository.MockDemoRepository
 		u   entity.User
 	}
 	tests := []struct {
 		name        string
-		service     *createUserService
 		args        args
-		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
+		mockFunc    func(mockRepository *MockcreateUserRepository)
 		expected    *entity.User
 		isError     bool
 		expectedErr domerr.DomErr
 	}{
 		{
-			name:    "Success",
-			service: &createUserService{},
+			name: "Success",
 			args: args{
 				ctx: context.Background(),
-				dr:  mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},
 			},
-			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
+			mockFunc: func(mockRepository *MockcreateUserRepository) {
 				mockRepository.EXPECT().CreateOneUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(&entity.User{
@@ -59,16 +52,14 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			isError: false,
 		},
 		{
-			name:    "Error(CreateOneUser)",
-			service: &createUserService{},
+			name: "Error(CreateOneUser)",
 			args: args{
 				ctx: context.Background(),
-				dr:  mockRepository,
 				u: entity.User{
 					Email: "user@example.com",
 				},
 			},
-			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
+			mockFunc: func(mockRepository *MockcreateUserRepository) {
 				mockRepository.EXPECT().CreateOneUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
 				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
@@ -80,10 +71,14 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			mockRepository := NewMockcreateUserRepository(ctrl)
 			if tt.mockFunc != nil {
-				tt.mockFunc(tt.args.dr)
+				tt.mockFunc(mockRepository)
 			}
-			actual, err := tt.service.CreateUser(tt.args.ctx, tt.args.dr, tt.args.u)
+			service := &createUserService{
+				cur: mockRepository,
+			}
+			actual, err := service.CreateUser(tt.args.ctx, tt.args.u)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {

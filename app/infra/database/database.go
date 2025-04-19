@@ -5,19 +5,15 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
-
-// check whether DBClient implements repository.DemoRepository interface
-var _ repository.DemoRepository = (*DBClient)(nil)
 
 type DBClient struct {
 	db *gorm.DB
 }
 
-func (dbc *DBClient) Transaction(fn func(dr repository.DemoRepository) error) error {
+func (dbc *DBClient) Transaction(fn func(dbclient *DBClient) error) error {
 	return dbc.db.Transaction(func(tx *gorm.DB) error {
 		return fn(NewDBClient(tx))
 	})

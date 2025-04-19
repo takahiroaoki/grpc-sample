@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
+	"github.com/takahiroaoki/grpc-sample/app/infra/database"
 	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
 	"github.com/takahiroaoki/grpc-sample/app/infra/server/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/util"
@@ -15,21 +15,21 @@ import (
 
 type sampleServiceServer struct {
 	pb.UnimplementedSampleServiceServer
-	createUserHandler  handler.CreateUserHandler
-	getUserInfoHandler handler.GetUserInfoHandler
+	createUserHandler  createUserHandler
+	getUserInfoHandler getUserInfoHandler
 }
 
-func newSampleServiceServer(dr repository.DemoRepository) pb.SampleServiceServer {
-	getUserInfoService := service.NewGetUserInfoService()
-	createUserService := service.NewCreateUserService()
+func newSampleServiceServer(dbc *database.DBClient) pb.SampleServiceServer {
+	getUserInfoService := service.NewGetUserInfoService(dbc)
+	createUserService := service.NewCreateUserService(dbc)
 
 	return &sampleServiceServer{
-		createUserHandler:  handler.NewCreateUserHandler(dr, createUserService),
-		getUserInfoHandler: handler.NewGetUserInfoHandler(dr, getUserInfoService),
+		createUserHandler:  handler.NewCreateUserHandler(createUserService),
+		getUserInfoHandler: handler.NewGetUserInfoHandler(getUserInfoService),
 	}
 }
 
-func NewGRPCServer(dr repository.DemoRepository, refFlg bool) *grpc.Server {
+func NewGRPCServer(dbc *database.DBClient, refFlg bool) *grpc.Server {
 	server := grpc.NewServer(grpc.UnaryInterceptor(
 		middleware.ChainUnaryServer(
 			interceptor.SetContext(),
@@ -43,6 +43,6 @@ func NewGRPCServer(dr repository.DemoRepository, refFlg bool) *grpc.Server {
 	}
 
 	// Register gRPC handler
-	pb.RegisterSampleServiceServer(server, newSampleServiceServer(dr))
+	pb.RegisterSampleServiceServer(server, newSampleServiceServer(dbc))
 	return server
 }

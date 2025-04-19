@@ -2,7 +2,7 @@
 	"name": "grpc-sample",
 	"dockerComposeFile": "docker-compose.yml",
     "service": "demo-app",
-	"workspaceFolder": "/mnt/grpc-sample",
+	"workspaceFolder": "/workspaces/grpc-sample",
 	"customizations": {
 		"vscode": {
 			"extensions": [

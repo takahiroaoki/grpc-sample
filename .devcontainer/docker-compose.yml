@@ -12,8 +12,8 @@ services:
       - DB_USER=${MYSQL_USER}
       - DB_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - ..:/mnt/grpc-sample
-    working_dir: /mnt/grpc-sample
+      - ..:/workspaces/grpc-sample
+    working_dir: /workspaces/grpc-sample
     ports:
       - 8080:8080
     depends_on:

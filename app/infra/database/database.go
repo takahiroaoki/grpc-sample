@@ -1,4 +1,4 @@
-package client
+package database
 
 import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
@@ -22,19 +22,20 @@ func (dbc *DBClient) Transaction(fn func(dr repository.DemoRepository) error) er
 }
 
 func (dbc *DBClient) SelectOneUserByUserId(userId string) (*entity.User, domerr.DomErr) {
-	var user entity.User
+	var user user
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return nil, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO)
 	}
 
-	return &user, nil
+	return convertUserSchema(user), nil
 }
 
 func (dbc *DBClient) CreateOneUser(u entity.User) (*entity.User, domerr.DomErr) {
-	if err := dbc.db.Create(&u).Error; err != nil {
+	s := convertUserEntity(u)
+	if err := dbc.db.Create(s).Error; err != nil {
 		return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
-	return &u, nil
+	return convertUserSchema(*s), nil
 }
 
 func (dbc *DBClient) CloseDB() error {

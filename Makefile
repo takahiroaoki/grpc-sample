@@ -17,6 +17,10 @@ proto-go:
 		--go_out=app/infra/pb --go_opt=paths=source_relative \
 		--go-grpc_out=app/infra/pb --go-grpc_opt=paths=source_relative \
 		sample.proto
+	protoc --proto_path=proto \
+		--go_out=tests/pb --go_opt=paths=source_relative \
+		--go-grpc_out=tests/pb --go-grpc_opt=paths=source_relative \
+		sample.proto
 
 # run server
 run-server:
@@ -40,6 +44,11 @@ mockgen:
 	mockgen -source=./app/domain/repository/repository_interface.go -destination=./app/testutil/mockrepository/repository.go -package=mockrepository
 	mockgen -source=./app/domain/service/service_interface.go -destination=./app/testutil/mockservice/service.go -package=mockservice
 	mockgen -source=./app/domain/handler/handler_interface.go -destination=./app/testutil/mockhandler/handler.go -package=mockhandler
+
+api-test:
+	cd ./tests \
+	&& go clean -testcache \
+	&& go test -v ./...
 
 # data
 db-sample:

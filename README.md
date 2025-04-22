@@ -59,6 +59,12 @@ I prepared deploy system for development purpose. See the following repositories
 $ make test
 ```
 
+### Api test
+```
+# after starting grpc server 
+$ make api-test
+```
+
 ### Lint
 ```
 $ make lint

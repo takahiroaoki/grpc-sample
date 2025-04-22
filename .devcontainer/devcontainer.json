@@ -8,7 +8,8 @@
 			"extensions": [
 				"golang.Go",
 				"ms-azuretools.vscode-docker",
-				"Postman.postman-for-vscode"
+				"Postman.postman-for-vscode",
+				"cweijan.vscode-mysql-client2"
 			]
 		}
 	}

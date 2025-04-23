@@ -18,16 +18,12 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mockrepository.NewMockDemoRepository(ctrl)
-
 	type args struct {
 		ctx    context.Context
-		dr     *mockrepository.MockDemoRepository
 		userId string
 	}
 	tests := []struct {
 		name        string
-		service     *getUserInfoServiceImpl
 		args        args
 		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
 		expected    *entity.User
@@ -35,11 +31,9 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 		expectedErr domerr.DomErr
 	}{
 		{
-			name:    "Success",
-			service: &getUserInfoServiceImpl{},
+			name: "Success",
 			args: args{
 				ctx:    context.Background(),
-				dr:     mockRepository,
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
@@ -55,11 +49,9 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			isError: false,
 		},
 		{
-			name:    "Error(SelectOneUserByUserId)",
-			service: &getUserInfoServiceImpl{},
+			name: "Error(SelectOneUserByUserId)",
 			args: args{
 				ctx:    context.Background(),
-				dr:     mockRepository,
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
@@ -72,10 +64,14 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			mockRepository := mockrepository.NewMockDemoRepository(ctrl)
 			if tt.mockFunc != nil {
-				tt.mockFunc(tt.args.dr)
+				tt.mockFunc(mockRepository)
 			}
-			actual, err := tt.service.GetUserByUserId(tt.args.ctx, tt.args.dr, tt.args.userId)
+			service := &getUserInfoServiceImpl{
+				dr: mockRepository,
+			}
+			actual, err := service.GetUserByUserId(tt.args.ctx, tt.args.userId)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {

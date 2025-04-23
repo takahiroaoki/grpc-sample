@@ -20,12 +20,12 @@ type sampleServiceServerImpl struct {
 }
 
 func newSampleServiceServer(dr repository.DemoRepository) pb.SampleServiceServer {
-	getUserInfoService := service.NewGetUserInfoService()
-	createUserService := service.NewCreateUserService()
+	getUserInfoService := service.NewGetUserInfoService(dr)
+	createUserService := service.NewCreateUserService(dr)
 
 	return &sampleServiceServerImpl{
-		createUserHandler:  handler.NewCreateUserHandler(dr, createUserService),
-		getUserInfoHandler: handler.NewGetUserInfoHandler(dr, getUserInfoService),
+		createUserHandler:  handler.NewCreateUserHandler(createUserService),
+		getUserInfoHandler: handler.NewGetUserInfoHandler(getUserInfoService),
 	}
 }
 

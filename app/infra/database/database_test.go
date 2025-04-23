@@ -12,16 +12,13 @@ import (
 )
 
 func Test_DBClient_Transaction(t *testing.T) {
-	dbc, sqlMock, err := GetMockDBClient()
-	assert.NoError(t, err)
-
 	type args struct {
 		fn func(tx repository.DemoRepository) error
 	}
 	tests := []struct {
-		name     string
-		args     args
-		mockFunc func(sqlMock sqlmock.Sqlmock)
+		name        string
+		args        args
+		mockFunc    func(sqlMock sqlmock.Sqlmock)
 		expectedErr error
 	}{
 		{
@@ -52,11 +49,14 @@ func Test_DBClient_Transaction(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			dbc, sqlMock, err := GetMockDBClient()
+			assert.NoError(t, err)
 			if tt.mockFunc != nil {
 				tt.mockFunc(sqlMock)
 			}
-			err := dbc.Transaction(tt.args.fn)
-			assert.Equal(t, tt.expectedErr, err)
+			tranErr := dbc.Transaction(tt.args.fn)
+			assert.Equal(t, tt.expectedErr, tranErr)
+			assert.Nil(t, sqlMock.ExpectationsWereMet())
 		})
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/tests/pb"
 )
 
@@ -34,4 +35,14 @@ func Test_CreateAndGetUser(t *testing.T) {
 		fmt.Printf("failed to GetUserInfo: %v", err)
 	}
 	assertGetUserInfoResponse(t, expectedGetResp, gotGetResp)
+}
+
+func Test_GetNonExistingUser(t *testing.T) {
+	client := setup(t)
+	getReq := &pb.GetUserInfoRequest{
+		Id: "0",
+	}
+	gotGetResp, err := client.GetUserInfo(context.Background(), getReq)
+	assert.Nil(t, gotGetResp)
+	assert.EqualError(t, err, "rpc error: code = NotFound desc = record not found")
 }

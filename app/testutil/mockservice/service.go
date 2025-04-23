@@ -11,7 +11,6 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	domerr "github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	entity "github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	repository "github.com/takahiroaoki/grpc-sample/app/domain/repository"
 )
 
 // MockCreateUserService is a mock of CreateUserService interface.
@@ -38,18 +37,18 @@ func (m *MockCreateUserService) EXPECT() *MockCreateUserServiceMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockCreateUserService) CreateUser(ctx context.Context, dr repository.DemoRepository, u entity.User) (*entity.User, domerr.DomErr) {
+func (m *MockCreateUserService) CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", ctx, dr, u)
+	ret := m.ctrl.Call(m, "CreateUser", ctx, u)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }
 
 // CreateUser indicates an expected call of CreateUser.
-func (mr *MockCreateUserServiceMockRecorder) CreateUser(ctx, dr, u interface{}) *gomock.Call {
+func (mr *MockCreateUserServiceMockRecorder) CreateUser(ctx, u interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockCreateUserService)(nil).CreateUser), ctx, dr, u)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockCreateUserService)(nil).CreateUser), ctx, u)
 }
 
 // MockGetUserInfoService is a mock of GetUserInfoService interface.
@@ -76,16 +75,16 @@ func (m *MockGetUserInfoService) EXPECT() *MockGetUserInfoServiceMockRecorder {
 }
 
 // GetUserByUserId mocks base method.
-func (m *MockGetUserInfoService) GetUserByUserId(ctx context.Context, dr repository.DemoRepository, userId string) (*entity.User, domerr.DomErr) {
+func (m *MockGetUserInfoService) GetUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByUserId", ctx, dr, userId)
+	ret := m.ctrl.Call(m, "GetUserByUserId", ctx, userId)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }
 
 // GetUserByUserId indicates an expected call of GetUserByUserId.
-func (mr *MockGetUserInfoServiceMockRecorder) GetUserByUserId(ctx, dr, userId interface{}) *gomock.Call {
+func (mr *MockGetUserInfoServiceMockRecorder) GetUserByUserId(ctx, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUserId", reflect.TypeOf((*MockGetUserInfoService)(nil).GetUserByUserId), ctx, dr, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUserId", reflect.TypeOf((*MockGetUserInfoService)(nil).GetUserByUserId), ctx, userId)
 }

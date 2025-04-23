@@ -6,41 +6,27 @@ import (
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
-	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
 
-type createUserHandlerImpl struct {
-	dr  repository.DemoRepository
+type createUserHandler struct {
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
-	var (
-		u   *entity.User
-		err error
-	)
-	err = h.dr.Transaction(func(dr repository.DemoRepository) error {
-		u, err = h.cus.CreateUser(ctx, dr, entity.User{
-			Email: req.email,
-		})
-		return err
+func (h *createUserHandler) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
+	created, err := h.cus.CreateUser(ctx, entity.User{
+		Email: req.email,
 	})
 	if err != nil {
-		appErr, ok := err.(domerr.DomErr)
-		if !ok {
-			return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
-		}
-		return nil, appErr
+		return nil, err
 	}
 	return &CreateUserResponse{
-		id: strconv.FormatUint(uint64(u.ID), 10),
+		id: strconv.FormatUint(uint64(created.ID), 10),
 	}, nil
 }
 
-func NewCreateUserHandler(dr repository.DemoRepository, cus service.CreateUserService) CreateUserHandler {
-	return &createUserHandlerImpl{
-		dr:  dr,
+func NewCreateUserHandler(cus service.CreateUserService) CreateUserHandler {
+	return &createUserHandler{
 		cus: cus,
 	}
 }

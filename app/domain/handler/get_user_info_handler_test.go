@@ -12,15 +12,11 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mockservice"
 )
 
-func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
+func Test_getUserInfoHandler_Invoke(t *testing.T) {
 	t.Parallel()
 
-	dbc, _, err := testutil.GetMockDBClient()
-	assert.NoError(t, err)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
-	mockService := mockservice.NewMockGetUserInfoService(ctrl)
 
 	type args struct {
 		ctx context.Context
@@ -28,7 +24,6 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		handler     *getUserInfoHandlerImpl
 		args        args
 		mockFunc    func(mockRepository *mockservice.MockGetUserInfoService)
 		expected    *GetUserInfoResponse
@@ -37,10 +32,6 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
 			args: args{
 				ctx: context.Background(),
 				req: &GetUserInfoRequest{
@@ -48,7 +39,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(gomock.Any(), dbc, "1").Return(&entity.User{
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), "1").Return(&entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -61,10 +52,6 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 		},
 		{
 			name: "Error(GetUserByUserId)",
-			handler: &getUserInfoHandlerImpl{
-				dr:   dbc,
-				guis: mockService,
-			},
 			args: args{
 				ctx: context.Background(),
 				req: &GetUserInfoRequest{
@@ -72,7 +59,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(gomock.Any(), dbc, "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,
@@ -81,10 +68,14 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			mockService := mockservice.NewMockGetUserInfoService(ctrl)
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)
 			}
-			actual, err := tt.handler.Invoke(tt.args.ctx, tt.args.req)
+			handler := &getUserInfoHandler{
+				guis: mockService,
+			}
+			actual, err := handler.Invoke(tt.args.ctx, tt.args.req)
 
 			assert.Equal(t, tt.expected, actual)
 			if tt.isError {

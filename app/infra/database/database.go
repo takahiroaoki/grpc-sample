@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/entity"
@@ -26,7 +27,10 @@ func (dbc *DBClient) Transaction(fn func(dr repository.DemoRepository) error) er
 func (dbc *DBClient) SelectOneUserByUserId(_ context.Context, userId string) (*entity.User, domerr.DomErr) {
 	var user user
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
-		return nil, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO)
+		}
+		return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
 	}
 
 	return convertUserSchema(user), nil

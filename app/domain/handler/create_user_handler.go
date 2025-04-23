@@ -9,11 +9,11 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
 )
 
-type createUserHandlerImpl struct {
+type createUserHandler struct {
 	cus service.CreateUserService
 }
 
-func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
+func (h *createUserHandler) Invoke(ctx context.Context, req *CreateUserRequest) (*CreateUserResponse, domerr.DomErr) {
 	created, err := h.cus.CreateUser(ctx, entity.User{
 		Email: req.email,
 	})
@@ -26,7 +26,7 @@ func (h *createUserHandlerImpl) Invoke(ctx context.Context, req *CreateUserReque
 }
 
 func NewCreateUserHandler(cus service.CreateUserService) CreateUserHandler {
-	return &createUserHandlerImpl{
+	return &createUserHandler{
 		cus: cus,
 	}
 }

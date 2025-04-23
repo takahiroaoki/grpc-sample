@@ -8,11 +8,11 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 )
 
-type createUserServiceImpl struct {
+type createUserService struct {
 	dr repository.DemoRepository
 }
 
-func (s *createUserServiceImpl) CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
+func (s *createUserService) CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
 	var (
 		createdUser *entity.User
 		err         error
@@ -32,5 +32,5 @@ func (s *createUserServiceImpl) CreateUser(ctx context.Context, u entity.User) (
 }
 
 func NewCreateUserService(dr repository.DemoRepository) CreateUserService {
-	return &createUserServiceImpl{dr}
+	return &createUserService{dr}
 }

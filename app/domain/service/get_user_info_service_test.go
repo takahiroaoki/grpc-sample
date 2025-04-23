@@ -12,7 +12,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mockrepository"
 )
 
-func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
+func Test_getUserInfoService_GetUserByUserId(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -68,7 +68,7 @@ func Test_getUserInfoServiceImpl_GetUserByUserId(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockRepository)
 			}
-			service := &getUserInfoServiceImpl{
+			service := &getUserInfoService{
 				dr: mockRepository,
 			}
 			actual, err := service.GetUserByUserId(tt.args.ctx, tt.args.userId)

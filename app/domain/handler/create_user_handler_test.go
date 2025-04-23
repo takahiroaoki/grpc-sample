@@ -12,7 +12,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mockservice"
 )
 
-func Test_createUserHandlerImpl_Invoke(t *testing.T) {
+func Test_createUserHandler_Invoke(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -76,7 +76,7 @@ func Test_createUserHandlerImpl_Invoke(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)
 			}
-			handler := &createUserHandlerImpl{
+			handler := &createUserHandler{
 				cus: mockService,
 			}
 			actual, err := handler.Invoke(tt.args.ctx, tt.args.req)

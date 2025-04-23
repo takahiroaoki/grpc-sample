@@ -13,7 +13,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mockrepository"
 )
 
-func Test_createUserServiceImpl_CreateUser(t *testing.T) {
+func Test_createUserService_CreateUser(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -83,7 +83,7 @@ func Test_createUserServiceImpl_CreateUser(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockRepository)
 			}
-			service := &createUserServiceImpl{
+			service := &createUserService{
 				dr: mockRepository,
 			}
 			actual, err := service.CreateUser(tt.args.ctx, tt.args.u)

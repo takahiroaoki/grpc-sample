@@ -13,7 +13,7 @@ import (
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 )
 
-type sampleServiceServerImpl struct {
+type sampleServiceServer struct {
 	pb.UnimplementedSampleServiceServer
 	createUserHandler  handler.CreateUserHandler
 	getUserInfoHandler handler.GetUserInfoHandler
@@ -23,7 +23,7 @@ func newSampleServiceServer(dr repository.DemoRepository) pb.SampleServiceServer
 	getUserInfoService := service.NewGetUserInfoService(dr)
 	createUserService := service.NewCreateUserService(dr)
 
-	return &sampleServiceServerImpl{
+	return &sampleServiceServer{
 		createUserHandler:  handler.NewCreateUserHandler(createUserService),
 		getUserInfoHandler: handler.NewGetUserInfoHandler(getUserInfoService),
 	}

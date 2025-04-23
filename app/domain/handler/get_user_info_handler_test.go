@@ -12,7 +12,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mockservice"
 )
 
-func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
+func Test_getUserInfoHandler_Invoke(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
@@ -72,7 +72,7 @@ func Test_getUserInfoHandlerImpl_Invoke(t *testing.T) {
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)
 			}
-			handler := &getUserInfoHandlerImpl{
+			handler := &getUserInfoHandler{
 				guis: mockService,
 			}
 			actual, err := handler.Invoke(tt.args.ctx, tt.args.req)

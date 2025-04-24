@@ -53,7 +53,7 @@ func Test_handleError(t *testing.T) {
 				ctx:    context.Background(),
 				domerr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_INFO),
 			},
-			expected: status.Error(codes.Internal, "internal error"),
+			expected: status.Error(codes.Unknown, "unknown error"),
 		},
 	}
 	for _, tt := range tests {

@@ -27,7 +27,7 @@ func Test_createUserService_CreateUser(t *testing.T) {
 		name        string
 		args        args
 		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
-		expected    *entity.User
+		expected    entity.User
 		isError     bool
 		expectedErr domerr.DomErr
 	}{
@@ -45,12 +45,12 @@ func Test_createUserService_CreateUser(t *testing.T) {
 				})
 				mockRepository.EXPECT().CreateOneUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(&entity.User{
+				}).Return(entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
 			},
-			expected: &entity.User{
+			expected: entity.User{
 				ID:    1,
 				Email: "user@example.com",
 			},
@@ -70,9 +70,9 @@ func Test_createUserService_CreateUser(t *testing.T) {
 				})
 				mockRepository.EXPECT().CreateOneUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				}).Return(entity.User{}, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
-			expected:    nil,
+			expected:    entity.User{},
 			isError:     true,
 			expectedErr: domerr.NewDomErrFromMsg("createUserService.CreateUser: err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},

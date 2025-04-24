@@ -12,9 +12,9 @@ type createUserService struct {
 	dr repository.DemoRepository
 }
 
-func (s *createUserService) CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
+func (s *createUserService) CreateUser(ctx context.Context, u entity.User) (entity.User, domerr.DomErr) {
 	var (
-		createdUser *entity.User
+		createdUser entity.User
 		err         error
 	)
 	err = s.dr.Transaction(func(dr repository.DemoRepository) error {
@@ -24,9 +24,9 @@ func (s *createUserService) CreateUser(ctx context.Context, u entity.User) (*ent
 	if err != nil {
 		appErr, ok := err.(domerr.DomErr)
 		if !ok {
-			return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddDescription("createUserService.CreateUser")
+			return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddDescription("createUserService.CreateUser")
 		}
-		return nil, appErr.AddDescription("createUserService.CreateUser")
+		return entity.User{}, appErr.AddDescription("createUserService.CreateUser")
 	}
 	return createdUser, nil
 }

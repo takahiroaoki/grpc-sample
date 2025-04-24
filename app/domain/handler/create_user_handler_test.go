@@ -41,7 +41,7 @@ func Test_createUserHandler_Invoke(t *testing.T) {
 			mockFunc: func(mockService *mockservice.MockCreateUserService) {
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(&entity.User{
+				}).Return(entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -62,7 +62,7 @@ func Test_createUserHandler_Invoke(t *testing.T) {
 			mockFunc: func(mockService *mockservice.MockCreateUserService) {
 				mockService.EXPECT().CreateUser(gomock.Any(), entity.User{
 					Email: "user@example.com",
-				}).Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				}).Return(entity.User{}, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,

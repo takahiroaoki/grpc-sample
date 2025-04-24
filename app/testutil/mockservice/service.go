@@ -37,10 +37,10 @@ func (m *MockCreateUserService) EXPECT() *MockCreateUserServiceMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockCreateUserService) CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
+func (m *MockCreateUserService) CreateUser(ctx context.Context, u entity.User) (entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, u)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }
@@ -75,10 +75,10 @@ func (m *MockGetUserInfoService) EXPECT() *MockGetUserInfoServiceMockRecorder {
 }
 
 // GetUserByUserId mocks base method.
-func (m *MockGetUserInfoService) GetUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
+func (m *MockGetUserInfoService) GetUserByUserId(ctx context.Context, userId string) (entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByUserId", ctx, userId)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }

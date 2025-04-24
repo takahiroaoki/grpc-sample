@@ -12,7 +12,7 @@ func Test_convertUserEntity(t *testing.T) {
 		ID:    1,
 		Email: "email",
 	}
-	expected := &user{
+	expected := user{
 		ID:    1,
 		Email: "email",
 	}
@@ -24,7 +24,7 @@ func Test_convertUserSchema(t *testing.T) {
 		ID:    1,
 		Email: "email",
 	}
-	expected := &entity.User{
+	expected := entity.User{
 		ID:    1,
 		Email: "email",
 	}

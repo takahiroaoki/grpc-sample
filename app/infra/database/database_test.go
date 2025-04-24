@@ -81,7 +81,7 @@ func Test_DBClient_SelectOneUserByUserId(t *testing.T) {
 		args        args
 		mockFunc    func(sqlMock sqlmock.Sqlmock)
 		assertions  assert.ErrorAssertionFunc
-		expectedUsr *entity.User
+		expectedUsr entity.User
 		expectedErr domerr.DomErr
 	}{
 		{
@@ -97,7 +97,7 @@ func Test_DBClient_SelectOneUserByUserId(t *testing.T) {
 						sqlmock.NewRows([]string{"id", "email"}).AddRow(uint(1), "sample@example.com"),
 					)
 			},
-			expectedUsr: &entity.User{
+			expectedUsr: entity.User{
 				ID:    1,
 				Email: "sample@example.com",
 			},
@@ -114,7 +114,7 @@ func Test_DBClient_SelectOneUserByUserId(t *testing.T) {
 					WithArgs("1", 1).
 					WillReturnError(gorm.ErrRecordNotFound)
 			},
-			expectedUsr: nil,
+			expectedUsr: entity.User{},
 			expectedErr: domerr.NewDomErr(errors.New("DBClient.SelectOneUserByUserId: record not found"), domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO),
 			assertions:  assert.Error,
 		},
@@ -129,7 +129,7 @@ func Test_DBClient_SelectOneUserByUserId(t *testing.T) {
 					WithArgs("1", 1).
 					WillReturnError(gorm.ErrInvalidDB)
 			},
-			expectedUsr: nil,
+			expectedUsr: entity.User{},
 			expectedErr: domerr.NewDomErr(errors.New("DBClient.SelectOneUserByUserId: invalid db"), domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 			assertions:  assert.Error,
 		},
@@ -167,7 +167,7 @@ func Test_DBClient_CreateOneUser(t *testing.T) {
 		args        args
 		mockFunc    func(sqlMock sqlmock.Sqlmock)
 		assertions  assert.ErrorAssertionFunc
-		expectedUsr *entity.User
+		expectedUsr entity.User
 		expectedErr domerr.DomErr
 	}{
 		{
@@ -185,7 +185,7 @@ func Test_DBClient_CreateOneUser(t *testing.T) {
 					WillReturnResult(sqlmock.NewResult(1, 1))
 				sqlMock.ExpectCommit()
 			},
-			expectedUsr: &entity.User{
+			expectedUsr: entity.User{
 				ID:    1,
 				Email: "sample@example.com",
 			},
@@ -206,7 +206,7 @@ func Test_DBClient_CreateOneUser(t *testing.T) {
 					WillReturnError(gorm.ErrInvalidTransaction)
 				sqlMock.ExpectRollback()
 			},
-			expectedUsr: nil,
+			expectedUsr: entity.User{},
 			assertions:  assert.Error,
 			expectedErr: domerr.NewDomErr(errors.New("DBClient.CreateOneUser: invalid transaction"), domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
 		},

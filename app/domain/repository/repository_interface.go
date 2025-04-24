@@ -12,6 +12,6 @@ type DemoRepository interface {
 	Transaction(func(dr DemoRepository) error) error
 
 	// users table
-	SelectOneUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr)
-	CreateOneUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr)
+	SelectOneUserByUserId(ctx context.Context, userId string) (entity.User, domerr.DomErr)
+	CreateOneUser(ctx context.Context, u entity.User) (entity.User, domerr.DomErr)
 }

@@ -27,7 +27,7 @@ type DomErr interface {
 	Error() string
 	Cause() ErrorCause
 	LogLevel() LogLevel
-	AddDescription(description string) DomErr
+	AddErrContext(ctx string) DomErr
 }
 
 type domErr struct {
@@ -57,11 +57,11 @@ func (de *domErr) LogLevel() LogLevel {
 	return de.logLevel
 }
 
-func (de *domErr) AddDescription(description string) DomErr {
+func (de *domErr) AddErrContext(ctx string) DomErr {
 	if de == nil {
 		de = &domErr{}
 	}
-	de.err = fmt.Errorf("%s: %w", description, de)
+	de.err = fmt.Errorf("%s: %w", ctx, de)
 	return de
 }
 

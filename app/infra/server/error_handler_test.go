@@ -29,7 +29,7 @@ func Test_handleError(t *testing.T) {
 				ctx:    context.Background(),
 				domerr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO),
 			},
-			expected: status.Error(codes.NotFound, "err"),
+			expected: status.Error(codes.NotFound, "data not found"),
 		},
 		{
 			name: "invalid argument",
@@ -37,7 +37,7 @@ func Test_handleError(t *testing.T) {
 				ctx:    context.Background(),
 				domerr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_INVALID_ARGUMENT, domerr.LOG_LEVEL_INFO),
 			},
-			expected: status.Error(codes.InvalidArgument, "err"),
+			expected: status.Error(codes.InvalidArgument, "invalid argument"),
 		},
 		{
 			name: "internal",
@@ -45,7 +45,7 @@ func Test_handleError(t *testing.T) {
 				ctx:    context.Background(),
 				domerr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_INFO),
 			},
-			expected: status.Error(codes.Internal, "err"),
+			expected: status.Error(codes.Internal, "internal error"),
 		},
 		{
 			name: "undefined",
@@ -53,7 +53,7 @@ func Test_handleError(t *testing.T) {
 				ctx:    context.Background(),
 				domerr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_INFO),
 			},
-			expected: status.Error(codes.Internal, "err"),
+			expected: status.Error(codes.Internal, "internal error"),
 		},
 	}
 	for _, tt := range tests {

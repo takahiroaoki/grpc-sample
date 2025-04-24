@@ -15,7 +15,7 @@ type getUserInfoHandler struct {
 func (h *getUserInfoHandler) Invoke(ctx context.Context, req *GetUserInfoRequest) (*GetUserInfoResponse, domerr.DomErr) {
 	u, err := h.guis.GetUserByUserId(ctx, req.id)
 	if err != nil {
-		return nil, err.AddDescription("getUserInfoHandler.Invoke")
+		return nil, err.AddErrContext("getUserInfoHandler.Invoke")
 	}
 
 	return &GetUserInfoResponse{

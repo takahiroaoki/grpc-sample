@@ -26,15 +26,22 @@ func handleError(ctx context.Context, err domerr.DomErr) error {
 		util.ErrorLogWithContext(ctx, fmt.Sprintf("error with no log level: %s", err.Error()))
 	}
 
+	var errMap = map[domerr.ErrorCause]string{
+		domerr.CAUSE_UNDEFINED:        "internal error",
+		domerr.CAUSE_INVALID_ARGUMENT: "invalid argument",
+		domerr.CAUSE_NOT_FOUND:        "data not found",
+		domerr.CAUSE_INTERNAL:         "internal error",
+	}
+
 	switch err.Cause() {
 	case domerr.CAUSE_INVALID_ARGUMENT:
-		return status.Error(codes.InvalidArgument, err.Error())
+		return status.Error(codes.InvalidArgument, errMap[err.Cause()])
 	case domerr.CAUSE_NOT_FOUND:
-		return status.Error(codes.NotFound, err.Error())
+		return status.Error(codes.NotFound, errMap[err.Cause()])
 	case domerr.CAUSE_INTERNAL:
-		return status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, errMap[err.Cause()])
 	default:
 		util.ErrorLogWithContext(ctx, fmt.Sprintf("error with no cause: %s", err.Error()))
-		return status.Error(codes.Internal, err.Error())
+		return status.Error(codes.Internal, errMap[err.Cause()])
 	}
 }

@@ -15,7 +15,7 @@ type getUserInfoService struct {
 func (s *getUserInfoService) GetUserByUserId(ctx context.Context, userId string) (entity.User, domerr.DomErr) {
 	u, err := s.dr.SelectOneUserByUserId(ctx, userId)
 	if err != nil {
-		return entity.User{}, err.AddDescription("getUserInfoService.GetUserByUserId")
+		return entity.User{}, err.AddErrContext("getUserInfoService.GetUserByUserId")
 	}
 	return u, nil
 }

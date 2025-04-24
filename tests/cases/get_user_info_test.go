@@ -44,5 +44,5 @@ func Test_GetNonExistingUser(t *testing.T) {
 	}
 	gotGetResp, err := client.GetUserInfo(context.Background(), getReq)
 	assert.Nil(t, gotGetResp)
-	assert.EqualError(t, err, "rpc error: code = NotFound desc = getUserInfoHandler.Invoke: getUserInfoService.GetUserByUserId: DBClient.SelectOneUserByUserId: record not found")
+	assert.EqualError(t, err, "rpc error: code = NotFound desc = data not found")
 }

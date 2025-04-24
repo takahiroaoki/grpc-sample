@@ -47,7 +47,7 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 				mockHandler.EXPECT().Invoke(ctx, handler.NewGetUserInfoRequest("id")).Return(handler.NewGetUserInfoResponse("id", "email"), nil)
 			},
 			expected: &pb.GetUserInfoResponse{
-				Id: "id",
+				Id:    "id",
 				Email: "email",
 			},
 			assertion: assert.NoError,
@@ -61,11 +61,11 @@ func Test_sampleServiceServer_GetUserInfo(t *testing.T) {
 				},
 			},
 			mockFunc: func(ctx context.Context, mockHandler *mockhandler.MockGetUserInfoHandler) {
-				mockHandler.EXPECT().Invoke(ctx, handler.NewGetUserInfoRequest("id")).Return(nil, domerr.NewDomErrFromMsg("internal", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR))
+				mockHandler.EXPECT().Invoke(ctx, handler.NewGetUserInfoRequest("id")).Return(nil, domerr.NewDomErrFromMsg("error", domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR))
 			},
 			expected:    nil,
 			assertion:   assert.Error,
-			expectedErr: status.Error(codes.Internal, "internal"),
+			expectedErr: status.Error(codes.Internal, "internal error"),
 		},
 	}
 	for _, tt := range tests {

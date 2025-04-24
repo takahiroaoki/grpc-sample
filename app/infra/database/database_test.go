@@ -156,6 +156,83 @@ func Test_DBClient_SelectOneUserByUserId(t *testing.T) {
 	}
 }
 
+func Test_DBClient_CreateOneUser(t *testing.T) {
+	t.Parallel()
+	type args struct {
+		ctx  context.Context
+		user entity.User
+	}
+	tests := []struct {
+		name        string
+		args        args
+		mockFunc    func(sqlMock sqlmock.Sqlmock)
+		assertions  assert.ErrorAssertionFunc
+		expectedUsr *entity.User
+		expectedErr domerr.DomErr
+	}{
+		{
+			name: "success",
+			args: args{
+				ctx: context.Background(),
+				user: entity.User{
+					Email: "sample@example.com",
+				},
+			},
+			mockFunc: func(sqlMock sqlmock.Sqlmock) {
+				sqlMock.ExpectBegin()
+				sqlMock.ExpectExec("INSERT INTO `users` (`email`) VALUES (?)").
+					WithArgs("sample@example.com").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				sqlMock.ExpectCommit()
+			},
+			expectedUsr: &entity.User{
+				ID:    1,
+				Email: "sample@example.com",
+			},
+			assertions: assert.NoError,
+		},
+		{
+			name: "error",
+			args: args{
+				ctx: context.Background(),
+				user: entity.User{
+					Email: "sample@example.com",
+				},
+			},
+			mockFunc: func(sqlMock sqlmock.Sqlmock) {
+				sqlMock.ExpectBegin()
+				sqlMock.ExpectExec("INSERT INTO `users` (`email`) VALUES (?)").
+					WithArgs("sample@example.com").
+					WillReturnError(gorm.ErrInvalidTransaction)
+				sqlMock.ExpectRollback()
+			},
+			expectedUsr: nil,
+			assertions:  assert.Error,
+			expectedErr: domerr.NewDomErr(errors.New("DBClient.CreateOneUser: invalid transaction"), domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			dbc, sqlMock, err := GetMockDBClient()
+			defer func() {
+				_ = dbc.CloseDB()
+			}()
+			assert.NoError(t, err)
+			if tt.mockFunc != nil {
+				tt.mockFunc(sqlMock)
+			}
+			gotUsr, gotErr := dbc.CreateOneUser(tt.args.ctx, tt.args.user)
+			assert.Equal(t, tt.expectedUsr, gotUsr)
+			tt.assertions(t, gotErr)
+			if gotErr != nil {
+				assert.True(t, testutil.SameDomainErrors(tt.expectedErr, gotErr))
+			}
+			assert.Nil(t, sqlMock.ExpectationsWereMet())
+		})
+	}
+}
+
 func GetMockDBClient() (*DBClient, sqlmock.Sqlmock, error) {
 	sqlDB, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {

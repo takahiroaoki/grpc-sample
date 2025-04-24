@@ -28,9 +28,9 @@ func (dbc *DBClient) SelectOneUserByUserId(_ context.Context, userId string) (en
 	var user user
 	if err := dbc.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO).AddDescription("DBClient.SelectOneUserByUserId")
+			return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_NOT_FOUND, domerr.LOG_LEVEL_INFO).AddErrContext("DBClient.SelectOneUserByUserId")
 		}
-		return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddDescription("DBClient.SelectOneUserByUserId")
+		return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddErrContext("DBClient.SelectOneUserByUserId")
 	}
 
 	return convertUserSchema(user), nil
@@ -39,7 +39,7 @@ func (dbc *DBClient) SelectOneUserByUserId(_ context.Context, userId string) (en
 func (dbc *DBClient) CreateOneUser(_ context.Context, u entity.User) (entity.User, domerr.DomErr) {
 	s := convertUserEntity(u)
 	if err := dbc.db.Create(&s).Error; err != nil {
-		return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddDescription("DBClient.CreateOneUser")
+		return entity.User{}, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddErrContext("DBClient.CreateOneUser")
 	}
 	return convertUserSchema(s), nil
 }

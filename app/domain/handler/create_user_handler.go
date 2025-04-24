@@ -18,7 +18,7 @@ func (h *createUserHandler) Invoke(ctx context.Context, req *CreateUserRequest) 
 		Email: req.email,
 	})
 	if err != nil {
-		return nil, err.AddDescription("createUserHandler.Invoke")
+		return nil, err.AddErrContext("createUserHandler.Invoke")
 	}
 	return &CreateUserResponse{
 		id: strconv.FormatUint(uint64(created.ID), 10),

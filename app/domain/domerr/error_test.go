@@ -125,11 +125,11 @@ func Test_domErr_LogLevel(t *testing.T) {
 	}
 }
 
-func Test_domErr_AddContext(t *testing.T) {
+func Test_domErr_AddErrContext(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
-		description string
+		ctx string
 	}
 
 	tests := []struct {
@@ -145,10 +145,10 @@ func Test_domErr_AddContext(t *testing.T) {
 				logLevel: LOG_LEVEL_INFO,
 			},
 			args: args{
-				description: "description",
+				ctx: "ctx",
 			},
 			expected: &domErr{
-				err:      errors.New("description: err"),
+				err:      errors.New("ctx: err"),
 				logLevel: LOG_LEVEL_INFO,
 			},
 		},
@@ -156,27 +156,27 @@ func Test_domErr_AddContext(t *testing.T) {
 			name: "Success(*domErr is nil)",
 			de:   nil,
 			args: args{
-				description: "description",
+				ctx: "ctx",
 			},
 			expected: &domErr{
-				err: errors.New("description: "),
+				err: errors.New("ctx: "),
 			},
 		},
 		{
 			name: "Success(err is nil)",
 			de:   &domErr{},
 			args: args{
-				description: "description",
+				ctx: "ctx",
 			},
 			expected: &domErr{
-				err: errors.New("description: "),
+				err: errors.New("ctx: "),
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got := tt.de.AddDescription(tt.args.description)
+			got := tt.de.AddErrContext(tt.args.ctx)
 			assert.EqualError(t, tt.expected, got.Error())
 		})
 	}

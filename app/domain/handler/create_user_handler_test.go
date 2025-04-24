@@ -66,7 +66,7 @@ func Test_createUserHandler_Invoke(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("createUserHandler.Invoke: err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {

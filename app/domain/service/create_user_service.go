@@ -24,9 +24,9 @@ func (s *createUserService) CreateUser(ctx context.Context, u entity.User) (*ent
 	if err != nil {
 		appErr, ok := err.(domerr.DomErr)
 		if !ok {
-			return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR)
+			return nil, domerr.NewDomErr(err, domerr.CAUSE_INTERNAL, domerr.LOG_LEVEL_ERROR).AddDescription("createUserService.CreateUser")
 		}
-		return nil, appErr
+		return nil, appErr.AddDescription("createUserService.CreateUser")
 	}
 	return createdUser, nil
 }

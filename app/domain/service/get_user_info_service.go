@@ -13,7 +13,11 @@ type getUserInfoService struct {
 }
 
 func (s *getUserInfoService) GetUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
-	return s.dr.SelectOneUserByUserId(ctx, userId)
+	u, err := s.dr.SelectOneUserByUserId(ctx, userId)
+	if err != nil {
+		return nil, err.AddDescription("getUserInfoService.GetUserByUserId")
+	}
+	return u, nil
 }
 
 func NewGetUserInfoService(dr repository.DemoRepository) GetUserInfoService {

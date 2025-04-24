@@ -27,6 +27,7 @@ type DomErr interface {
 	Error() string
 	Cause() ErrorCause
 	LogLevel() LogLevel
+	AddDescription(description string) DomErr
 }
 
 type domErr struct {
@@ -56,7 +57,7 @@ func (de *domErr) LogLevel() LogLevel {
 	return de.logLevel
 }
 
-func (de *domErr) AddDescription(description string) *domErr {
+func (de *domErr) AddDescription(description string) DomErr {
 	if de == nil {
 		de = &domErr{}
 	}

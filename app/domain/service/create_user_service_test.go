@@ -74,11 +74,12 @@ func Test_createUserService_CreateUser(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("createUserService.CreateUser: err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			mockRepository := mockrepository.NewMockDemoRepository(ctrl)
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockRepository)

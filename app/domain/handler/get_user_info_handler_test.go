@@ -63,11 +63,12 @@ func Test_getUserInfoHandler_Invoke(t *testing.T) {
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("getUserInfoHandler.Invoke: err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			mockService := mockservice.NewMockGetUserInfoService(ctrl)
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)

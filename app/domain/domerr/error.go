@@ -1,6 +1,9 @@
 package domerr
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type ErrorCause int
 
@@ -32,25 +35,33 @@ type domErr struct {
 	logLevel LogLevel
 }
 
-func (aei *domErr) Error() string {
-	if aei == nil || aei.err == nil {
+func (de *domErr) Error() string {
+	if de == nil || de.err == nil {
 		return ""
 	}
-	return aei.err.Error()
+	return de.err.Error()
 }
 
-func (aei *domErr) Cause() ErrorCause {
-	if aei == nil || aei.err == nil {
+func (de *domErr) Cause() ErrorCause {
+	if de == nil || de.err == nil {
 		return CAUSE_UNDEFINED
 	}
-	return aei.cause
+	return de.cause
 }
 
-func (aei *domErr) LogLevel() LogLevel {
-	if aei == nil || aei.err == nil {
+func (de *domErr) LogLevel() LogLevel {
+	if de == nil || de.err == nil {
 		return LOG_LEVEL_UNDEFINED
 	}
-	return aei.logLevel
+	return de.logLevel
+}
+
+func (de *domErr) AddDescription(description string) *domErr {
+	if de == nil {
+		de = &domErr{}
+	}
+	de.err = fmt.Errorf("%s: %w", description, de)
+	return de
 }
 
 func NewDomErr(err error, cause ErrorCause, logLevel LogLevel) DomErr {

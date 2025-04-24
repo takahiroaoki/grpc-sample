@@ -233,6 +233,51 @@ func Test_DBClient_CreateOneUser(t *testing.T) {
 	}
 }
 
+func Test_DBclient_CloseDB(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name           string
+		mockFunc       func(sqlMock sqlmock.Sqlmock)
+		assertions     assert.ErrorAssertionFunc
+		expectedErrMsg string
+	}{
+		{
+			name: "success",
+			mockFunc: func(sqlMock sqlmock.Sqlmock) {
+				sqlMock.ExpectClose()
+			},
+			assertions: assert.NoError,
+		},
+		{
+			name: "error",
+			mockFunc: func(sqlMock sqlmock.Sqlmock) {
+				sqlMock.ExpectClose().WillReturnError(errors.New("error"))
+			},
+			assertions:     assert.Error,
+			expectedErrMsg: "error",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			dbc, sqlMock, err := GetMockDBClient()
+			defer func() {
+				_ = dbc.CloseDB()
+			}()
+			assert.NoError(t, err)
+			if tt.mockFunc != nil {
+				tt.mockFunc(sqlMock)
+			}
+			gotErr := dbc.CloseDB()
+			tt.assertions(t, gotErr)
+			if gotErr != nil {
+				assert.EqualError(t, gotErr, tt.expectedErrMsg)
+			}
+			assert.Nil(t, sqlMock.ExpectationsWereMet())
+		})
+	}
+}
+
 func GetMockDBClient() (*DBClient, sqlmock.Sqlmock, error) {
 	sqlDB, sqlMock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {

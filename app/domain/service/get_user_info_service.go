@@ -12,8 +12,12 @@ type getUserInfoService struct {
 	dr repository.DemoRepository
 }
 
-func (s *getUserInfoService) GetUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
-	return s.dr.SelectOneUserByUserId(ctx, userId)
+func (s *getUserInfoService) GetUserByUserId(ctx context.Context, userId string) (entity.User, domerr.DomErr) {
+	u, err := s.dr.SelectOneUserByUserId(ctx, userId)
+	if err != nil {
+		return entity.User{}, err.AddDescription("getUserInfoService.GetUserByUserId")
+	}
+	return u, nil
 }
 
 func NewGetUserInfoService(dr repository.DemoRepository) GetUserInfoService {

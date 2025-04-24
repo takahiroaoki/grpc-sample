@@ -8,9 +8,9 @@ import (
 )
 
 type CreateUserService interface {
-	CreateUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr)
+	CreateUser(ctx context.Context, u entity.User) (entity.User, domerr.DomErr)
 }
 
 type GetUserInfoService interface {
-	GetUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr)
+	GetUserByUserId(ctx context.Context, userId string) (entity.User, domerr.DomErr)
 }

@@ -26,7 +26,7 @@ func Test_getUserInfoService_GetUserByUserId(t *testing.T) {
 		name        string
 		args        args
 		mockFunc    func(mockRepository *mockrepository.MockDemoRepository)
-		expected    *entity.User
+		expected    entity.User
 		isError     bool
 		expectedErr domerr.DomErr
 	}{
@@ -37,12 +37,12 @@ func Test_getUserInfoService_GetUserByUserId(t *testing.T) {
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId(gomock.Any(), "1").Return(&entity.User{
+				mockRepository.EXPECT().SelectOneUserByUserId(gomock.Any(), "1").Return(entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
 			},
-			expected: &entity.User{
+			expected: entity.User{
 				ID:    1,
 				Email: "user@example.com",
 			},
@@ -55,15 +55,16 @@ func Test_getUserInfoService_GetUserByUserId(t *testing.T) {
 				userId: "1",
 			},
 			mockFunc: func(mockRepository *mockrepository.MockDemoRepository) {
-				mockRepository.EXPECT().SelectOneUserByUserId(gomock.Any(), "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				mockRepository.EXPECT().SelectOneUserByUserId(gomock.Any(), "1").Return(entity.User{}, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
-			expected:    nil,
+			expected:    entity.User{},
 			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("getUserInfoService.GetUserByUserId: err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			mockRepository := mockrepository.NewMockDemoRepository(ctrl)
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockRepository)

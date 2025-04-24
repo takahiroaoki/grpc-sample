@@ -12,30 +12,31 @@ func Test_domErr_Error(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		aei      *domErr
+		de       *domErr
 		expected string
 	}{
 		{
 			name: "Success",
-			aei: &domErr{
+			de: &domErr{
 				err: errors.New("err"),
 			},
 			expected: "err",
 		},
 		{
 			name:     "Success(*domErr is nil)",
-			aei:      nil,
+			de:       nil,
 			expected: "",
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &domErr{},
+			de:       &domErr{},
 			expected: "",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, tt.aei.Error())
+			t.Parallel()
+			assert.Equal(t, tt.expected, tt.de.Error())
 		})
 	}
 }
@@ -45,12 +46,12 @@ func Test_domErr_Cause(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		aei      *domErr
+		de       *domErr
 		expected ErrorCause
 	}{
 		{
 			name: "Success",
-			aei: &domErr{
+			de: &domErr{
 				err:   errors.New("err"),
 				cause: CAUSE_INTERNAL,
 			},
@@ -58,17 +59,17 @@ func Test_domErr_Cause(t *testing.T) {
 		},
 		{
 			name:     "Success(*domErr is nil)",
-			aei:      nil,
+			de:       nil,
 			expected: CAUSE_UNDEFINED,
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &domErr{},
+			de:       &domErr{},
 			expected: CAUSE_UNDEFINED,
 		},
 		{
 			name: "Error(cause is not defined)",
-			aei: &domErr{
+			de: &domErr{
 				err: errors.New("err"),
 			},
 			expected: CAUSE_UNDEFINED,
@@ -76,7 +77,8 @@ func Test_domErr_Cause(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, tt.aei.Cause())
+			t.Parallel()
+			assert.Equal(t, tt.expected, tt.de.Cause())
 		})
 	}
 }
@@ -86,12 +88,12 @@ func Test_domErr_LogLevel(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		aei      *domErr
+		de       *domErr
 		expected LogLevel
 	}{
 		{
 			name: "Success",
-			aei: &domErr{
+			de: &domErr{
 				err:      errors.New("err"),
 				logLevel: LOG_LEVEL_INFO,
 			},
@@ -99,17 +101,17 @@ func Test_domErr_LogLevel(t *testing.T) {
 		},
 		{
 			name:     "Success(*domErr is nil)",
-			aei:      nil,
+			de:       nil,
 			expected: LOG_LEVEL_UNDEFINED,
 		},
 		{
 			name:     "Success(err is nil)",
-			aei:      &domErr{},
+			de:       &domErr{},
 			expected: LOG_LEVEL_UNDEFINED,
 		},
 		{
 			name: "Error(logLevel is not defined)",
-			aei: &domErr{
+			de: &domErr{
 				err: errors.New("err"),
 			},
 			expected: LOG_LEVEL_UNDEFINED,
@@ -117,7 +119,65 @@ func Test_domErr_LogLevel(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, tt.aei.LogLevel())
+			t.Parallel()
+			assert.Equal(t, tt.expected, tt.de.LogLevel())
+		})
+	}
+}
+
+func Test_domErr_AddContext(t *testing.T) {
+	t.Parallel()
+
+	type args struct {
+		description string
+	}
+
+	tests := []struct {
+		name     string
+		de       *domErr
+		args     args
+		expected *domErr
+	}{
+		{
+			name: "Success",
+			de: &domErr{
+				err:      errors.New("err"),
+				logLevel: LOG_LEVEL_INFO,
+			},
+			args: args{
+				description: "description",
+			},
+			expected: &domErr{
+				err:      errors.New("description: err"),
+				logLevel: LOG_LEVEL_INFO,
+			},
+		},
+		{
+			name: "Success(*domErr is nil)",
+			de:   nil,
+			args: args{
+				description: "description",
+			},
+			expected: &domErr{
+				err: errors.New("description: "),
+			},
+		},
+		{
+			name: "Success(err is nil)",
+			de:   &domErr{},
+			args: args{
+				description: "description",
+			},
+			expected: &domErr{
+				err: errors.New("description: "),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := tt.de.AddDescription(tt.args.description)
+			assert.EqualError(t, tt.expected, got.Error())
 		})
 	}
 }

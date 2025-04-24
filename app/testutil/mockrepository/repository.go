@@ -38,10 +38,10 @@ func (m *MockDemoRepository) EXPECT() *MockDemoRepositoryMockRecorder {
 }
 
 // CreateOneUser mocks base method.
-func (m *MockDemoRepository) CreateOneUser(ctx context.Context, u entity.User) (*entity.User, domerr.DomErr) {
+func (m *MockDemoRepository) CreateOneUser(ctx context.Context, u entity.User) (entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateOneUser", ctx, u)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }
@@ -53,10 +53,10 @@ func (mr *MockDemoRepositoryMockRecorder) CreateOneUser(ctx, u interface{}) *gom
 }
 
 // SelectOneUserByUserId mocks base method.
-func (m *MockDemoRepository) SelectOneUserByUserId(ctx context.Context, userId string) (*entity.User, domerr.DomErr) {
+func (m *MockDemoRepository) SelectOneUserByUserId(ctx context.Context, userId string) (entity.User, domerr.DomErr) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SelectOneUserByUserId", ctx, userId)
-	ret0, _ := ret[0].(*entity.User)
+	ret0, _ := ret[0].(entity.User)
 	ret1, _ := ret[1].(domerr.DomErr)
 	return ret0, ret1
 }

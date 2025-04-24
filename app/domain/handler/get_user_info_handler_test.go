@@ -39,7 +39,7 @@ func Test_getUserInfoHandler_Invoke(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(gomock.Any(), "1").Return(&entity.User{
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), "1").Return(entity.User{
 					ID:    1,
 					Email: "user@example.com",
 				}, nil)
@@ -59,15 +59,16 @@ func Test_getUserInfoHandler_Invoke(t *testing.T) {
 				},
 			},
 			mockFunc: func(mockService *mockservice.MockGetUserInfoService) {
-				mockService.EXPECT().GetUserByUserId(gomock.Any(), "1").Return(nil, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
+				mockService.EXPECT().GetUserByUserId(gomock.Any(), "1").Return(entity.User{}, domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED))
 			},
 			expected:    nil,
 			isError:     true,
-			expectedErr: domerr.NewDomErrFromMsg("err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
+			expectedErr: domerr.NewDomErrFromMsg("getUserInfoHandler.Invoke: err", domerr.CAUSE_UNDEFINED, domerr.LOG_LEVEL_UNDEFINED),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			mockService := mockservice.NewMockGetUserInfoService(ctrl)
 			if tt.mockFunc != nil {
 				tt.mockFunc(mockService)

@@ -12,6 +12,7 @@ import (
 )
 
 func Test_DBClient_Transaction(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		fn func(tx repository.DemoRepository) error
 	}
@@ -49,6 +50,7 @@ func Test_DBClient_Transaction(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			dbc, sqlMock, err := GetMockDBClient()
 			assert.NoError(t, err)
 			if tt.mockFunc != nil {

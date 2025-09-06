@@ -3,7 +3,7 @@ package interceptor
 import (
 	"context"
 
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 	"github.com/takahiroaoki/grpc-sample/app/infra/server/interceptor/validator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

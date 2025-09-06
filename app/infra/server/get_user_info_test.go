@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/takahiroaoki/grpc-sample/app/domain/domerr"
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 	"github.com/takahiroaoki/grpc-sample/app/testutil/mockhandler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

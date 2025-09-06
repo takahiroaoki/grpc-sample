@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/takahiroaoki/grpc-sample/tests/client"
-	"github.com/takahiroaoki/grpc-sample/tests/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 )
 
 func setup(t *testing.T) pb.SampleServiceClient {

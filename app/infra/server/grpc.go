@@ -4,7 +4,7 @@ import (
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
 	"github.com/takahiroaoki/grpc-sample/app/domain/repository"
 	"github.com/takahiroaoki/grpc-sample/app/domain/service"
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 	"github.com/takahiroaoki/grpc-sample/app/infra/server/interceptor"
 	"github.com/takahiroaoki/grpc-sample/app/util"
 	"google.golang.org/grpc"

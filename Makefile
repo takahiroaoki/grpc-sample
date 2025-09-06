@@ -1,5 +1,5 @@
 # set up
-init:proto-go db-reset migrate-up
+init:db-reset migrate-up
 
 db-reset:
 	mysql -h demo-mysql -u dev-user -D demodb -p < /workspaces/grpc-sample/devutil/reset.sql
@@ -11,16 +11,6 @@ migrate-up:
 migrate-down:
 	cd ./app \
 	&& go run main.go migrate down
-
-proto-go:
-	protoc --proto_path=proto \
-		--go_out=app/infra/pb --go_opt=paths=source_relative \
-		--go-grpc_out=app/infra/pb --go-grpc_opt=paths=source_relative \
-		sample.proto
-	protoc --proto_path=proto \
-		--go_out=tests/pb --go_opt=paths=source_relative \
-		--go-grpc_out=tests/pb --go-grpc_opt=paths=source_relative \
-		sample.proto
 
 # run server
 run-server:

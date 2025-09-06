@@ -7,15 +7,11 @@ runs:
       run: |
         apk update \
           && apk add git \
-          make \
-          protobuf~=24.4
-        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 \
-          && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2 \
-          && go install github.com/golang/mock/mockgen@v1.6 \
+          make
+        go install github.com/golang/mock/mockgen@v1.6 \
           && go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
       shell: sh
     - name: Generate Code
       run: |
-        make proto-go
         make mockgen
       shell: sh

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 )
 
 func Test_Validate_ValidateCreateUserRequest(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 )
 
 func (v *Validator) ValidateCreateUserRequest(ctx context.Context, req *pb.CreateUserRequest) error {

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/takahiroaoki/grpc-sample/app/domain/handler"
-	"github.com/takahiroaoki/grpc-sample/app/infra/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 )
 
 func (s *sampleServiceServer) GetUserInfo(ctx context.Context, req *pb.GetUserInfoRequest) (*pb.GetUserInfoResponse, error) {

@@ -7,7 +7,7 @@ import (
 
 	middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/takahiroaoki/grpc-sample/tests/config"
-	"github.com/takahiroaoki/grpc-sample/tests/pb"
+	pb "github.com/takahiroaoki/protobuf/gen_go/proto/grpc_sample/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"

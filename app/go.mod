@@ -1,6 +1,6 @@
 module github.com/takahiroaoki/grpc-sample/app
 
-go 1.24.1
+go 1.24.5
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2

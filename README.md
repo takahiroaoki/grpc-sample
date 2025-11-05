@@ -69,13 +69,6 @@ $ make api-test
 ```
 $ make lint
 ```
-
-### Create migration files
-```
-$ go install -tags mysql github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
-$ migrate create -ext sql -dir /workspaces/grpc-sample/app/resource/migration -seq ${MIGRATION_FILE_NAME}
-```
-
 ### Connect to mysql container from app container
 ```
 # the password is written in .devcontainer/.env

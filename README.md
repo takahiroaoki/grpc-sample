@@ -13,11 +13,6 @@ This is the sample grpc server written with golang.
 - MySQL 8
 - gRPC
 
-
-Others:
-- gorm
-- golang-migrate
-
 etc.
 
 ## Local setup

@@ -5,12 +5,8 @@ db-reset:
 	mysql -h demo-mysql -u dev-user -D demodb -p < /workspaces/grpc-sample/devutil/reset.sql
 
 migrate-up:
-	cd ./app \
-	&& go run main.go migrate up
-
-migrate-down:
-	cd ./app \
-	&& go run main.go migrate down
+	git submodule update --init --recursive
+	./submodules/artifact-storage/batch-hub/batch-hub-0.1.0 schema-migration up
 
 # run server
 run-server:

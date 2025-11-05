@@ -14,7 +14,6 @@ func NewBundle() *cobra.Command {
 	}
 	bundle.AddCommand(
 		newServerCmd(),
-		newMigrateCmd(),
 	)
 	return bundle
 }

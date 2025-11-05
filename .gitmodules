@@ -1,0 +1,3 @@
+[submodule "submodules/artifact-storage"]
+	path = submodules/artifact-storage
+	url = https://github.com/takahiroaoki/artifact-storage.git
